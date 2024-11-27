@@ -1,7 +1,6 @@
 package commons;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -10,9 +9,16 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Entity
 public class Collection {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public long id;
+
+    @Column(unique = true, nullable = false)
     public String name;
 
+    @Column(nullable = false)
     public String title;
+
+    public boolean isDefault;
 
     public Collection() {
         // for object mapper
@@ -21,6 +27,7 @@ public class Collection {
     public Collection(String name, String title) {
         this.name = name;
         this.title = title;
+        this.isDefault = false;
     }
 
     @Override
