@@ -28,11 +28,19 @@ public class SidebarCtrl {
         List<NoteTitle> titles = NoteTitle.getDefaultNoteTitles();
         for (NoteTitle title : titles) {
             Label label = new Label(title.getTitle());
-            label.setId(title.getId() + "");
             VBox wrapper = new VBox(label);
+            wrapper.setId(title.getId() + "");
             wrapper.setPadding(new Insets(5, 10, 5, 10));
+            wrapper.setOnMouseClicked(event -> {
+                String id = wrapper.getId(); // Get the VBox's ID
+                noteClick(id);             // Call a function, passing the ID
+            });
             noteContainer.getChildren().add(wrapper);
         }
+    }
+
+    private void noteClick(String id) {
+        System.out.println("Clicked on note " + id);
     }
 
 }
