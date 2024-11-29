@@ -16,12 +16,19 @@
 package client;
 
 import java.net.URL;
+
+import client.scenes.PrimaryCtrl;
+import client.scenes.SidebarCtrl;
+import com.google.inject.Injector;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import static com.google.inject.Guice.createInjector;
+
 public class Main extends Application {
+
+	private static final Injector INJECTOR = createInjector(new MyModule());
+	private static final MyFXML FXML = new MyFXML(INJECTOR);
 
 	public static void main(String[] args) {
 		launch(args);
@@ -29,11 +36,14 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		var fxml = new FXMLLoader();
-		fxml.setLocation(getLocation("client/scenes/Sidebar.fxml"));
-		var scene = new Scene(fxml.load());
-		primaryStage.setScene(scene);
-		primaryStage.show();
+		var sidebar = FXML.load(SidebarCtrl.class, "client", "Sidebar.fxml");
+		var pc = INJECTOR.getInstance(PrimaryCtrl.class);
+		pc.init(primaryStage, sidebar);
+//		var fxml = new FXMLLoader();
+//		fxml.setLocation(getLocation("client/scenes/Sidebar.fxml"));
+//		var scene = new Scene(fxml.load());
+//		primaryStage.setScene(scene);
+//		primaryStage.show();
 	}
 
 	private static URL getLocation(String path) {
