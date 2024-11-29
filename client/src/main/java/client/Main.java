@@ -16,21 +16,12 @@
 package client;
 
 import java.net.URL;
-import java.util.List;
-
 import javafx.application.Application;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import javafx.scene.control.Label;
-
 public class Main extends Application {
-
-	@FXML
-	public VBox noteContainer;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -47,21 +38,6 @@ public class Main extends Application {
 
 	private static URL getLocation(String path) {
 		return Main.class.getClassLoader().getResource(path);
-	}
-
-	public void refresh() {
-		noteContainer.getChildren().clear();
-
-		List<String> titles = getNoteTitles();
-		for (String title : titles) {
-			Label label = new Label(title);
-			noteContainer.getChildren().add(label);
-		}
-	}
-
-	private List<String> getNoteTitles() {
-		// TODO: GET notes in collection
-		return List.of("Title #1", "Title #2", "Title #3", "Title #4");
 	}
 
 }
