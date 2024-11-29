@@ -30,8 +30,11 @@ public class MainCtrl {
     private AddQuoteCtrl addCtrl;
     private Scene add;
 
+    private MarkdownEditorCtrl markdownEditorCtrl;
+    private Scene markdownEditor;
+
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add) {
+            Pair<AddQuoteCtrl, Parent> add, Pair<MarkdownEditorCtrl, Parent> markdownEditor) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -39,7 +42,11 @@ public class MainCtrl {
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
 
+        this.markdownEditorCtrl = markdownEditor.getKey();
+        this.markdownEditor = new Scene(markdownEditor.getValue());
+
         showOverview();
+        //showEditor();
         primaryStage.show();
     }
 
@@ -53,5 +60,10 @@ public class MainCtrl {
         primaryStage.setTitle("Quotes: Adding Quote");
         primaryStage.setScene(add);
         add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
+    }
+
+    public void showEditor() {
+        //markdownEditorCtrl.setDivider(0.5);
+        primaryStage.setScene(markdownEditor);
     }
 }
