@@ -47,6 +47,13 @@ public class ServerUtils {
 		}
 	}
 
+	public List<NoteTitle> getNoteTitles() {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/titles") //
+				.request(APPLICATION_JSON) //
+				.get(new GenericType<List<NoteTitle>>() {});
+	}
+
 	public List<Quote> getQuotes() {
 		return ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/quotes") //
