@@ -1,5 +1,7 @@
 package client.utils;
 
+import jakarta.persistence.Id;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -7,7 +9,11 @@ import java.util.Objects;
 public class NoteTitle {
 
     private String title;
+
+    @Id
     private int id;
+
+    public NoteTitle() {}
 
     public NoteTitle(String title, int id) {
         this.title = title;
@@ -15,7 +21,7 @@ public class NoteTitle {
     }
 
     public static List<NoteTitle> getDefaultNoteTitles() {
-        // TODO: GET notes in collection
+        // for testing //
         List<NoteTitle> noteTitles = new ArrayList<>();
 
         for (int i = 0; i < 32; i++) {
