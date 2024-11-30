@@ -7,9 +7,9 @@ import java.util.Objects;
 public class NoteTitle {
 
     private String title;
-    private int id;
+    private long id;
 
-    public NoteTitle(String title, int id) {
+    public NoteTitle(String title, long id) {
         this.title = title;
         this.id = id;
     }
@@ -52,11 +52,11 @@ public class NoteTitle {
         this.title = title;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

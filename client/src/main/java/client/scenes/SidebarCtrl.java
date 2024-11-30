@@ -32,14 +32,14 @@ public class SidebarCtrl {
             wrapper.setId(title.getId() + "");
             wrapper.setPadding(new Insets(5, 10, 5, 10));
             wrapper.setOnMouseClicked(event -> {
-                String id = wrapper.getId(); // Get the VBox's ID
+                long id = Long.parseLong(wrapper.getId()); // Get the VBox's ID
                 noteClick(id);             // Call a function, passing the ID
             });
             noteContainer.getChildren().add(wrapper);
         }
     }
 
-    private void noteClick(String id) {
+    private void noteClick(Long id) {
         System.out.println("Clicked on note " + id);
     }
 
