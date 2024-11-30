@@ -28,7 +28,6 @@ public class MainCtrl {
 
     public void initialize(Stage primaryStage, Pair<NoteEditorCtrl, Parent> noteEditor) {
         this.primaryStage = primaryStage;
-
         this.noteEditorCtrl = noteEditor.getKey();
         this.noteEditor = new Scene(noteEditor.getValue());
 
