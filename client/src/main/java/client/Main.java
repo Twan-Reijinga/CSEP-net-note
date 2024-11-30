@@ -20,6 +20,9 @@ import java.net.URL;
 import client.scenes.PrimaryCtrl;
 import client.scenes.SidebarCtrl;
 import com.google.inject.Injector;
+import client.scenes.NoteEditorCtrl;
+import com.google.inject.Injector;
+import client.scenes.MainCtrl;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -44,10 +47,19 @@ public class Main extends Application {
 //		var scene = new Scene(fxml.load());
 //		primaryStage.setScene(scene);
 //		primaryStage.show();
-	}
 
+		/*var serverUtils = INJECTOR.getInstance(ServerUtils.class);
+		if (!serverUtils.isServerAvailable()) {
+			var msg = "Server needs to be started before the client, but it does not seem to be available. Shutting down.";
+			System.err.println(msg);
+			return;
+		}*/
+		var noteEditor = FXML.load(NoteEditorCtrl.class, "client", "scenes", "mocktemplate.fxml");
+		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+		mainCtrl.initialize(primaryStage, noteEditor);
+	}
+	
 	private static URL getLocation(String path) {
 		return Main.class.getClassLoader().getResource(path);
 	}
-
 }
