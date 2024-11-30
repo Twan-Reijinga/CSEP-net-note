@@ -58,7 +58,7 @@ public class Main extends Application {
 		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 		mainCtrl.initialize(primaryStage, noteEditor);
 	}
-	
+
 	private static URL getLocation(String path) {
 		return Main.class.getClassLoader().getResource(path);
 	}
