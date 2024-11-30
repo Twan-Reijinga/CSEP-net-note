@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.NoteTitle;
+import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -12,20 +13,23 @@ import java.util.List;
 
 public class SidebarCtrl {
 
+    private final ServerUtils server;
+
     @FXML
     public VBox noteContainer;
 
     private PrimaryCtrl pc;
 
     @Inject
-    public SidebarCtrl(PrimaryCtrl pc) {
+    public SidebarCtrl(PrimaryCtrl pc, ServerUtils server) {
         this.pc = pc;
+        this.server = server;
     }
 
     public void refresh() {
         noteContainer.getChildren().clear();
 
-        List<NoteTitle> titles = NoteTitle.getDefaultNoteTitles();
+        List<NoteTitle> titles = server.getNoteTitles();
         for (NoteTitle title : titles) {
             Label label = new Label(title.getTitle());
             VBox wrapper = new VBox(label);
