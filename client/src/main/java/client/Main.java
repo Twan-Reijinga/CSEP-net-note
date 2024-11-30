@@ -22,7 +22,6 @@ import client.scenes.PrimaryCtrl;
 import client.scenes.SidebarCtrl;
 import com.google.inject.Injector;
 import client.scenes.NoteEditorCtrl;
-import client.utils.ServerUtils;
 import com.google.inject.Injector;
 import client.scenes.MainCtrl;
 import javafx.application.Application;
