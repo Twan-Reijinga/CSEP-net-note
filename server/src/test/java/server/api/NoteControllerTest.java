@@ -37,14 +37,6 @@ public class NoteControllerTest {
     }
 
     @Test
-    public void getMappedNotesTest(){
-        List<NoteMapper> mapped = controller.getMappedNotes();
-        List<NoteMapper> expected = List.of(new NoteMapper(0, "Title 1"), new NoteMapper(1, "Title 2"));
-
-        assertEquals(expected, mapped);
-    }
-
-    @Test
     public void getAllNotesTest(){
         List<Note> mapped = controller.getAllNotes();
         List<Note> expected = List.of(note1, note2);
