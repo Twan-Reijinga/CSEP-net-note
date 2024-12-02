@@ -30,7 +30,7 @@ public class CollectionController {
 
     /**
      * Returns a list of all notes that are in the collection
-     * Could be used alongside with a collection remove
+     * Works with removing the collection
      * <p>
      * @param id the identifier of the collection
      * @return List of Notes, the notes that correspond to the current selected collection
