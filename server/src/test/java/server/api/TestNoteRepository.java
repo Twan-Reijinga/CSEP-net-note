@@ -10,6 +10,7 @@ import server.database.NoteRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -24,6 +25,21 @@ public class TestNoteRepository implements NoteRepository {
 
     public Optional<Note> find(long id) {
         return notes.stream().filter(x -> x.id == id).findFirst();
+    }
+
+    @Override
+    public List<Note> findByCollectionId(long collectionId) {
+        Map<Long, Note> fakeDB =
+                Map.of(
+                        0L, new Note("Title 1", "Content 1", null),
+                        1L, new Note("Title 2", "Content 2", null));
+        List<Note> notes = new ArrayList<>();
+        for (Note note : fakeDB.values()) {
+            if (note.collection != null && note.collection.id == collectionId) {
+                notes.add(note);
+            }
+        }
+        return notes;
     }
 
     @Override
