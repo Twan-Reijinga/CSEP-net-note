@@ -23,47 +23,38 @@ import javafx.util.Pair;
 public class MainCtrl {
 
     private Stage primaryStage;
-
-    private QuoteOverviewCtrl overviewCtrl;
-    private Scene overview;
-
-    private AddQuoteCtrl addCtrl;
-    private Scene add;
+    private NoteEditorCtrl noteEditorCtrl;
+    private Scene noteEditor;
 
     private MarkdownEditorCtrl markdownEditorCtrl;
     private Scene markdownEditor;
 
-    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add, Pair<MarkdownEditorCtrl, Parent> markdownEditor) {
+    public void initialize(
+            Stage primaryStage,
+            Pair<NoteEditorCtrl, Parent> noteEditor,
+            Pair<MarkdownEditorCtrl, Parent> markdownEditor)
+    {
         this.primaryStage = primaryStage;
-        this.overviewCtrl = overview.getKey();
-        this.overview = new Scene(overview.getValue());
 
-        this.addCtrl = add.getKey();
-        this.add = new Scene(add.getValue());
+        this.noteEditorCtrl = noteEditor.getKey();
+        this.noteEditor = new Scene(noteEditor.getValue());
 
         this.markdownEditorCtrl = markdownEditor.getKey();
         this.markdownEditor = new Scene(markdownEditor.getValue());
 
-        showOverview();
-        //showEditor();
+//        showNoteEditor();
+        showMarkdownEditor();
+
         primaryStage.show();
     }
 
-    public void showOverview() {
-        primaryStage.setTitle("Quotes: Overview");
-        primaryStage.setScene(overview);
-        overviewCtrl.refresh();
+    public void showNoteEditor() {
+        primaryStage.setTitle("NoteEditor");
+        primaryStage.setScene(noteEditor);
     }
 
-    public void showAdd() {
-        primaryStage.setTitle("Quotes: Adding Quote");
-        primaryStage.setScene(add);
-        add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
-    }
-
-    public void showEditor() {
-        //markdownEditorCtrl.setDivider(0.5);
+    public void showMarkdownEditor() {
+        primaryStage.setTitle("MarkdownEditor");
         primaryStage.setScene(markdownEditor);
     }
 }

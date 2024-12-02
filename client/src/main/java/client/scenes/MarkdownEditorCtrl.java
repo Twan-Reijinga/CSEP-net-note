@@ -113,6 +113,8 @@ public class MarkdownEditorCtrl {
         setTimeState(false);
         String html = convertMarkdownToHtml(noteText.getText());
 
+
+        // FIXME: hangs the application when UI is closed
         // Use the jfx thread to update the text
         Platform.runLater(() -> markdownPreview.getEngine().loadContent(html));
     }
