@@ -2,7 +2,6 @@ package server.api;
 
 import java.util.*;
 import commons.Note;
-import commons.NoteMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
