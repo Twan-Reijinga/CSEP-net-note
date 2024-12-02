@@ -1,5 +1,6 @@
 package server;
 
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -25,10 +26,14 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initializeData() {
         return args -> {
-            if (collectionRepository.existsById("default")) return;
+            Optional<Collection> collectionResult = collectionRepository.findFirstByIsDefaultTrue();
+
+            if (collectionResult.isPresent()) return;
 
             // Create the default collection if it doesn't exist
-            Collection defaultCollection = new Collection("default", "Default Collection");
+            Collection defaultCollection = new commons.Collection("default", "Default Collection");
+            defaultCollection.isDefault = true;
+
             collectionRepository.save(defaultCollection);
 
             // Create some boilerplate notes in the default collection
