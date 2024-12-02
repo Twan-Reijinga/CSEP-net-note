@@ -27,6 +27,24 @@ public class CollectionController {
         return collectionRepository.findAll();
     }
 
+
+    /**
+     * Returns a list of all notes that are in the collection
+     * Could be used alongside with a collection remove
+     * <p>
+     * @param id the identifier of the collection
+     * @return List of Notes, the notes that correspond to the current selected collection
+     */
+    @GetMapping("/getNotes/{id}")
+    public List<Note> getNotesInCollection(@PathVariable("id") Long id ) {
+        if (id < 0 || collectionRepository.findById(id).isEmpty()) {
+            return null;
+        }
+        List<Note> tempNoteList = new ArrayList<>(List.copyOf(noteRepository.findAll()));
+        tempNoteList.removeIf(currentNote -> !(currentNote.collection.id == id));
+        return tempNoteList;
+    }
+
     /**
      * Stores a new collection in the database, with the provided arguments.
      * Collection can not have empty values.
@@ -45,31 +63,14 @@ public class CollectionController {
     }
 
     /**
-     * Returns a list of all notes that are in the collection
-     * Could be used alongside with a collection remove
-     * <p>
-     * @param id the identifier of the collection
-     * @return List of Notes, the notes that correspond to the current selected collection
-     */
-    @GetMapping("/getNotes/{name}")
-    public List<Note> getNotesInCollection(@PathVariable("name") Long id ) {
-        if (id < 0 || collectionRepository.findById(id).isEmpty()) {
-            return null;
-        }
-        List<Note> tempNoteList = new ArrayList<>(List.copyOf(noteRepository.findAll()));
-        tempNoteList.removeIf(currentNote -> !(currentNote.collection.id == id));
-        return tempNoteList;
-    }
-
-    /**
      * Removes the collection of the provided ID from database
      * Name has to match with a collection in the database.
      * <p>
      * @param id  the identifier of the collection
      * @return a http Response, either a bad build or a valid one
      */
-    @DeleteMapping("/delete/{name}")
-    public ResponseEntity<Collection> remove(@PathVariable("name") Long id ) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Collection> remove(@PathVariable("id") Long id ) {
         if (id < 0|| collectionRepository.findById(id).isEmpty()){
             return ResponseEntity.badRequest().build();
         }
