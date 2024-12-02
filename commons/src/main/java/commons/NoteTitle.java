@@ -47,6 +47,15 @@ public class NoteTitle {
     }
 
     /**
+     * Converter function to convert a Note into a NoteTitle object.
+     * @param note Original Note.
+     * @return NoteTitle with the same title and id as original Note.
+     */
+    public static NoteTitle fromNote(Note note) {
+        return new NoteTitle(note.title, note.id);
+    }
+
+    /**
      * Equals method for the NoteTitle.
      * Title and id need to be the same to be equal.
      * @param o Other object to compare to.
