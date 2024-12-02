@@ -1,5 +1,6 @@
 package server.api;
 
+import commons.Collection;
 import commons.Note;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -29,15 +30,15 @@ public class TestNoteRepository implements NoteRepository {
 
     @Override
     public List<Note> findByCollectionId(long collectionId) {
+        Collection collection = new Collection("first collection", "title");
+
         Map<Long, Note> fakeDB =
                 Map.of(
-                        0L, new Note("Title 1", "Content 1", null),
-                        1L, new Note("Title 2", "Content 2", null));
+                        1L, new Note("Title 1", "Content 1", collection),
+                        2L, new Note("Title 2", "Content 2", collection));
         List<Note> notes = new ArrayList<>();
         for (Note note : fakeDB.values()) {
-            if (note.collection != null && note.collection.id == collectionId) {
-                notes.add(note);
-            }
+            notes.add(note);
         }
         return notes;
     }
