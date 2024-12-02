@@ -1,6 +1,6 @@
 package server.api;
 
-import client.utils.NoteTitle;
+import commons.NoteTitle;
 import commons.Note;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

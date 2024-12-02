@@ -1,6 +1,6 @@
 package client.scenes;
 
-import client.utils.NoteTitle;
+import commons.NoteTitle;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
