@@ -1,7 +1,6 @@
 package client.scenes;
 
 import client.utils.NoteTitle;
-import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -15,11 +14,8 @@ public class SidebarCtrl {
     @FXML
     public VBox noteContainer;
 
-    private PrimaryCtrl pc;
+    public SidebarCtrl() {
 
-    @Inject
-    public SidebarCtrl(PrimaryCtrl pc) {
-        this.pc = pc;
     }
 
     public void refresh() {

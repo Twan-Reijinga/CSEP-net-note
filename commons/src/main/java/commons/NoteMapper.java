@@ -1,33 +1,21 @@
 package commons;
 
-import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-@Entity
-public class Collection {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+
+public class NoteMapper {
     public long id;
 
-    @Column(unique = true, nullable = false)
-    public String name;
-
-    @Column(nullable = false)
     public String title;
 
-    public boolean isDefault;
+    public NoteMapper() {}
 
-    public Collection() {
-        // for object mapper
-    }
-
-    public Collection(String name, String title) {
-        this.name = name;
+    public NoteMapper(long id, String title) {
+        this.id = id;
         this.title = title;
-        this.isDefault = false;
     }
 
     @Override
