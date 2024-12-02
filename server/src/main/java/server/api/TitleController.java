@@ -3,13 +3,11 @@ package server.api;
 import client.utils.NoteTitle;
 import commons.Note;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import server.database.NoteRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/titles")
@@ -22,16 +20,26 @@ public class TitleController {
     }
 
     @GetMapping(path = {"", "/"})
-    public ResponseEntity<List<NoteTitle>> getTitle(@RequestParam(required = false) Long collectionId) {
+    public ResponseEntity<List<NoteTitle>> getAllTitles(@RequestParam(required = false) Long collectionId) {
         List<Note> notes = noteRepository.findAll();
-        // TODO: filter on collectionID, could only be done after MR !8 from Oleh is approved //
 
         List<NoteTitle> titles = notes
                 .stream()
-//                .filter(note -> note.collectionId = collectionId) // ^ see TODO ^ //
                 .map(note -> new NoteTitle(note.title, note.id))
                 .toList();
 
         return ResponseEntity.ok(titles);
+    }
+
+    @GetMapping(path="/{id}")
+    public ResponseEntity<NoteTitle> getTitle(@PathVariable("id") Long collectionId) {
+        Optional<Note> note = noteRepository.findById(collectionId);
+        if (note.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        NoteTitle nt = new NoteTitle(note.get().title, note.get().id);
+
+        return ResponseEntity.ok(nt);
     }
 }
