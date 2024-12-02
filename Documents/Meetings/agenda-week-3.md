@@ -44,7 +44,7 @@
 - Sprint Retrospective (what was ommited and can be improved?) (4min)
 - Sprint Planning (what will be done?): Make sure that everyone opened their issues (10min)
 
-## Actionable Topics
+## Discussion Topics
 
 ### 1. How and when specifically we update our issues on Friday? (7min)
 
