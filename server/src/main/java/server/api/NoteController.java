@@ -26,9 +26,10 @@ public class NoteController {
         return noteRepository.findAll();
     }
 
-    /** This method handles Get requests to the url "/api/notes/{id}"
-     *  when a request is made the database is queried for a note with the id specified.
-     *  If no such note exists the response is 400 - "Bad request".
+    /**
+     * This method handles GET requests to the url "/api/notes/{id}"
+     * when a request is made the database is queried for a note with the id specified.
+     * If no such note exists the response is 400 - "Bad request".
      *
      * @param id    unique identifier of every note
      * @return      the note with that id
@@ -41,10 +42,11 @@ public class NoteController {
         return ResponseEntity.ok(noteRepository.findById(id).get());
     }
 
-    /** This method handles get requests to the "/api/notes/sidebar" url
-     *  when a request is made it gets all notes in the database, then
-     *  each note is mapped to a NoteMapper object that contains only an id
-     *  and a title.
+    /**
+     * This method handles get requests to the "/api/notes/sidebar" url
+     * when a request is made it gets all notes in the database, then
+     * each note is mapped to a NoteMapper object that contains only an id
+     * and a title.
      *
      * @return a list of NoteMapper objects
      */
