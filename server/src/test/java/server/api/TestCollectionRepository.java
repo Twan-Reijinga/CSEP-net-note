@@ -1,7 +1,6 @@
 package server.api;
 
 import commons.Collection;
-import commons.Note;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +10,6 @@ import server.database.CollectionRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
