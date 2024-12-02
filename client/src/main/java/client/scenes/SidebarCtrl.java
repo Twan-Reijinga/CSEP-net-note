@@ -20,12 +20,21 @@ public class SidebarCtrl {
 
     private PrimaryCtrl pc;
 
+    /**
+     * Sidebar control constructor for functionality behind the sidebar UI element.
+     * @param  pc Primary controller for all the scenes in our project.
+     * @param server Server utilities for requests and functionality dependent on the server.
+     */
     @Inject
     public SidebarCtrl(PrimaryCtrl pc, ServerUtils server) {
         this.pc = pc;
         this.server = server;
     }
 
+    /**
+     * Refresh function to activate a GET request to the server to receive all note titles.
+     * Functionality will be used when pressed on the refresh button in the GUI.
+     */
     public void refresh() {
         noteContainer.getChildren().clear();
 
@@ -43,6 +52,11 @@ public class SidebarCtrl {
         }
     }
 
+    /**
+     * Note click function for action when a specific note in the sidebar is clicked
+     * intended behaviour is that the note contents opens.
+     * @param id identifier that is linked to a specific note that corresponds to the servers note ID.
+     */
     private void noteClick(String id) {
         System.out.println("Clicked on note " + id);
     }

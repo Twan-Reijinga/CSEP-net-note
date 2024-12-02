@@ -47,6 +47,11 @@ public class ServerUtils {
 		}
 	}
 
+	/**
+	 * method for requesting titles in a List of NoteTitles from the server.
+	 * GET request on endpoint /api/titles
+	 * @return List of NoteTitle object that link the noteID to the title
+	 */
 	public List<NoteTitle> getNoteTitles() {
 		return ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/titles") //
