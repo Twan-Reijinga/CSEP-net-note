@@ -18,16 +18,12 @@ public class SidebarCtrl {
     @FXML
     public VBox noteContainer;
 
-    private PrimaryCtrl pc;
-
     /**
      * Sidebar control constructor for functionality behind the sidebar UI element.
-     * @param  pc Primary controller for all the scenes in our project.
      * @param server Server utilities for requests and functionality dependent on the server.
      */
     @Inject
-    public SidebarCtrl(PrimaryCtrl pc, ServerUtils server) {
-        this.pc = pc;
+    public SidebarCtrl(ServerUtils server) {
         this.server = server;
     }
 
@@ -45,7 +41,7 @@ public class SidebarCtrl {
             wrapper.setId(title.getId() + "");
             wrapper.setPadding(new Insets(5, 10, 5, 10));
             wrapper.setOnMouseClicked(event -> {
-                String id = wrapper.getId(); // Get the VBox's ID
+                long id = Long.parseLong(wrapper.getId()); // Get the VBox's ID
                 noteClick(id);             // Call a function, passing the ID
             });
             noteContainer.getChildren().add(wrapper);
@@ -57,8 +53,7 @@ public class SidebarCtrl {
      * intended behaviour is that the note contents opens.
      * @param id identifier that is linked to a specific note that corresponds to the servers note ID.
      */
-    private void noteClick(String id) {
+    private void noteClick(Long id) {
         System.out.println("Clicked on note " + id);
     }
-
 }
