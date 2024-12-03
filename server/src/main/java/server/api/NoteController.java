@@ -5,10 +5,7 @@ import commons.Note;
 import commons.NoteMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import server.database.NoteRepository;
 
 @RestController
@@ -54,5 +51,17 @@ public class NoteController {
         List<NoteMapper> mapped = notes.stream().map(x -> new NoteMapper(x.id, x.title)).toList();
 
         return mapped;
+    }
+
+    @PutMapping
+    public ResponseEntity<Note> updateNote(@RequestBody Note note) {
+        try {
+            noteRepository.save(note);
+            return ResponseEntity.ok(note);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
