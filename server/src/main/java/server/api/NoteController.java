@@ -38,20 +38,6 @@ public class NoteController {
         return ResponseEntity.ok(noteRepository.findById(id).get());
     }
 
-    /** This method handles get requests to the "/api/notes/sidebar" url
-     *  when a request is made it gets all notes in the database, then
-     *  each note is mapped to a NoteMapper object that contains only an id
-     *  and a title.
-     *
-     * @return a list of NoteMapper objects
-     */
-    @GetMapping(path = "/sidebar")
-    public List<NoteMapper> getMappedNotes(){
-        List<Note> notes = noteRepository.findAll();
-        List<NoteMapper> mapped = notes.stream().map(x -> new NoteMapper(x.id, x.title)).toList();
-
-        return mapped;
-    }
 
     /**
      * Stores a new note in the database, with the provided arguments.
