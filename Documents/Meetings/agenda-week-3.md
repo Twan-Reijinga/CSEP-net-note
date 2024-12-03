@@ -59,6 +59,7 @@
 ## Quick Remarks (3min)
 
 - Establish how we assign reviewers and who merges the MRs: the person who wrote the code of the one who reviewed
+- Discuss epics and milestones (pages on GitLab) and decide if we want to use them
 
 ## Discussing feedback on Code of Conduct (5min)
 
