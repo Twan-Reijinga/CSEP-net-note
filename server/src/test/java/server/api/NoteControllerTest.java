@@ -1,7 +1,6 @@
 package server.api;
 
 import commons.Note;
-import commons.NoteMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,14 +33,6 @@ public class NoteControllerTest {
     public void getCorrectNoteByIdTest(){
         Note note = controller.getById(0).getBody();
         assertEquals(note, note1);
-    }
-
-    @Test
-    public void getMappedNotesTest(){
-        List<NoteMapper> mapped = controller.getMappedNotes();
-        List<NoteMapper> expected = List.of(new NoteMapper(0, "Title 1"), new NoteMapper(1, "Title 2"));
-
-        assertEquals(expected, mapped);
     }
 
     @Test
