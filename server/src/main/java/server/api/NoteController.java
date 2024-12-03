@@ -13,6 +13,8 @@ import server.database.NoteRepository;
 public class NoteController {
     private NoteRepository noteRepository;
 
+    private int counter = 0;
+
     @Autowired
     public NoteController(NoteRepository noteRepository) {
         this.noteRepository = noteRepository;
@@ -53,7 +55,7 @@ public class NoteController {
         return mapped;
     }
 
-    @PutMapping
+    @PutMapping(path={"", "/"})
     public ResponseEntity<Note> updateNote(@RequestBody Note note) {
         try {
             noteRepository.save(note);
@@ -63,5 +65,15 @@ public class NoteController {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping(path="/mock")
+    public ResponseEntity<Note> MOCK_getDefaultNote() {
+        List<Note> notes = noteRepository.findAll();
+        if (notes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(notes.get(0));
     }
 }
