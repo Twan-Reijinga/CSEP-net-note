@@ -27,6 +27,23 @@ public class TestCollectionRepository implements CollectionRepository {
     }
 
     @Override
+    public Optional<Collection> findFirstByIsDefaultTrue() {
+        call("findFirstByIsDefaultTrue");
+        return collections.stream().filter(c -> c.isDefault).findFirst();
+    }
+
+    @Override
+    public void flush() {
+        call("flush");
+    }
+
+    @Override
+    public <S extends Collection> S saveAndFlush(S entity) {
+        call("saveAndFlush");
+        save(entity);
+        return entity;
+    }
+
     public Optional<Collection> findById(Long aLong) {
         call("findById");
         return find(aLong);
@@ -59,6 +76,13 @@ public class TestCollectionRepository implements CollectionRepository {
     }
 
     @Override
+    public <S extends Collection> List<S> saveAllAndFlush(Iterable<S> entities) {
+        call("saveAllAndFlush");
+        List<S> saved = saveAll(entities);
+        return new ArrayList<>(saved);
+    }
+
+    @Override
     public void deleteById(Long aLong) {
         call("deleteById");
         int i = 0;
@@ -73,53 +97,46 @@ public class TestCollectionRepository implements CollectionRepository {
     }
 
     @Override
-    public void delete(Collection entity) {
-
-    }
-
-    @Override
-    public void flush() {
-
-    }
-
-    @Override
-    public <S extends Collection> S saveAndFlush(S entity) {
-        return null;
-    }
-
-    @Override
-    public <S extends Collection> List<S> saveAllAndFlush(Iterable<S> entities) {
-        return List.of();
-    }
-
-    @Override
     public void deleteAllInBatch(Iterable<Collection> entities) {
-
+        call("deleteAllInBatch");
+        entities.forEach(this::delete);
     }
 
     @Override
     public void deleteAllByIdInBatch(Iterable<Long> longs) {
-
+        call("deleteAllByIdInBatch");
+        longs.forEach(this::deleteById);
     }
 
     @Override
     public void deleteAllInBatch() {
-
+        call("deleteAllInBatch");
+        collections.clear();
     }
 
+    /**
+     * @param aLong
+     * @deprecated
+     */
     @Override
     public Collection getOne(Long aLong) {
-        return null;
+        return getReferenceById(aLong);
     }
 
+    /**
+     * @param aLong
+     * @deprecated
+     */
     @Override
     public Collection getById(Long aLong) {
-        return null;
+        return getReferenceById(aLong);
+
     }
 
     @Override
     public Collection getReferenceById(Long aLong) {
-        return null;
+        call("getReferenceById");
+        return find(aLong).get();
     }
 
     @Override
@@ -157,6 +174,7 @@ public class TestCollectionRepository implements CollectionRepository {
         return null;
     }
 
+
     @Override
     public <S extends Collection> List<S> saveAll(Iterable<S> entities) {
         return List.of();
@@ -165,6 +183,11 @@ public class TestCollectionRepository implements CollectionRepository {
     @Override
     public List<Collection> findAllById(Iterable<Long> longs) {
         return List.of();
+    }
+
+    @Override
+    public void delete(Collection entity) {
+
     }
 
     @Override
@@ -191,10 +214,4 @@ public class TestCollectionRepository implements CollectionRepository {
     public Page<Collection> findAll(Pageable pageable) {
         return null;
     }
-
-    @Override
-    public Optional<Collection> findFirstByIsDefaultTrue() {
-        return Optional.empty();
-    }
 }
-

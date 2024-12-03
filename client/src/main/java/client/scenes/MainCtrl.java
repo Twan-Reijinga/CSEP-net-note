@@ -29,10 +29,15 @@ public class MainCtrl {
     private MarkdownEditorCtrl markdownEditorCtrl;
     private Scene markdownEditor;
 
+    private SidebarCtrl sidebarCtrl;
+    private Scene sidebar;
+
     public void initialize(
             Stage primaryStage,
             Pair<NoteEditorCtrl, Parent> noteEditor,
-            Pair<MarkdownEditorCtrl, Parent> markdownEditor)
+            Pair<MarkdownEditorCtrl, Parent> markdownEditor,
+            Pair<SidebarCtrl, Parent> sidebarEditor
+    )
     {
         this.primaryStage = primaryStage;
 
@@ -42,8 +47,12 @@ public class MainCtrl {
         this.markdownEditorCtrl = markdownEditor.getKey();
         this.markdownEditor = new Scene(markdownEditor.getValue());
 
-//        showNoteEditor();
-        showMarkdownEditor();
+        this.sidebarCtrl = sidebarEditor.getKey();
+        this.sidebar = new Scene(sidebarEditor.getValue());
+
+        showNoteEditor();
+//        showMarkdownEditor();
+//        showSidebar();
 
         primaryStage.show();
     }
@@ -56,5 +65,10 @@ public class MainCtrl {
     public void showMarkdownEditor() {
         primaryStage.setTitle("MarkdownEditor");
         primaryStage.setScene(markdownEditor);
+    }
+
+    public void showSidebar() {
+        primaryStage.setTitle("Sidebar");
+        primaryStage.setScene(sidebar);
     }
 }

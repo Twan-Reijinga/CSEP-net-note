@@ -2,7 +2,6 @@ package server.api;
 
 import java.util.*;
 import commons.Note;
-import commons.NoteMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +22,10 @@ public class NoteController {
         return noteRepository.findAll();
     }
 
-    /** This method handles Get requests to the url "/api/notes/{id}"
-     *  when a request is made the database is queried for a note with the id specified.
-     *  If no such note exists the response is 400 - "Bad request".
+    /**
+     * This method handles GET requests to the url "/api/notes/{id}"
+     * when a request is made the database is queried for a note with the id specified.
+     * If no such note exists the response is 400 - "Bad request".
      *
      * @param id    unique identifier of every note
      * @return      the note with that id

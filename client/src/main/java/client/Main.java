@@ -17,6 +17,7 @@ package client;
 
 import static com.google.inject.Guice.createInjector;
 
+import client.scenes.SidebarCtrl;
 import com.google.inject.Injector;
 import client.scenes.NoteEditorCtrl;
 import client.scenes.MainCtrl;
@@ -36,13 +37,12 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		// TODO: use Twan's sidebar
-
 		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, "client", "scenes", "MarkdownEditor.fxml");
 		var noteEditor = FXML.load(NoteEditorCtrl.class, "client", "scenes", "MainUI.fxml");
+		var sidebarEditor = FXML.load(SidebarCtrl.class, "client", "scenes", "Sidebar.fxml");
 
 		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
-		mainCtrl.initialize(primaryStage, noteEditor, markdownEditor);
+		mainCtrl.initialize(primaryStage, noteEditor, markdownEditor, sidebarEditor);
 	}
 }

@@ -17,48 +17,30 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ConnectException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
+import commons.NoteTitle;
 import org.glassfish.jersey.client.ClientConfig;
 
-import commons.Quote;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 
 	private static final String SERVER = "http://localhost:8080/";
 
-	public void getQuotesTheHardWay() throws IOException, URISyntaxException {
-		var url = new URI("http://localhost:8080/api/quotes").toURL();
-		var is = url.openConnection().getInputStream();
-		var br = new BufferedReader(new InputStreamReader(is));
-		String line;
-		while ((line = br.readLine()) != null) {
-			System.out.println(line);
-		}
-	}
-
-	public List<Quote> getQuotes() {
+	/**
+	 * method for requesting titles in a List of NoteTitles from the server.
+	 * GET request on endpoint /api/titles
+	 * @return List of NoteTitle object that link the noteID to the title
+	 */
+	public List<NoteTitle> getNoteTitles() {
 		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/quotes") //
+				.target(SERVER).path("api/titles") //
 				.request(APPLICATION_JSON) //
-				.get(new GenericType<List<Quote>>() {});
-	}
-
-	public Quote addQuote(Quote quote) {
-		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/quotes") //
-				.request(APPLICATION_JSON) //
-				.post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
+				.get(new GenericType<List<NoteTitle>>() {});
 	}
 
 	public boolean isServerAvailable() {
