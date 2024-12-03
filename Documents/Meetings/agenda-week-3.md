@@ -26,8 +26,6 @@
 - Did everyone read the minutes from previous agenda?
 - Is there anything that needs to be said about it?
 
-## Announcements by the TA (if any) (5min)
-
 ## Elaboration: Feedback on Previous Agenda (3min)
 
 - Ensure that minute taker will have enough time to write down necessary information
@@ -62,9 +60,11 @@
 
 - Establish how we assign reviewers and who merges the MRs: the person who wrote the code of the one who reviewed
 
-## Discussing feedback on Code of Conduct (if any) (5min)
+## Discussing feedback on Code of Conduct (5min)
 
 ## Questions & Extra Topics (if any) (5min)
+
+## Announcements by the TA (if any) (5min)
 
 ## Meeting Closure (2min)
 
