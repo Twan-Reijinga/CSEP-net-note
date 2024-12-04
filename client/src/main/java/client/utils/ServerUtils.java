@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import commons.Note;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -74,4 +75,12 @@ public class ServerUtils {
 		}
 		return true;
 	}
+
+	public List<Note> searchInNotes(String text){
+		return  ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/search/" + text)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<List<Note>>() {});
+	}
+
 }
