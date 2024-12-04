@@ -78,7 +78,17 @@ public class TestNoteRepository implements NoteRepository {
 
     @Override
     public void deleteById(Long aLong) {
-
+        call("delete");
+        int i = 0;
+        for(Note currentNote : notes) {
+            i++;
+            if(currentNote.id == aLong) {
+                notes.remove(currentNote);
+            }
+            if (notes.size() <= i) {
+                break;
+            }
+        }
     }
 
     @Override

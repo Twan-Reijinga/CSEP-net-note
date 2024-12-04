@@ -29,7 +29,8 @@ public class TestCollectionRepository implements CollectionRepository {
     @Override
     public Optional<Collection> findFirstByIsDefaultTrue() {
         call("findFirstByIsDefaultTrue");
-        return collections.stream().filter(c -> c.isDefault).findFirst();    }
+        return collections.stream().filter(c -> c.isDefault).findFirst();
+    }
 
     @Override
     public void flush() {
@@ -43,11 +44,56 @@ public class TestCollectionRepository implements CollectionRepository {
         return entity;
     }
 
+    public Optional<Collection> findById(Long aLong) {
+        call("findById");
+        return find(aLong);
+    }
+
+    @Override
+    public boolean existsById(Long aLong) {
+        call("existsById");
+        return find(aLong).isPresent();
+    }
+
+    @Override
+    public List<Collection> findAll() {
+        call("findAll");
+        return collections;
+    }
+
+    @Override
+    public long count() {
+        call("count");
+        return collections.stream().count();
+    }
+
+    @Override
+    public <S extends Collection> S save(S entity) {
+        call("save");
+        entity.id = (long) collections.size();
+        collections.add(entity);
+        return entity;
+    }
+
     @Override
     public <S extends Collection> List<S> saveAllAndFlush(Iterable<S> entities) {
         call("saveAllAndFlush");
         List<S> saved = saveAll(entities);
         return new ArrayList<>(saved);
+    }
+
+    @Override
+    public void deleteById(Long aLong) {
+        call("deleteById");
+        int i = 0;
+        for(Collection currentCollection : collections) {
+            if(currentCollection.id == aLong) {
+                collections.remove(currentCollection);
+            }
+            if (collections.size() <= i)
+                break;
+            i++;
+        }
     }
 
     @Override
@@ -84,6 +130,7 @@ public class TestCollectionRepository implements CollectionRepository {
     @Override
     public Collection getById(Long aLong) {
         return getReferenceById(aLong);
+
     }
 
     @Override
@@ -127,10 +174,6 @@ public class TestCollectionRepository implements CollectionRepository {
         return null;
     }
 
-    @Override
-    public <S extends Collection> S save(S entity) {
-        return null;
-    }
 
     @Override
     public <S extends Collection> List<S> saveAll(Iterable<S> entities) {
@@ -138,33 +181,8 @@ public class TestCollectionRepository implements CollectionRepository {
     }
 
     @Override
-    public Optional<Collection> findById(Long aLong) {
-        return Optional.empty();
-    }
-
-    @Override
-    public boolean existsById(Long aLong) {
-        return true;
-    }
-
-    @Override
-    public List<Collection> findAll() {
-        return List.of();
-    }
-
-    @Override
     public List<Collection> findAllById(Iterable<Long> longs) {
         return List.of();
-    }
-
-    @Override
-    public long count() {
-        return 0;
-    }
-
-    @Override
-    public void deleteById(Long aLong) {
-
     }
 
     @Override
