@@ -50,25 +50,19 @@ public class MainCtrl {
         this.sidebarCtrl = sidebarEditor.getKey();
         this.sidebar = new Scene(sidebarEditor.getValue());
 
-        showNoteEditor();
-//        showMarkdownEditor();
-//        showSidebar();
+        noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue());
 
+        showNoteEditor();
         primaryStage.show();
     }
 
+    /**
+     * Sets the minimum window size for the main note editor window
+     */
     public void showNoteEditor() {
         primaryStage.setTitle("NoteEditor");
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(500);
         primaryStage.setScene(noteEditor);
-    }
-
-    public void showMarkdownEditor() {
-        primaryStage.setTitle("MarkdownEditor");
-        primaryStage.setScene(markdownEditor);
-    }
-
-    public void showSidebar() {
-        primaryStage.setTitle("Sidebar");
-        primaryStage.setScene(sidebar);
     }
 }
