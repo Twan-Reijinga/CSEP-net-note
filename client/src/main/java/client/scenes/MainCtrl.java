@@ -65,4 +65,17 @@ public class MainCtrl {
         primaryStage.setMinHeight(500);
         primaryStage.setScene(noteEditor);
     }
+
+    /**
+     * Getter for the id of the selected note
+     * in the sidebar based on which item is clicked last.
+     * If there is not yet a specific note selected,
+     * -1 will be returned as a default value.
+     *
+     * @return The id as a Long of the selected note
+     * or -1 if nothing is selected.
+     */
+    public Long getSelectedNoteId() {
+        return sidebarCtrl.getSelectedNoteId();
+    }
 }
