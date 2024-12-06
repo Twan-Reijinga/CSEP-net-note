@@ -50,25 +50,32 @@ public class MainCtrl {
         this.sidebarCtrl = sidebarEditor.getKey();
         this.sidebar = new Scene(sidebarEditor.getValue());
 
-        showNoteEditor();
-//        showMarkdownEditor();
-//        showSidebar();
+        noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue());
 
+        showNoteEditor();
         primaryStage.show();
     }
 
+    /**
+     * Sets the minimum window size for the main note editor window
+     */
     public void showNoteEditor() {
         primaryStage.setTitle("NoteEditor");
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(500);
         primaryStage.setScene(noteEditor);
     }
 
-    public void showMarkdownEditor() {
-        primaryStage.setTitle("MarkdownEditor");
-        primaryStage.setScene(markdownEditor);
-    }
-
-    public void showSidebar() {
-        primaryStage.setTitle("Sidebar");
-        primaryStage.setScene(sidebar);
+    /**
+     * Getter for the id of the selected note
+     * in the sidebar based on which item is clicked last.
+     * If there is not yet a specific note selected,
+     * -1 will be returned as a default value.
+     *
+     * @return The id as a Long of the selected note
+     * or -1 if nothing is selected.
+     */
+    public Long getSelectedNoteId() {
+        return sidebarCtrl.getSelectedNoteId();
     }
 }

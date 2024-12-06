@@ -1,6 +1,6 @@
 package client.scenes;
 
-import client.utils.NoteTitle;
+import commons.NoteTitle;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
@@ -14,6 +14,7 @@ import java.util.List;
 public class SidebarCtrl {
 
     private final ServerUtils server;
+    private long selectedNoteId;
 
     @FXML
     public VBox noteContainer;
@@ -25,6 +26,7 @@ public class SidebarCtrl {
     @Inject
     public SidebarCtrl(ServerUtils server) {
         this.server = server;
+        selectedNoteId = -1;
     }
 
     /**
@@ -54,6 +56,26 @@ public class SidebarCtrl {
      * @param id identifier that is linked to a specific note that corresponds to the servers note ID.
      */
     private void noteClick(Long id) {
-        System.out.println("Clicked on note " + id);
+        for (var titleBoxes : noteContainer.getChildren()) {
+            if (titleBoxes.getId().equals(id + "")) {
+                titleBoxes.setStyle("-fx-background-color: #98c1d9");
+            } else {
+                titleBoxes.setStyle("-fx-background-color: transparent");
+            }
+        }
+        selectedNoteId = id;
+    }
+
+    /**
+     * Getter for the id of the selected note
+     * in the sidebar based on which item is clicked last.
+     * If there is not yet a specific note selected,
+     * -1 will be returned as a default value.
+     *
+     * @return The id as a Long of the selected note
+     * or -1 if nothing is selected.
+     */
+    public Long getSelectedNoteId() {
+        return selectedNoteId;
     }
 }

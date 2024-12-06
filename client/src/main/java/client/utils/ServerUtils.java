@@ -20,6 +20,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.net.ConnectException;
 import java.util.List;
 
+import commons.NoteTitle;
 import jakarta.ws.rs.client.Entity;
 import org.glassfish.jersey.client.ClientConfig;
 

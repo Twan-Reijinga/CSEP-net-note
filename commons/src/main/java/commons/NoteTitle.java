@@ -1,6 +1,7 @@
-package client.utils;
+package commons;
 
-import jakarta.persistence.Id;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +9,8 @@ import java.util.Objects;
 
 public class NoteTitle {
 
-    private String title;
-
-    @Id
     private long id;
+    private String title;
 
     /**
      * Default constructor used to create a NoteTitle object from a JSON file.
@@ -48,6 +47,15 @@ public class NoteTitle {
     }
 
     /**
+     * Converter function to convert a Note into a NoteTitle object.
+     * @param note Original Note.
+     * @return NoteTitle with the same title and id as original Note.
+     */
+    public static NoteTitle fromNote(Note note) {
+        return new NoteTitle(note.title, note.id);
+    }
+
+    /**
      * Equals method for the NoteTitle.
      * Title and id need to be the same to be equal.
      * @param o Other object to compare to.
@@ -67,35 +75,55 @@ public class NoteTitle {
     }
 
     /**
-     * generated hash base on the title and id of a specified NoteTitle object
-     * @return hash for title and id of object
+     * generated hash base on the title and id of a specified NoteTitle object.
+     * @return hash for title and id of object.
      */
     @Override
     public int hashCode() {
         return Objects.hash(title, id);
     }
 
+    /**
+     * Getter for the title.
+     * @return The title as a string.
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Setter for the title.
+     * @param title New title to assign to NoteTitle object.
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * Getter for the id
+     * @return id as a long type
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * Setter for the id
+     * @param id New id to assign to NoteTitle object as a long.
+     */
     public void setId(long id) {
         this.id = id;
     }
 
+    /**
+     * To string method for the NoteTitle using a multi line style.
+     * @return The object as a human readably string.
+     */
     @Override
     public String toString() {
-        return "NoteTitle - " +
-                "title: '" + title + '\'' +
-                ", id:" + id;
+        return ToStringBuilder.reflectionToString(
+                this,
+                ToStringStyle.MULTI_LINE_STYLE);
     }
 
 }
