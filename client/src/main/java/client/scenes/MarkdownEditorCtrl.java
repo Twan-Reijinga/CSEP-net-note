@@ -32,6 +32,9 @@ import org.commonmark.ext.ins.InsExtension;
 import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
 import org.commonmark.ext.task.list.items.TaskListItemsExtension;
 import org.commonmark.ext.footnotes.FootnotesExtension;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import java.util.List;
 import java.util.Timer;
@@ -46,31 +49,22 @@ public class MarkdownEditorCtrl {
     private final long REFRESH_THRESHOLD = 500;
     private final long SYNC_THRESHOLD = 5000;
 
-    private final Timer refreshTimer;
-    private final Timer syncTimer;
-    private TimerTask syncTask;
-
     private boolean timeState = false;
-    private long lastSyncedTime = -1;
+    private boolean isContentsSynced = true;
 
-    private final ServerUtils serverUtils;
-
+    private final Timer refreshTimer;
     private final Parser parser;
     private final HtmlRenderer renderer;
+    private final ScheduledExecutorService scheduler;
+
+    private final ServerUtils serverUtils;
 
     private Note activeNote;
 
     @Inject
     public MarkdownEditorCtrl(ServerUtils serverUtils) {
         this.serverUtils = serverUtils;
-
         this.refreshTimer = new Timer();
-        this.syncTimer = new Timer();
-        this.syncTask = new TimerTask() {
-            public void run() {
-                // no-op to avoid null exception
-            }
-        };
 
         var ext = List.of(
                 TablesExtension.create(),
@@ -81,21 +75,29 @@ public class MarkdownEditorCtrl {
                 TaskListItemsExtension.create(),
                 FootnotesExtension.create()
         );
+
         this.parser = Parser.builder().extensions(ext).build();
         this.renderer = HtmlRenderer.builder().extensions(ext).build();
+        this.scheduler = Executors.newScheduledThreadPool(1);
     }
 
     @FXML
     public void initialize() {
         activeNote = serverUtils.MOCK_getDefaultNote();
-
         noteText.setText(activeNote.content);
         requestRefresh();
+
+        scheduler.scheduleAtFixedRate(
+                this::syncNoteContents,
+                0,
+                SYNC_THRESHOLD,
+                TimeUnit.MILLISECONDS
+        );
     }
 
     public synchronized void onKeyTyped(KeyEvent e) {
+        isContentsSynced = false;
         requestRefresh();
-        requestSync();
     }
 
     public synchronized void requestRefresh() {
@@ -106,30 +108,6 @@ public class MarkdownEditorCtrl {
             @Override
             public void run() { refreshView(); }
         }, REFRESH_THRESHOLD);
-    }
-
-    public synchronized void requestSync() {
-        long elapsedTime = System.currentTimeMillis() - lastSyncedTime;
-
-       if (elapsedTime >= SYNC_THRESHOLD) {
-           syncNoteContents();
-           // Once synced here no need for another schedule sync request
-           syncTask.cancel();
-       } else {
-           // Cancel any previously scheduled requests
-           syncTask.cancel();
-           syncTask = new TimerTask() {
-               @Override
-               public void run() {
-                   syncNoteContents();
-               }
-           };
-
-           // Start a new scheduled requests to sync the final changes
-           // Only one sync request must be completed in the end of typing
-           // All intermediate requests will be completed without scheduler (branch above)
-           syncTimer.schedule(syncTask, SYNC_THRESHOLD - elapsedTime);
-       }
     }
 
     private synchronized void refreshView() {
@@ -143,6 +121,8 @@ public class MarkdownEditorCtrl {
     }
 
     private synchronized void syncNoteContents() {
+        if (isContentsSynced) return;
+
         // FIXME: do something meaningful?
         if (activeNote == null) return;
 
@@ -151,14 +131,14 @@ public class MarkdownEditorCtrl {
         Platform.runLater(() -> {
             activeNote.content = noteText.getText();
             serverUtils.updateNote(activeNote);
-            lastSyncedTime = System.currentTimeMillis();
+            isContentsSynced = true;
         });
     }
 
     // TODO: needs to be hooked up to the actual event "onClose"
     private void cleanup() {
         refreshTimer.cancel();
-        syncTimer.cancel();
+        scheduler.shutdown();
 
         // Make sure final changes will be synchronized
         syncNoteContents();
