@@ -13,8 +13,6 @@ import server.database.NoteRepository;
 public class NoteController {
     private NoteRepository noteRepository;
 
-    private int counter = 0;
-
     @Autowired
     public NoteController(NoteRepository noteRepository) {
         this.noteRepository = noteRepository;
