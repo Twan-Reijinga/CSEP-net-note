@@ -54,6 +54,12 @@ public class SidebarCtrl {
      * @param id identifier that is linked to a specific note that corresponds to the servers note ID.
      */
     private void noteClick(Long id) {
-        System.out.println("Clicked on note " + id);
+        for (var titleBoxes : noteContainer.getChildren()) {
+            if (titleBoxes.getId().equals(id + "")) {
+                titleBoxes.setStyle("-fx-background-color: #98c1d9");
+            } else {
+                titleBoxes.setStyle("-fx-background-color: transparent");
+            }
+        }
     }
 }
