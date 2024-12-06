@@ -14,6 +14,7 @@ import java.util.List;
 public class SidebarCtrl {
 
     private final ServerUtils server;
+    private long selectedNoteId;
 
     @FXML
     public VBox noteContainer;
@@ -25,6 +26,7 @@ public class SidebarCtrl {
     @Inject
     public SidebarCtrl(ServerUtils server) {
         this.server = server;
+        selectedNoteId = -1;
     }
 
     /**
@@ -61,5 +63,19 @@ public class SidebarCtrl {
                 titleBoxes.setStyle("-fx-background-color: transparent");
             }
         }
+        selectedNoteId = id;
+    }
+
+    /**
+     * Getter for the id of the selected note
+     * in the sidebar based on which item is clicked last.
+     * If there is not yet a specific note selected,
+     * -1 will be returned as a default value.
+     *
+     * @return The id as a Long of the selected note
+     * or -1 if nothing is selected.
+     */
+    public Long getSelectedNoteId() {
+        return selectedNoteId;
     }
 }
