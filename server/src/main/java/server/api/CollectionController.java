@@ -4,6 +4,8 @@ import java.util.*;
 import commons.Collection;
 import commons.Note;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +17,8 @@ import server.database.NoteRepository;
 @RequestMapping("/api/collections")
 public class CollectionController {
 
-    private CollectionRepository collectionRepository;
-    private NoteRepository noteRepository;
+    private final CollectionRepository collectionRepository;
+    private final NoteRepository noteRepository;
 
     @Autowired
     public CollectionController(CollectionRepository collectionRepository, NoteRepository noteRepository) {

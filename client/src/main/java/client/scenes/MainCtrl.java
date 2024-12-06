@@ -26,17 +26,43 @@ public class MainCtrl {
     private NoteEditorCtrl noteEditorCtrl;
     private Scene noteEditor;
 
-    public void initialize(Stage primaryStage, Pair<NoteEditorCtrl, Parent> noteEditor) {
+    private MarkdownEditorCtrl markdownEditorCtrl;
+    private Scene markdownEditor;
+
+    private SidebarCtrl sidebarCtrl;
+    private Scene sidebar;
+
+    public void initialize(
+            Stage primaryStage,
+            Pair<NoteEditorCtrl, Parent> noteEditor,
+            Pair<MarkdownEditorCtrl, Parent> markdownEditor,
+            Pair<SidebarCtrl, Parent> sidebarEditor
+    )
+    {
         this.primaryStage = primaryStage;
+
         this.noteEditorCtrl = noteEditor.getKey();
         this.noteEditor = new Scene(noteEditor.getValue());
+
+        this.markdownEditorCtrl = markdownEditor.getKey();
+        this.markdownEditor = new Scene(markdownEditor.getValue());
+
+        this.sidebarCtrl = sidebarEditor.getKey();
+        this.sidebar = new Scene(sidebarEditor.getValue());
+
+        noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue());
 
         showNoteEditor();
         primaryStage.show();
     }
 
+    /**
+     * Sets the minimum window size for the main note editor window
+     */
     public void showNoteEditor() {
         primaryStage.setTitle("NoteEditor");
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(500);
         primaryStage.setScene(noteEditor);
     }
 }

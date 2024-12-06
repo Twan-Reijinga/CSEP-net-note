@@ -14,8 +14,10 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
 
+    @Column(nullable = false)
     public String title;
 
+    @Column(nullable = false)
     public String content;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -27,7 +29,7 @@ public class Note {
     }
 
     @ManyToOne
-    @JoinColumn(name = "collection_name", nullable = false)
+    @JoinColumn(name = "collection_id", nullable = false)
     public Collection collection;
 
     public Note() {

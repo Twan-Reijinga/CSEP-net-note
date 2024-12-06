@@ -1,5 +1,6 @@
 package server.api;
 
+import commons.Collection;
 import commons.Note;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import server.database.NoteRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -24,6 +26,21 @@ public class TestNoteRepository implements NoteRepository {
 
     public Optional<Note> find(long id) {
         return notes.stream().filter(x -> x.id == id).findFirst();
+    }
+
+    @Override
+    public List<Note> findByCollectionId(long collectionId) {
+        Collection collection = new Collection("first collection", "title");
+
+        Map<Long, Note> fakeDB =
+                Map.of(
+                        1L, new Note("Title 1", "Content 1", collection),
+                        2L, new Note("Title 2", "Content 2", collection));
+        List<Note> notes = new ArrayList<>();
+        for (Note note : fakeDB.values()) {
+            notes.add(note);
+        }
+        return notes;
     }
 
     @Override
@@ -61,7 +78,17 @@ public class TestNoteRepository implements NoteRepository {
 
     @Override
     public void deleteById(Long aLong) {
-
+        call("delete");
+        int i = 0;
+        for(Note currentNote : notes) {
+            i++;
+            if(currentNote.id == aLong) {
+                notes.remove(currentNote);
+            }
+            if (notes.size() <= i) {
+                break;
+            }
+        }
     }
 
     @Override

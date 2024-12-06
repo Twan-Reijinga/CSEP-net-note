@@ -15,14 +15,13 @@
  */
 package client;
 
-import java.net.URL;
 import static com.google.inject.Guice.createInjector;
 
-import client.scenes.PrimaryCtrl;
 import client.scenes.SidebarCtrl;
 import com.google.inject.Injector;
 import client.scenes.NoteEditorCtrl;
 import client.scenes.MainCtrl;
+import client.scenes.MarkdownEditorCtrl;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -38,29 +37,11 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		var sidebar = FXML.load(SidebarCtrl.class, "client", "Sidebar.fxml");
-		var pc = INJECTOR.getInstance(PrimaryCtrl.class);
-		pc.init(primaryStage, sidebar);
-//		var fxml = new FXMLLoader();
-//		fxml.setLocation(getLocation("client/scenes/Sidebar.fxml"));
-//		var scene = new Scene(fxml.load());
-//		primaryStage.setScene(scene);
-//		primaryStage.show();
-
-		/*var serverUtils = INJECTOR.getInstance(ServerUtils.class);
-		if (!serverUtils.isServerAvailable()) {
-			var msg = "Server needs to be started before the client, but it does not seem to be available. Shutting down.";
-			System.err.println(msg);
-			return;*/
-
-		var noteEditor = FXML.load(NoteEditorCtrl.class, "client", "scenes", "mocktemplate.fxml");
+		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, "client", "scenes", "MarkdownEditor.fxml");
+		var sidebarEditor = FXML.load(SidebarCtrl.class, "client", "scenes", "Sidebar.fxml");
+		var noteEditor = FXML.load(NoteEditorCtrl.class, "client", "scenes", "MainUI.fxml");
 		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-		mainCtrl.initialize(primaryStage, noteEditor);
+
+		mainCtrl.initialize(primaryStage, noteEditor, markdownEditor, sidebarEditor);
 	}
-
-
-	private static URL getLocation(String path) {
-			return Main.class.getClassLoader().getResource(path);
-	}
-
 }
