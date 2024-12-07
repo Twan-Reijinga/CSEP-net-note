@@ -35,7 +35,7 @@ class TitleControllerTest {
 
         note1 = new Note("Title 1", "Content 1", collection);
         noteRepo.save(note1);
-        note2 = new Note("Title 2", "Content 2", collection);
+        note2 = new Note("Title 2", "Content 2", collection2);
         noteRepo.save(note2);
         note3 = new Note("Title 3", "Content 3", collection2);
         noteRepo.save(note3);
@@ -59,7 +59,6 @@ class TitleControllerTest {
     void getAllTitlesForCollection() {
         List<NoteTitle> titles = controller.getAllTitles(1L).getBody();
         List<NoteTitle> expected = List.of(
-                NoteTitle.fromNote(note2),
                 NoteTitle.fromNote(note1));
         assert titles != null;
         List<String> titleStrings =
