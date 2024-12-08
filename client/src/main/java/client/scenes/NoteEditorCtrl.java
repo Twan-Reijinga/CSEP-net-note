@@ -80,10 +80,8 @@ public class NoteEditorCtrl {
 
 
     /** Called upon clicking the search button
-     *  Calls the searchNotesInCollection method that performs a GET request
-     *  to the server and searches by the text given in the searchBox.
-     *  Results are displayed in a list.
-     *
+     *  Calls the sendSearchRequest method from the mainCtrl with the text from the searchBox.
+     *  Currently, nothing happens if no text is present in the search box.
      */
     public void onSearchButtonPressed(){
         String searchText = searchBox.getText();
@@ -96,6 +94,12 @@ public class NoteEditorCtrl {
         }
     }
 
+    /** Called everytime a key event is detected in the searchBar, schedules a timer
+     *  for delayBetweenKeyPresses milliseconds after which the onSearchButtonPressed()
+     *  method is called to perform a search. Consecutive calls cancel previous timers
+     *  and schedule new ones, therefore the callback is called only delayBetweenKeyPresses
+     *  after the last keypress.
+     */
     public void onSearchBarInput() {
         timeKeyPresses.cancel();
         timeKeyPresses = new Timer();

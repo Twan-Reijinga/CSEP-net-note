@@ -73,6 +73,14 @@ public class MainCtrl {
         primaryStage.setScene(noteEditor);
     }
 
+    /** This method sends data for the creation of a get request to the server and passes the returned data
+     *  to the sidebar, forcing it to update itself.
+     *
+     * @param text  text for the search request
+     * @param collectionId id of collection to search
+     * @param matchAll option to match all keywords or not
+     * @param whereToSearch option to search specific parts of a note
+     */
     public void sendSearchRequest(String text, long collectionId, boolean matchAll, int whereToSearch){
         List<NoteTitle> results = serverUtils.searchNotesInCollection(collectionId, text, true, whereToSearch);
         updateSideBar(results);

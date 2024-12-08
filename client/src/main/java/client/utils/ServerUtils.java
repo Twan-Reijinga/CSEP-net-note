@@ -57,6 +57,9 @@ public class ServerUtils {
 		return true;
 	}
 
+	/** Sends a GET request to the server with the provided parameters.
+	 * @return List of NoteTitle objects that is used to fill in the sidebar.
+	 */
 	public List<NoteTitle> searchNotesInCollection(long collectionId, String text, boolean matchAll, int whereToSearch){
 		String requestPath = "api/collections/search/";
 		return  ClientBuilder.newClient(new ClientConfig())
