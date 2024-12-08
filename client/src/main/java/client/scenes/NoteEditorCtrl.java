@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.utils.ServerUtils;
 import com.google.inject.Inject;
-import commons.Note;
-import commons.NoteTitle;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -12,9 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
