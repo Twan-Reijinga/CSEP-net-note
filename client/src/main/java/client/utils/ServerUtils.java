@@ -20,7 +20,9 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.net.ConnectException;
 import java.util.List;
 
+import commons.Note;
 import commons.NoteTitle;
+import jakarta.ws.rs.client.Entity;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.ProcessingException;
@@ -55,5 +57,36 @@ public class ServerUtils {
 			}
 		}
 		return true;
+	}
+
+
+	public List<Note> getAllNotes() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<List<Note>>() {});
+	}
+
+	/**
+	 *
+	 * @param note
+	 * @return
+	 */
+	public void addNote(Note note) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes")
+				.request(APPLICATION_JSON)
+				.post(Entity.entity(note, APPLICATION_JSON), Note.class);
+	}
+
+	/**
+	 * Deleting a note
+	 * @param note
+	 */
+	public void deleteNote(Note note) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/delete/" + note.id)
+				.request(APPLICATION_JSON)
+				.delete();
 	}
 }
