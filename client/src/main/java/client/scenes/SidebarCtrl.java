@@ -1,5 +1,6 @@
 package client.scenes;
 
+import commons.Note;
 import commons.NoteTitle;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
@@ -48,6 +49,18 @@ public class SidebarCtrl {
             });
             noteContainer.getChildren().add(wrapper);
         }
+    }
+
+    public void addNote() {
+        Note note1 = server.getAllNotes().getFirst();
+        note1.id = 0; // Update the ID, the database will make one automatically
+        server.addNote(note1);
+    }
+
+    public void deleteNote() {
+        Note note1 = server.getAllNotes().getFirst();
+        System.out.println(server.getAllNotes());
+        server.deleteNote(note1);
     }
 
     /**
