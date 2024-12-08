@@ -15,10 +15,14 @@
  */
 package client.scenes;
 
+import client.utils.ServerUtils;
+import commons.NoteTitle;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
+import java.util.List;
 
 public class MainCtrl {
 
@@ -31,6 +35,7 @@ public class MainCtrl {
 
     private SidebarCtrl sidebarCtrl;
     private Scene sidebar;
+    private ServerUtils serverUtils;
 
     public void initialize(
             Stage primaryStage,
@@ -40,6 +45,8 @@ public class MainCtrl {
     )
     {
         this.primaryStage = primaryStage;
+
+        this.serverUtils = new ServerUtils();
 
         this.noteEditorCtrl = noteEditor.getKey();
         this.noteEditor = new Scene(noteEditor.getValue());
@@ -64,5 +71,14 @@ public class MainCtrl {
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(500);
         primaryStage.setScene(noteEditor);
+    }
+
+    public void sendSearchRequest(String text, long collectionId, boolean matchAll, int whereToSearch){
+        List<NoteTitle> results = serverUtils.searchNotesInCollection(collectionId, text, true, whereToSearch);
+        updateSideBar(results);
+    }
+
+    public void updateSideBar(List<NoteTitle> titles){
+        sidebarCtrl.loadSideBar(titles);
     }
 }

@@ -2,11 +2,9 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.NoteEditorCtrl">
@@ -15,12 +13,12 @@
          <top>
             <AnchorPane fx:id="topMostAnchor" prefHeight="59.0" prefWidth="600.0" style="-fx-background-color: black;" BorderPane.alignment="CENTER">
                <children>
-                  <TextField fx:id="searchBox" layoutX="12.999999999999986" layoutY="18.0" prefHeight="25.0" prefWidth="127.0" promptText="Search..." AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="12.999999999999986" AnchorPane.topAnchor="18.0">
+                  <TextField fx:id="searchBox" layoutX="12.999999999999986" layoutY="18.0" onKeyTyped="#onSearchBarInput" prefHeight="25.0" prefWidth="127.0" promptText="Search..." AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="12.999999999999986" AnchorPane.topAnchor="18.0">
                      <font>
                         <Font name="Candara" size="12.0" />
                      </font>
                   </TextField>
-                  <Button fx:id="searchButton" layoutX="144.99999999999997" layoutY="18.0" mnemonicParsing="false" text="Search" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="144.66666666666666" AnchorPane.topAnchor="18.0" />
+                  <Button fx:id="searchButton" layoutX="144.99999999999997" layoutY="18.0" mnemonicParsing="false" onAction="#onSearchButtonPressed" text="Search" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="144.66666666666666" AnchorPane.topAnchor="18.0" />
                   <Label fx:id="appTitle" alignment="CENTER" layoutX="231.0" layoutY="18.0" text="NetNote" textFill="WHITE">
                      <font>
                         <Font name="Candara" size="22.0" />
@@ -36,6 +34,5 @@
             <AnchorPane fx:id="sideBarContainer" prefHeight="339.0" prefWidth="115.0" BorderPane.alignment="CENTER" />
          </left>
       </BorderPane>
-      <ListView fx:id="searchResults" layoutX="401.0" layoutY="44.0" prefHeight="25.0" prefWidth="127.0" visible="false" />
    </children>
 </AnchorPane>

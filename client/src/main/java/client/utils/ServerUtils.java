@@ -20,7 +20,6 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.net.ConnectException;
 import java.util.List;
 
-import commons.Note;
 import commons.NoteTitle;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -58,11 +57,15 @@ public class ServerUtils {
 		return true;
 	}
 
-	public List<Note> searchInNotes(String text){
+	public List<NoteTitle> searchNotesInCollection(long collectionId, String text, boolean matchAll, int whereToSearch){
+		String requestPath = "api/collections/search/";
 		return  ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes/search/" + text)
+				.target(SERVER).path(requestPath + collectionId +
+										"/" + text +
+										"/" + matchAll +
+										"/" + whereToSearch)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<List<Note>>() {});
+				.get(new GenericType<List<NoteTitle>>() {});
 	}
 
 }

@@ -3,22 +3,26 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Note;
+import commons.NoteTitle;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class NoteEditorCtrl {
     private final MainCtrl mainCtrl;
-    private final ServerUtils serverUtils;
-    private List<Note> searchResultsData = new ArrayList<Note>();
+    private Timer timeKeyPresses = new Timer();
+    private int delayBetweenKeyPresses = 1000;
 
     @FXML
     private AnchorPane sideBarContainer;
@@ -38,12 +42,8 @@ public class NoteEditorCtrl {
     @FXML
     private AnchorPane topMostAnchor;
 
-    @FXML
-    private ListView<String> searchResults;
-
     @Inject
     public NoteEditorCtrl(MainCtrl mainCtrl) {
-        this.serverUtils = new ServerUtils();
         this.mainCtrl = mainCtrl;
     }
 
@@ -80,36 +80,32 @@ public class NoteEditorCtrl {
 
 
     /** Called upon clicking the search button
-     *  Calls the searchInNotes method that performs a GET request
+     *  Calls the searchNotesInCollection method that performs a GET request
      *  to the server and searches by the text given in the searchBox.
      *  Results are displayed in a list.
      *
      */
-    public void search(){
+    public void onSearchButtonPressed(){
         String searchText = searchBox.getText();
+        long collectionId = 0;
         if(!searchText.isEmpty()){
-            List<Note> results = serverUtils.searchInNotes(searchText);
-            displaySearchResults(results);
+            mainCtrl.sendSearchRequest(searchText, collectionId, true, 0);
         }
         else{
             // Do we return all notes or display an alert?
         }
     }
 
-    public void displaySearchResults(List<Note> results) {
-        searchBox.setText("");
-        searchResultsData.clear();
-        searchResultsData.addAll(results);
-        List<String> titles = results.stream().map(x -> x.title).toList();
-        searchResults.getItems().setAll(titles);
-        if(results.size() > 4){
-            searchResults.setPrefHeight(100);
-        }
-        else{
-            searchResults.setPrefHeight(results.size() * 25);
-        }
+    public void onSearchBarInput() {
+        timeKeyPresses.cancel();
+        timeKeyPresses = new Timer();
 
-        searchResults.setVisible(true);
+        timeKeyPresses.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> onSearchButtonPressed());
+            }
+        }, delayBetweenKeyPresses);
+
     }
-
 }
