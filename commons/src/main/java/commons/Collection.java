@@ -6,6 +6,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 public class Collection {
     @Id
@@ -17,6 +20,9 @@ public class Collection {
 
     @Column(nullable = false)
     public String title;
+
+    @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<Note> notes = new ArrayList<>();
 
     public boolean isDefault;
 

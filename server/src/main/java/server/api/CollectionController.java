@@ -3,13 +3,10 @@ package server.api;
 import java.util.*;
 import commons.Collection;
 import commons.Note;
+import commons.NoteTitle;
+import net.java.frej.Regex;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import server.database.CollectionRepository;
 import server.database.NoteRepository;
 
@@ -39,17 +36,24 @@ public class CollectionController {
      * @param keywords the words by which the search is performed
      * @return list of all notes containing every keyword
      */
-    @GetMapping(path = "/search/{name}/{keywords}")
-    public List<Note> getSearchedNotes(@PathVariable String name, @PathVariable String keywords) {
-        List<Note> resultNotes = new ArrayList<>();
+    @GetMapping(path = "/search/{id}/{keywords}/{matchAll}/{searchIn}")
+    public List<NoteTitle> searchNotesMatchAll(@PathVariable String id,
+                                               @PathVariable String keywords,
+                                               @PathVariable String matchAll,
+                                               @PathVariable String searchIn) {
+        List<NoteTitle> resultNotes = new ArrayList<>();
         String[] words = keywords.split(" ");
-        // List<Note> notesInCollection = collectionRepository.findById(name).Notes;
+        Collection coll = (Collection)collectionRepository.findAll().toArray()[0];
+        //List<Note> notesInCollection = collectionRepository.findById(Long.parseLong(id)).get().notes;
+        List<Note> notesInCollection = coll.notes;
 
-//        for (Note note : notesInCollection) {
-//            if(scanSingleNote(note, words)){
-//                resultNotes.add(note);
-//            }
-//        }
+
+        for (Note note : notesInCollection) {
+            if(noteContainsKeywords(note, words, Boolean.valueOf(matchAll), Integer.valueOf(searchIn))) {
+                NoteTitle nt = new NoteTitle(note.title, note.id);
+                resultNotes.add(nt);
+            }
+        }
 
         return resultNotes;
     }
@@ -58,18 +62,41 @@ public class CollectionController {
      *  the title and content of a specified note.
      *
      * @param note The note which we check for keywords
-     * @param words The keywords we are searching for
+     * @param keywords The keywords we are searching for
      * @return true or false, depending on whether the
      *         note contains every keyword or not.
      */
-    public boolean scanSingleNote(Note note, String[] words){
-        for(String word : words){
-            boolean isInTitle = note.title.toLowerCase().contains(word.toLowerCase());
-            boolean isInContent = note.content.toLowerCase().contains(word.toLowerCase());
-            if(!(isInTitle || isInContent)){
-                return false;
-            }
+    public boolean noteContainsKeywords(Note note, String[] keywords, boolean matchAll, int searchIn) {
+        boolean isInTitle = false;
+        boolean isInContent = false;
+
+        switch (searchIn) {
+            case 1:
+                isInTitle = matchesKeywords(keywords, note.title, matchAll);
+                break;
+            case 2:
+                isInContent = matchesKeywords(keywords, note.content, matchAll);
+                break;
+            default:
+                isInTitle = matchesKeywords(keywords, note.title, matchAll);
+                isInContent = matchesKeywords(keywords, note.content, matchAll);
+                break;
         }
-        return true;
+
+        return isInTitle || isInContent;
+    }
+
+    public boolean matchesKeywords(String[] keywords, String sequence, boolean all){
+        String seqToLowerCase = sequence.toLowerCase();
+        Regex pattern;
+
+        for(String keyword : keywords){
+            pattern = new Regex("(" + keyword.toLowerCase() + ")");
+
+            if(all && pattern.presentInSequence(seqToLowerCase) == -1) return false;
+            if(!all && pattern.presentInSequence(seqToLowerCase) != -1) return true;
+        }
+
+        return all;
     }
 }
