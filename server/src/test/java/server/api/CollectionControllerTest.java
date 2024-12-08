@@ -3,7 +3,6 @@ package server.api;
 import commons.Collection;
 import commons.Note;
 import commons.NoteTitle;
-import net.java.frej.Regex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -109,7 +108,7 @@ public class CollectionControllerTest {
         List<NoteTitle> expected = new ArrayList<NoteTitle>();
         expected.add(nt1);
 
-        List<NoteTitle> result = controller.searchNotesMatchAll(String.valueOf(collection1.id), "NoteTitle", "true", "0");
+        List<NoteTitle> result = controller.searchNotes(String.valueOf(collection1.id), "NoteTitle", "true", "0");
         assertEquals(expected, result);
     }
 
@@ -119,7 +118,7 @@ public class CollectionControllerTest {
         List<NoteTitle> expected = new ArrayList<NoteTitle>();
         expected.add(nt1);
 
-        List<NoteTitle> result = controller.searchNotesMatchAll(String.valueOf(collection1.id), "Notetitle and random", "false", "0");
+        List<NoteTitle> result = controller.searchNotes(String.valueOf(collection1.id), "Notetitle and random", "false", "0");
         assertEquals(expected, result);
     }
 }
