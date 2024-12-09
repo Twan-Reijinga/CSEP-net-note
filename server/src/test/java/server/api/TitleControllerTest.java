@@ -6,7 +6,7 @@ import commons.NoteTitle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-//import java.util.List;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,26 +47,25 @@ class TitleControllerTest {
 
     @Test
     void getAllTitles() {
-//        List<NoteTitle> titles = controller.getAllTitles(null).getBody();
-//        List<NoteTitle> expected = List.of(
-//                NoteTitle.fromNote(note1),
-//                NoteTitle.fromNote(note2),
-//                NoteTitle.fromNote(note3));
-//        assertEquals(titles, expected);
+        List<NoteTitle> titles = controller.getAllTitles(null).getBody();
+        List<NoteTitle> expected = List.of(
+                NoteTitle.fromNote(note1),
+                NoteTitle.fromNote(note2),
+                NoteTitle.fromNote(note3));
+        assertEquals(titles, expected);
     }
 
     @Test
     void getAllTitlesForCollection() {
-//        List<NoteTitle> titles = controller.getAllTitles(1L).getBody();
-//        List<NoteTitle> expected = List.of(
-//                NoteTitle.fromNote(note1),
-//                NoteTitle.fromNote(note2));
-//        assert titles != null;
-//        List<String> titleStrings =
-//                titles.stream().map(NoteTitle::getTitle).toList();
-//        List<String> expectedStrings =
-//                expected.stream().map(NoteTitle::getTitle).toList();
-//        assertEquals(titleStrings, expectedStrings);
+        List<NoteTitle> titles = controller.getAllTitles(1L).getBody();
+        List<NoteTitle> expected = List.of(
+                NoteTitle.fromNote(note1));
+        assert titles != null;
+        List<String> titleStrings =
+                titles.stream().map(NoteTitle::getTitle).toList();
+        List<String> expectedStrings =
+                expected.stream().map(NoteTitle::getTitle).toList();
+        assertEquals(titleStrings, expectedStrings);
     }
 
     @Test
