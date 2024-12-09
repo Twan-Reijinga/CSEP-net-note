@@ -73,4 +73,26 @@ public class NoteController {
         noteRepository.deleteById(id);
         return ResponseEntity.ok(removed);
     }
+
+    @PutMapping(path={"", "/"})
+    public ResponseEntity<Note> updateNote(@RequestBody Note note) {
+        try {
+            noteRepository.save(note);
+            return ResponseEntity.ok(note);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping(path="/mock")
+    public ResponseEntity<Note> MOCK_getDefaultNote() {
+        List<Note> notes = noteRepository.findAll();
+        if (notes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(notes.get(0));
+    }
 }
