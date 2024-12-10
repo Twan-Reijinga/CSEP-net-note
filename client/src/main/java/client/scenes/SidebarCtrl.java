@@ -1,5 +1,6 @@
 package client.scenes;
 
+import commons.Collection;
 import commons.Note;
 import commons.NoteTitle;
 import client.utils.ServerUtils;
@@ -9,6 +10,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -16,6 +18,7 @@ public class SidebarCtrl {
 
     private final ServerUtils server;
     private long selectedNoteId;
+    private Collection defaultCollection;
 
     @FXML
     public VBox noteContainer;
@@ -51,16 +54,53 @@ public class SidebarCtrl {
         }
     }
 
+    /**
+     *
+     * @param input
+     * @return
+     */
+    private int createDefaultTitle(int input) {
+        List<NoteTitle> notes = server.getNoteTitles();
+        for (NoteTitle currentNote : notes) {
+            if (currentNote.getTitle().contains("Edit title here. ") && currentNote.getTitle().length() >= 18) {
+                int tempInt = Integer.parseInt(currentNote.getTitle().split(" ")[3]);
+                if (tempInt >= input) {
+                    input = tempInt + 1;
+                }
+            }
+        }
+        return input;
+    }
+
     public void addNote() {
-        Note note1 = server.getAllNotes().getFirst();
-        note1.id = 0; // Update the ID, the database will make one automatically
-        server.addNote(note1);
+        defaultCollection = new Collection();
+        defaultCollection.id = 1;
+        defaultCollection.isDefault = true;
+        defaultCollection.name = "default";
+        defaultCollection.title = "Default Collection";
+
+        Collection collection = defaultCollection;
+        if (getSelectedNoteId() > 0) {
+            collection = server.getNoteById(getSelectedNoteId()).collection;;
+        }
+        int input = createDefaultTitle(1);
+        Note newNote = new Note("Edit title here. " + input, "Edit content here.", collection);
+        //newNote.id = 1000000;// Update the ID, the database will make one automatically
+        newNote.createdAt = new Date();
+        server.addNote(newNote);
+        refresh();
     }
 
     public void deleteNote() {
-        Note note1 = server.getAllNotes().getFirst();
-        System.out.println(server.getAllNotes());
-        server.deleteNote(note1);
+        if (getSelectedNoteId() > 0) {
+            Note note1 = server.getNoteById(getSelectedNoteId());
+            server.deleteNote(note1);
+            selectedNoteId = -1;
+            if (server.getAllNotes().isEmpty()){
+                addNote();
+            }
+            refresh();
+        }
     }
 
     /**

@@ -69,6 +69,17 @@ public class ServerUtils {
 
 	/**
 	 *
+	 * @param id
+	 * @return
+	 */
+	public Note getNoteById(Long id) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + id)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<Note>() {});
+	}
+
+	/**
 	 * @param note
 	 * @return
 	 */
