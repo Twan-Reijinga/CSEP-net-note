@@ -28,9 +28,14 @@ public class SidebarCtrl {
      * @param server Server utilities for requests and functionality dependent on the server.
      */
     @Inject
-    public SidebarCtrl(ServerUtils server) {
+    public SidebarCtrl(ServerUtils server, Collection defaultCollection) {
         this.server = server;
+        this.defaultCollection = defaultCollection;
         selectedNoteId = -1;
+
+        this.defaultCollection = new Collection("default", "Default Collection");
+        this.defaultCollection.id = 1;
+        this.defaultCollection.isDefault = true;
     }
 
     /**
@@ -73,19 +78,12 @@ public class SidebarCtrl {
     }
 
     public void addNote() {
-        defaultCollection = new Collection();
-        defaultCollection.id = 1;
-        defaultCollection.isDefault = true;
-        defaultCollection.name = "default";
-        defaultCollection.title = "Default Collection";
-
         Collection collection = defaultCollection;
         if (getSelectedNoteId() > 0) {
             collection = server.getNoteById(getSelectedNoteId()).collection;;
         }
         int input = createDefaultTitle(1);
         Note newNote = new Note("Edit title here. " + input, "Edit content here.", collection);
-        //newNote.id = 1000000;// Update the ID, the database will make one automatically
         newNote.createdAt = new Date();
         server.addNote(newNote);
         refresh();

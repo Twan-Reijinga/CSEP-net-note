@@ -49,7 +49,7 @@ public class NoteController {
      */
     @PostMapping("")
     public ResponseEntity<Note> add(@RequestBody Note note) {
-        if (note.collection == null || note.id <= 0 || note.title == null || noteRepository.existsById(note.id)) {
+        if (note.collection == null || note.id < 0 || note.title == null || noteRepository.existsById(note.id)) {
             return ResponseEntity.badRequest().build();
         }
 
