@@ -17,6 +17,7 @@ public class Note {
     @Column(nullable = false)
     public String title;
 
+    @Lob
     @Column(nullable = false)
     public String content;
 
