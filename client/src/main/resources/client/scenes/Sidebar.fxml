@@ -14,6 +14,6 @@
         </ScrollPane>
       <Button layoutX="14.0" layoutY="329.0" mnemonicParsing="false" text="+" AnchorPane.bottomAnchor="12.666666666666668" AnchorPane.leftAnchor="20.0" />
       <Button layoutX="74.0" layoutY="329.0" mnemonicParsing="false" prefWidth="24.666" text="-" AnchorPane.bottomAnchor="12.666666666666668" AnchorPane.leftAnchor="64.666" />
-      <Button layoutX="128.0" layoutY="329.0" mnemonicParsing="false" onAction="#refresh" text="Refresh" AnchorPane.bottomAnchor="12.6666" AnchorPane.leftAnchor="109.2" />
+      <Button layoutX="128.0" layoutY="329.0" mnemonicParsing="false" onAction="#refresh" text="%refresh" AnchorPane.bottomAnchor="12.6666" AnchorPane.leftAnchor="109.2" />
     </children>
 </AnchorPane>

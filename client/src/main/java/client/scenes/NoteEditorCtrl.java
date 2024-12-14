@@ -3,13 +3,14 @@ package client.scenes;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
 public class NoteEditorCtrl {
     private final MainCtrl mainCtrl;
+
+    @FXML
+    private ComboBox<String> languageDropDown;
 
     @FXML
     private AnchorPane sideBarContainer;
@@ -21,12 +22,6 @@ public class NoteEditorCtrl {
     private Label appTitle;
 
     @FXML
-    private TextField searchBox;
-
-    @FXML
-    private Button searchButton;
-
-    @FXML
     private AnchorPane topMostAnchor;
 
     @Inject
@@ -35,7 +30,7 @@ public class NoteEditorCtrl {
     }
 
     /**
-     * JavaFX method that automatically runs when this controller is initialized.
+     * JavaFX's method that automatically runs when this controller is initialized.
      * @param sideBarParent root element of the Sidebar fxml
      * @param markdownParent root element of the Markdown fxml
      */
@@ -53,6 +48,12 @@ public class NoteEditorCtrl {
         AnchorPane.setBottomAnchor(markdownParent, 0.0);
         AnchorPane.setLeftAnchor(markdownParent, 0.0);
         AnchorPane.setRightAnchor(markdownParent, 0.0);
+        String[] availableLanguages = new String[] {"English", "Dutch", "Spanish"};
+        languageDropDown.getItems().addAll(availableLanguages);
+        languageDropDown.setOnAction(actionEvent -> {
+            String chosenLanguage = languageDropDown.getSelectionModel().getSelectedItem();
+            mainCtrl.changeUILanguage(chosenLanguage);
+        });
     }
 
     /**
