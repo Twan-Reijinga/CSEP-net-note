@@ -83,7 +83,7 @@ public class SidebarCtrl {
             collection = server.getNoteById(getSelectedNoteId()).collection;;
         }
         int input = createDefaultTitle(1);
-        Note newNote = new Note("New title: " + input, "Edit content here.", collection);
+        Note newNote = new Note("New note: " + input, "Edit content here.", collection);
         newNote.createdAt = new Date();
         server.addNote(newNote);
         refresh();
