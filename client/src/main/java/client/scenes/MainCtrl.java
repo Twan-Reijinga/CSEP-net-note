@@ -89,4 +89,6 @@ public class MainCtrl {
     public void updateSideBar(List<NoteTitle> titles){
         sidebarCtrl.loadSideBar(titles);
     }
+
+    public void refreshSideBar(){ sidebarCtrl.refresh(); }
 }

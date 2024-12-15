@@ -84,7 +84,7 @@ public class NoteEditorCtrl {
             mainCtrl.sendSearchRequest(searchText, collectionId, true, 0);
         }
         else{
-            // Do we return all notes or display an alert?
+            mainCtrl.refreshSideBar();
         }
     }
 
