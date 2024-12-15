@@ -9,6 +9,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.util.Date;
 
 @Entity
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"collection_id", "title"})
+})
 public class Note {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,6 +20,7 @@ public class Note {
     @Column(nullable = false)
     public String title;
 
+    @Lob
     @Column(nullable = false)
     public String content;
 
