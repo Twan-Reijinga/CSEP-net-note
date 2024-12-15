@@ -63,12 +63,13 @@ public class SidebarCtrl {
      * Creates a new title that is unique to the other title in the format "New note: #"
      * 
      * @param input an integer that indicates what the first default title should be (usually 1)
-     * @return an integer which is one above the current highest "New note: #", so that every note is unique in title.
+     * 				every other title will have a higher number.
+     * @return an integer which increments the current highest "New note: #", so that every note is unique in title.
      */
     private int createDefaultTitle(int input) {
         List<NoteTitle> notes = server.getNoteTitles();
         if (!notes.isEmpty()) {
-        	boolean correctTitle = false;
+        	boolean correctTitle = true;
         	for (NoteTitle currentNote : notes) {
         		correctTitle = true;
         		char[] chars = currentNote.getTitle().substring(10).toCharArray();
@@ -92,7 +93,8 @@ public class SidebarCtrl {
 
     /**
      * Adds a default note to the database with a unique title, unique id, content and a default collection, 
-     * or the collection of the selected note. Afterwards selects the newly created note.
+     * or the collection of the selected note. 
+     * Afterwards selects the newly created note (last note).
      */
     public void addNote() {
         Collection collection = defaultCollection;
@@ -109,7 +111,8 @@ public class SidebarCtrl {
     }
     
     /**
-     * Deletes the selected note, and if there is no note -> creates a new default one.
+     * Deletes the selected note, and if there is no note -> 
+     * creates a new default note.
      * Afterwards selects the first note.
      */
     public void deleteNote() {
