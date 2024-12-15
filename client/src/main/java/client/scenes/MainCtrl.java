@@ -51,6 +51,8 @@ public class MainCtrl {
         this.sidebar = new Scene(sidebarEditor.getValue());
 
         noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue());
+        markdownEditorCtrl.initialize();
+        sidebarCtrl.initialize(markdownEditorCtrl);
 
         showNoteEditor();
         primaryStage.show();
@@ -75,7 +77,7 @@ public class MainCtrl {
      * @return The id as a Long of the selected note
      * or -1 if nothing is selected.
      */
-    public Long getSelectedNoteId() {
+    public long getSelectedNoteId() {
         return sidebarCtrl.getSelectedNoteId();
     }
 }
