@@ -60,9 +60,10 @@ public class SidebarCtrl {
     }
 
     /**
+     * Creates a new title that is unique to the other title in the format "New note: #"
      * 
-     * @param input
-     * @return
+     * @param input an integer that indicates what the first default title should be (usually 1)
+     * @return an integer which is one above the current highest "New note: #", so that every note is unique in title.
      */
     private int createDefaultTitle(int input) {
         List<NoteTitle> notes = server.getNoteTitles();
@@ -71,11 +72,14 @@ public class SidebarCtrl {
         	for (NoteTitle currentNote : notes) {
         		correctTitle = true;
         		char[] chars = currentNote.getTitle().substring(10).toCharArray();
+        		if (chars.length == 0) {
+        			correctTitle = false;
+        		}
         		for (char currentChar : chars) {
         			if (!Character.isDigit(currentChar))	
         				correctTitle = false;
         		}
-        		if (correctTitle == true && currentNote.getTitle().contains("New note: ") && currentNote.getTitle().length() >= ("New note: ").length() + 1) {
+        		if (correctTitle == true && currentNote.getTitle().startsWith("New note: ")) {
         			int tempInt = Integer.parseInt(currentNote.getTitle().split(" ")[2]);
         			if (tempInt >= input) {
         				input = tempInt + 1;
@@ -87,7 +91,8 @@ public class SidebarCtrl {
     }
 
     /**
-     * 
+     * Adds a default note to the database with a unique title, unique id, content and a default collection, 
+     * or the collection of the selected note. Afterwards selects the newly created note.
      */
     public void addNote() {
         Collection collection = defaultCollection;
@@ -104,7 +109,8 @@ public class SidebarCtrl {
     }
     
     /**
-     * 
+     * Deletes the selected note, and if there is no note -> creates a new default one.
+     * Afterwards selects the first note.
      */
     public void deleteNote() {
         if (getSelectedNoteId() > 0) {
