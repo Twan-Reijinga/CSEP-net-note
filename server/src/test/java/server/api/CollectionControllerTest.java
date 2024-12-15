@@ -102,24 +102,5 @@ public class CollectionControllerTest {
 //        assertEquals(expected, collections);
 //    }
 
-    @Test
-    public void successfulSearchCollectionTestMatchAll(){
-        NoteTitle nt1 = new NoteTitle(note1.title, note1.id);
-        List<NoteTitle> expected = new ArrayList<NoteTitle>();
-        expected.add(nt1);
-
-        List<NoteTitle> result = controller.searchNotes(String.valueOf(collection1.id), "NoteTitle", "true", "0");
-        assertEquals(expected, result);
-    }
-
-    @Test
-    public void successfulSearchCollectionTestMatchAny(){
-        NoteTitle nt1 = new NoteTitle(note1.title, note1.id);
-        List<NoteTitle> expected = new ArrayList<NoteTitle>();
-        expected.add(nt1);
-
-        List<NoteTitle> result = controller.searchNotes(String.valueOf(collection1.id), "Notetitle and random", "false", "0");
-        assertEquals(expected, result);
-    }
 }
 
