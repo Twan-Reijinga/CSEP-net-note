@@ -18,6 +18,7 @@ public class SidebarCtrl {
 
     @FXML
     public VBox noteContainer;
+    private MarkdownEditorCtrl markdownEditorCtrl;
 
     /**
      * Sidebar control constructor for functionality behind the sidebar UI element.
@@ -27,6 +28,10 @@ public class SidebarCtrl {
     public SidebarCtrl(ServerUtils server) {
         this.server = server;
         selectedNoteId = -1;
+    }
+
+    public void initialize(MarkdownEditorCtrl markdownEditorCtrl) {
+        this.markdownEditorCtrl = markdownEditorCtrl;
     }
 
     /**
@@ -55,7 +60,7 @@ public class SidebarCtrl {
      * intended behaviour is that the note contents opens.
      * @param id identifier that is linked to a specific note that corresponds to the servers note ID.
      */
-    private void noteClick(Long id) {
+    private void noteClick(long id) {
         for (var titleBoxes : noteContainer.getChildren()) {
             if (titleBoxes.getId().equals(id + "")) {
                 titleBoxes.setStyle("-fx-background-color: #98c1d9");
@@ -64,6 +69,7 @@ public class SidebarCtrl {
             }
         }
         selectedNoteId = id;
+        markdownEditorCtrl.updateNote(id);
     }
 
     /**
@@ -75,7 +81,7 @@ public class SidebarCtrl {
      * @return The id as a Long of the selected note
      * or -1 if nothing is selected.
      */
-    public Long getSelectedNoteId() {
+    public long getSelectedNoteId() {
         return selectedNoteId;
     }
 }

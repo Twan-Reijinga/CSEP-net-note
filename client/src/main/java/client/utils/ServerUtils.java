@@ -60,6 +60,19 @@ public class ServerUtils {
 				.put(Entity.entity(note, APPLICATION_JSON), Note.class);
 	}
 
+	/**
+	 * method for getting a note based on the giving id by which it is stored in the server
+	 * GET request on endpoint /api/notes/{id}
+	 * @param id Server id of the giving note
+	 * @return The note with specified ID, including title and contents
+	 */
+	public Note getNoteById(long id) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + id)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<Note>() {});
+	}
+
 	public boolean isServerAvailable() {
 		try {
 			ClientBuilder.newClient(new ClientConfig()) //
