@@ -101,6 +101,8 @@ public class MarkdownEditorCtrl {
      * @param newId The database ID of the note that need to be displayed.
      */
     public void updateNote(long newId) {
+        activeNote.content = noteText.getText();
+        serverUtils.updateNote(activeNote);
         activeNote = serverUtils.getNoteById(newId);
         noteText.setText(activeNote.content);
         requestRefresh();
