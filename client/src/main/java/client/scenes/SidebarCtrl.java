@@ -60,23 +60,35 @@ public class SidebarCtrl {
     }
 
     /**
-     *
+     * 
      * @param input
      * @return
      */
     private int createDefaultTitle(int input) {
         List<NoteTitle> notes = server.getNoteTitles();
-        for (NoteTitle currentNote : notes) {
-            if (currentNote.getTitle().contains("Edit title here. ") && currentNote.getTitle().length() >= 18) {
-                int tempInt = Integer.parseInt(currentNote.getTitle().split(" ")[3]);
-                if (tempInt >= input) {
-                    input = tempInt + 1;
+        if (!notes.isEmpty()) {
+        	boolean correctTitle = false;
+        	for (NoteTitle currentNote : notes) {
+        		correctTitle = true;
+        		char[] chars = currentNote.getTitle().substring(10).toCharArray();
+        		for (char currentChar : chars) {
+        			if (!Character.isDigit(currentChar))	
+        				correctTitle = false;
+        		}
+        		if (correctTitle == true && currentNote.getTitle().contains("New note: ") && currentNote.getTitle().length() >= ("New note: ").length() + 1) {
+        			int tempInt = Integer.parseInt(currentNote.getTitle().split(" ")[2]);
+        			if (tempInt >= input) {
+        				input = tempInt + 1;
+        			}
                 }
             }
         }
         return input;
     }
 
+    /**
+     * 
+     */
     public void addNote() {
         Collection collection = defaultCollection;
         if (getSelectedNoteId() > 0) {
@@ -87,8 +99,13 @@ public class SidebarCtrl {
         newNote.createdAt = new Date();
         server.addNote(newNote);
         refresh();
+        selectedNoteId = Integer.parseInt(noteContainer.getChildren().getLast().getId());
+        noteClick(selectedNoteId);
     }
-
+    
+    /**
+     * 
+     */
     public void deleteNote() {
         if (getSelectedNoteId() > 0) {
             Note note1 = server.getNoteById(getSelectedNoteId());
@@ -98,6 +115,8 @@ public class SidebarCtrl {
                 addNote();
             }
             refresh();
+            selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
+            noteClick(selectedNoteId);
         }
     }
 
