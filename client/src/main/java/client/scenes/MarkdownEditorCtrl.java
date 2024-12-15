@@ -17,9 +17,9 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Note;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.web.WebView;
@@ -32,55 +32,39 @@ import org.commonmark.ext.ins.InsExtension;
 import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
 import org.commonmark.ext.task.list.items.TaskListItemsExtension;
 import org.commonmark.ext.footnotes.FootnotesExtension;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MarkdownEditorCtrl {
-
-    public long getRefreshThreshold() {
-        return refreshThreshold;
-    }
-
-    public void setRefreshThreshold(long refreshThreshold) {
-        this.refreshThreshold = refreshThreshold;
-    }
-
-    public synchronized boolean getTimeState() {
-        return timeState;
-    }
-
-    public synchronized void setTimeState(boolean timeState) {
-        this.timeState = timeState;
-    }
-
-
-    private long refreshThreshold = 500;
-    private final Timer refreshTimer;
-    private boolean timeState = false;
-
-    private final ServerUtils server;
-    private final MainCtrl mainCtrl;
-
     @FXML
     private TextArea noteText;
-
     @FXML
     private WebView markdownPreview;
 
-    @FXML
-    private SplitPane divider;
+    private final long REFRESH_THRESHOLD = 500;
+    private final long SYNC_THRESHOLD = 5000;
 
+    private boolean timeState = false;
+    private boolean isContentsSynced = true;
+
+    private final Timer refreshTimer;
     private final Parser parser;
     private final HtmlRenderer renderer;
+    private final ScheduledExecutorService scheduler;
+
+    private final ServerUtils serverUtils;
+
+    private Note activeNote;
 
     @Inject
-    public MarkdownEditorCtrl(ServerUtils server, MainCtrl mainCtrl) {
-        this.mainCtrl = mainCtrl;
-        this.server = server;
-
-        this.refreshTimer = new java.util.Timer();
+    public MarkdownEditorCtrl(ServerUtils serverUtils) {
+        this.serverUtils = serverUtils;
+        this.refreshTimer = new Timer();
 
         var ext = List.of(
                 TablesExtension.create(),
@@ -91,35 +75,84 @@ public class MarkdownEditorCtrl {
                 TaskListItemsExtension.create(),
                 FootnotesExtension.create()
         );
+
         this.parser = Parser.builder().extensions(ext).build();
         this.renderer = HtmlRenderer.builder().extensions(ext).build();
+        this.scheduler = Executors.newScheduledThreadPool(1);
     }
 
-    public synchronized void requestRefresh(KeyEvent e) {
+    @FXML
+    public void initialize() {
+        activeNote = serverUtils.MOCK_getDefaultNote();
+        noteText.setText(activeNote.content);
+        requestRefresh();
+
+        scheduler.scheduleAtFixedRate(
+                this::syncNoteContents,
+                0,
+                SYNC_THRESHOLD,
+                TimeUnit.MILLISECONDS
+        );
+    }
+
+    public synchronized void onKeyTyped(KeyEvent e) {
+        isContentsSynced = false;
+        requestRefresh();
+    }
+
+    public synchronized void requestRefresh() {
         if(getTimeState()) return;
 
         setTimeState(true);
         refreshTimer.schedule(new TimerTask() {
             @Override
             public void run() { refreshView(); }
-        }, refreshThreshold);
+        }, REFRESH_THRESHOLD);
     }
 
-    public String convertMarkdownToHtml(String text) {
-        return renderer.render(parser.parse(text));
-    }
-
-    public synchronized void refreshView() {
+    private synchronized void refreshView() {
         setTimeState(false);
         String html = convertMarkdownToHtml(noteText.getText());
 
 
-        // FIXME: hangs the application when UI is closed
+        // FIXME (edited): intuition: hangs the application when UI is closed; maybe that's not the problem
         // Use the jfx thread to update the text
         Platform.runLater(() -> markdownPreview.getEngine().loadContent(html));
     }
 
-    public void setDivider(double percent) {
-        divider.setDividerPositions(percent);
+    private synchronized void syncNoteContents() {
+        if (isContentsSynced) return;
+
+        // FIXME: do something meaningful?
+        if (activeNote == null) return;
+
+        // TODO: lazy implementation of threading (not sure of the performance)
+        // read: https://openjfx.io/javadoc/23/javafx.graphics/javafx/application/Platform.html#runLater(java.lang.Runnable)
+        Platform.runLater(() -> {
+            activeNote.content = noteText.getText();
+            serverUtils.updateNote(activeNote);
+            isContentsSynced = true;
+        });
+    }
+
+    // TODO: needs to be hooked up to the actual event "onClose"
+    private void cleanup() {
+        refreshTimer.cancel();
+        scheduler.shutdown();
+
+        // Make sure final changes will be synchronized
+        syncNoteContents();
+    }
+
+    private String convertMarkdownToHtml(String text) {
+        return renderer.render(parser.parse(text));
+    }
+
+    private synchronized boolean getTimeState() {
+        return timeState;
+    }
+
+    private synchronized void setTimeState(boolean timeState) {
+        this.timeState = timeState;
     }
 }

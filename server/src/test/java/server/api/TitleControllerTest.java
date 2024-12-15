@@ -35,7 +35,7 @@ class TitleControllerTest {
 
         note1 = new Note("Title 1", "Content 1", collection);
         noteRepo.save(note1);
-        note2 = new Note("Title 2", "Content 2", collection2);
+        note2 = new Note("Title 2", "Content 2", collection);
         noteRepo.save(note2);
         note3 = new Note("Title 3", "Content 3", collection2);
         noteRepo.save(note3);

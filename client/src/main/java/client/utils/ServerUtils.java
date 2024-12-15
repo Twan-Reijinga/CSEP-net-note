@@ -29,6 +29,8 @@ import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
 
+import commons.Note;
+
 public class ServerUtils {
 
 	private static final String SERVER = "http://localhost:8080/";
@@ -43,6 +45,20 @@ public class ServerUtils {
 				.target(SERVER).path("api/titles") //
 				.request(APPLICATION_JSON) //
 				.get(new GenericType<List<NoteTitle>>() {});
+	}
+
+	public Note MOCK_getDefaultNote() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/mock")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<Note>() {});
+	}
+
+	public Note updateNote(Note note) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes")
+				.request(APPLICATION_JSON)
+				.put(Entity.entity(note, APPLICATION_JSON), Note.class);
 	}
 
 	public boolean isServerAvailable() {
