@@ -51,7 +51,7 @@ public class MainCtrl {
         this.sidebar = new Scene(sidebarEditor.getValue());
 
         noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue());
-        markdownEditorCtrl.initialize();
+        markdownEditorCtrl.initialize(sidebarCtrl);
         sidebarCtrl.initialize(markdownEditorCtrl);
 
         showNoteEditor();
