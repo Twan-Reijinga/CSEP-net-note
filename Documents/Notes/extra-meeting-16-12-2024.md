@@ -22,12 +22,14 @@ collection might be more difficult in comparison with other extensions
 
 
 ### Tasks for next sprint (incl. Christmas break)
-collections: Oleh
-files: Pepijn
-interconnected: Petr
-languages: Tushit (almost done)
-automated change sync: Liviu
-keyboard shortcuts and accessibility: Twan
+- collections: Oleh
+- files: Pepijn
+- interconnected: Petr
+- languages: Tushit (almost done)
+- automated change sync: Liviu
+- keyboard shortcuts and accessibility: Twan
 
 if done early: ask others to help with their tasks.
 if not done: no big deal, big tasks, we have to the times, so shift it over to next sprint.
+
+create your own issues.
