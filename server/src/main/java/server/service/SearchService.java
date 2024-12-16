@@ -20,16 +20,17 @@ public class SearchService {
         this.collectionRepository = collectionRepository;
     }
 
-    public List<NoteTitle> getSearchResults(long id, String keywords, boolean matchAll, int searchIn){
+    public List<NoteTitle> getSearchResults(long id, String keywords, boolean matchAll, String searchIn){
         String[] words = keywords.split(" ");
         Collection coll = (Collection)collectionRepository.findAll().toArray()[0];
         //List<Note> notesInCollection = collectionRepository.findById(id).get().notes;
-        List<Note> notesInCollection = coll.notes;
+        int searchInValue = getSearchInValue(searchIn);
 
+        List<Note> notesInCollection = coll.notes;
         List<NoteTitle> resultNotes = new ArrayList<>();
 
         for (Note note : notesInCollection) {
-            if(noteContainsKeywords(note, words, matchAll, searchIn)) {
+            if(noteContainsKeywords(note, words, matchAll, searchInValue)) {
                 NoteTitle nt = new NoteTitle(note.title, note.id);
                 resultNotes.add(nt);
             }
@@ -101,5 +102,13 @@ public class SearchService {
         }
 
         return all;
+    }
+
+    private int getSearchInValue(String text){
+        return switch (text) {
+            case "Title" -> 1;
+            case "Content" -> 2;
+            default -> 0;
+        };
     }
 }

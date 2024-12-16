@@ -35,7 +35,7 @@ public class SearchController {
                                                        @PathVariable String matchAll, @PathVariable String searchIn) {
 
         List<NoteTitle> result = searchService.getSearchResults(Long.parseLong(id), keywords,
-                                                                Boolean.valueOf(matchAll), Integer.valueOf(searchIn));
+                                                                Boolean.valueOf(matchAll), searchIn);
 
         return ResponseEntity.ok(result);
     }
