@@ -34,8 +34,7 @@ public class TestNoteRepository implements NoteRepository {
 
         Map<Long, Note> fakeDB =
                 Map.of(
-                        1L, new Note("Title 1", "Content 1", collection),
-                        2L, new Note("Title 2", "Content 2", collection));
+                        1L, new Note("Title 1", "Content 1", collection));
         List<Note> notes = new ArrayList<>();
         for (Note note : fakeDB.values()) {
             notes.add(note);

@@ -14,9 +14,11 @@ import java.util.List;
 public class SidebarCtrl {
 
     private final ServerUtils server;
+    private long selectedNoteId;
 
     @FXML
     public VBox noteContainer;
+    private MarkdownEditorCtrl markdownEditorCtrl;
 
     /**
      * Sidebar control constructor for functionality behind the sidebar UI element.
@@ -25,6 +27,11 @@ public class SidebarCtrl {
     @Inject
     public SidebarCtrl(ServerUtils server) {
         this.server = server;
+        selectedNoteId = -1;
+    }
+
+    public void initialize(MarkdownEditorCtrl markdownEditorCtrl) {
+        this.markdownEditorCtrl = markdownEditorCtrl;
     }
 
     /**
@@ -66,5 +73,35 @@ public class SidebarCtrl {
             });
             noteContainer.getChildren().add(wrapper);
         }
+    }
+
+    /**
+     * Note click function for action when a specific note in the sidebar is clicked
+     * intended behaviour is that the note contents opens.
+     * @param id identifier that is linked to a specific note that corresponds to the servers note ID.
+     */
+    private void noteClick(long id) {
+        for (var titleBoxes : noteContainer.getChildren()) {
+            if (titleBoxes.getId().equals(id + "")) {
+                titleBoxes.setStyle("-fx-background-color: #98c1d9");
+            } else {
+                titleBoxes.setStyle("-fx-background-color: transparent");
+            }
+        }
+        selectedNoteId = id;
+        markdownEditorCtrl.updateNote(id);
+    }
+
+    /**
+     * Getter for the id of the selected note
+     * in the sidebar based on which item is clicked last.
+     * If there is not yet a specific note selected,
+     * -1 will be returned as a default value.
+     *
+     * @return The id as a Long of the selected note
+     * or -1 if nothing is selected.
+     */
+    public long getSelectedNoteId() {
+        return selectedNoteId;
     }
 }

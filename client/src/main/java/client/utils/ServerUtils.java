@@ -21,11 +21,14 @@ import java.net.ConnectException;
 import java.util.List;
 
 import commons.NoteTitle;
+import jakarta.ws.rs.client.Entity;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
+
+import commons.Note;
 
 public class ServerUtils {
 
@@ -41,6 +44,33 @@ public class ServerUtils {
 				.target(SERVER).path("api/titles") //
 				.request(APPLICATION_JSON) //
 				.get(new GenericType<List<NoteTitle>>() {});
+	}
+
+	public Note MOCK_getDefaultNote() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/mock")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<Note>() {});
+	}
+
+	public Note updateNote(Note note) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes")
+				.request(APPLICATION_JSON)
+				.put(Entity.entity(note, APPLICATION_JSON), Note.class);
+	}
+
+	/**
+	 * method for getting a note based on the giving id by which it is stored in the server
+	 * GET request on endpoint /api/notes/{id}
+	 * @param id Server id of the giving note
+	 * @return The note with specified ID, including title and contents
+	 */
+	public Note getNoteById(long id) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + id)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<Note>() {});
 	}
 
 	public boolean isServerAvailable() {

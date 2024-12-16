@@ -49,6 +49,9 @@ public class NoteController {
      */
     @PostMapping("")
     public ResponseEntity<Note> add(@RequestBody Note note) {
+        // FIXME: this is not good for two reasons:
+        //  a) too much db logic for a controller;
+        //  b) does not handle newly created constraint
         if (note.collection == null || note.id <= 0 || note.title == null || noteRepository.existsById(note.id)) {
             return ResponseEntity.badRequest().build();
         }
@@ -72,5 +75,27 @@ public class NoteController {
         Note removed = noteRepository.findById(id).get();
         noteRepository.deleteById(id);
         return ResponseEntity.ok(removed);
+    }
+
+    @PutMapping(path={"", "/"})
+    public ResponseEntity<Note> updateNote(@RequestBody Note note) {
+        try {
+            noteRepository.save(note);
+            return ResponseEntity.ok(note);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping(path="/mock")
+    public ResponseEntity<Note> MOCK_getDefaultNote() {
+        List<Note> notes = noteRepository.findAll();
+        if (notes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(notes.get(0));
     }
 }
