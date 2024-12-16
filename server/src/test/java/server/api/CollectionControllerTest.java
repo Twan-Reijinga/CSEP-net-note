@@ -2,15 +2,12 @@ package server.api;
 
 import commons.Collection;
 import commons.Note;
-//import commons.NoteTitle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-//import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class CollectionControllerTest {
 
@@ -29,24 +26,25 @@ public class CollectionControllerTest {
         TestCollectionRepository repo = new TestCollectionRepository();
         TestNoteRepository noteRepo = new TestNoteRepository();
 
+        collection1 = new Collection("Name 1", "Title 1");
         note1 = new Note("NoteTitle 1", "Content 1", collection1);
         noteRepo.save(note1);
 
-        collection1 = new Collection("Name 1", "Title 1");
         collection1.notes.add(note1);
         repo.save(collection1);
 
+
+        collection2 = new Collection("Name 2", "Title 2");
+        collection3 = new Collection("Name 3", "Title 3");
         note2 = new Note("NoteTitle 2", "Content 2", collection2);
         noteRepo.save(note2);
         note3 = new Note("NoteTitle 3", "Content 3", collection2);
         noteRepo.save(note3);
 
-        collection2 = new Collection("Name 2", "Title 2");
         collection2.notes.add(note2);
         collection2.notes.add(note3);
         repo.save(collection2);
 
-        collection3 = new Collection("Name 3", "Title 3");
 
         controller = new CollectionController(repo, noteRepo);
     }
@@ -60,47 +58,47 @@ public class CollectionControllerTest {
         assertEquals(expected, allCollections);
     }
 
-//    @Test
-//    public void getNotesFromCollectionTest() {
-//        List<Note> noteCol1 = controller.getNotesInCollection(collection1.id);
-//        List<Note> expected = List.of(note1);
-//
-//        assertEquals(expected, noteCol1);
-//
-//        List<Note> noteCol2 = controller.getNotesInCollection(collection2.id);
-//        List<Note> expected2 = List.of(note2, note3);
-//
-//        assertEquals(expected2, noteCol2);
-//    }
-//
-//    @Test
-//    public void addCollectionTest() {
-//        collection3.id = 2;
-//        controller.add(collection3);
-//        List<Collection> collections = controller.getAllCollections();
-//        List<Collection> expected = List.of(collection1, collection2, collection3);
-//
-//        assertEquals(expected, collections);
-//    }
-//
-//    @Test
-//    public void removeCollectionTest() {
-//        Long tempId = collection1.id;
-//        controller.remove(collection1.id);
-//
-//        List<Note> noteCol1 = controller.getNotesInCollection(tempId);
-//
-//        assertEquals(null, noteCol1);
-//    }
-//
-//    @Test
-//    public void removeCollectionTest2() {
-//        controller.remove(collection2.id);
-//
-//        List<Collection> collections = controller.getAllCollections();
-//        List<Collection> expected = List.of(collection1);
-//        assertEquals(expected, collections);
-//    }
+    @Test
+    public void getNotesFromCollectionTest() {
+        List<Note> noteCol1 = controller.getNotesInCollection(collection1.id);
+        List<Note> expected = List.of(note1);
+
+        assertEquals(expected, noteCol1);
+
+        List<Note> noteCol2 = controller.getNotesInCollection(collection2.id);
+        List<Note> expected2 = List.of(note2, note3);
+
+        assertEquals(expected2, noteCol2);
+    }
+
+    @Test
+    public void addCollectionTest() {
+        collection3.id = 2;
+        controller.add(collection3);
+        List<Collection> collections = controller.getAllCollections();
+        List<Collection> expected = List.of(collection1, collection2, collection3);
+
+        assertEquals(expected, collections);
+    }
+
+    @Test
+    public void removeCollectionTest() {
+        Long tempId = collection1.id;
+        controller.remove(collection1.id);
+
+        List<Note> noteCol1 = controller.getNotesInCollection(tempId);
+
+        assertEquals(null, noteCol1);
+    }
+
+    @Test
+    public void removeCollectionTest2() {
+        controller.remove(collection2.id);
+
+        List<Collection> collections = controller.getAllCollections();
+        List<Collection> expected = List.of(collection1);
+        assertEquals(expected, collections);
+    }
 
 }
 
