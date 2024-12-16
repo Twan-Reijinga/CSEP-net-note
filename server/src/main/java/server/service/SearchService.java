@@ -81,10 +81,12 @@ public class SearchService {
     public boolean matchesKeywords(String[] keywords, String sequence, boolean all){
         String seqToLowerCase = sequence.toLowerCase();
         Regex pattern;
+        double threshold = 0.4;
 
         if(all){
             for(String keyword : keywords){
                 pattern = new Regex("(" + keyword.toLowerCase() + ")");
+                pattern.setThreshold(threshold);
                 if(pattern.presentInSequence(seqToLowerCase) == -1) return false;
             }
         }
@@ -98,6 +100,7 @@ public class SearchService {
             anyPattern += "}";
 
             pattern = new Regex(anyPattern);
+            pattern.setThreshold(threshold);
             if(pattern.presentInSequence(seqToLowerCase) != -1) return true;
         }
 
