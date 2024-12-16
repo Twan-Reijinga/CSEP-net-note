@@ -18,13 +18,15 @@ package client;
 import static com.google.inject.Guice.createInjector;
 
 import client.scenes.SidebarCtrl;
+import client.utils.DialogBoxUtils;
 import com.google.inject.Injector;
 import client.scenes.NoteEditorCtrl;
 import client.scenes.MainCtrl;
 import client.scenes.MarkdownEditorCtrl;
 import javafx.application.Application;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-
 
 public class Main extends Application {
 
@@ -37,11 +39,33 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		System.setProperty("javafx.sg.warn", "true");
+
 		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, "client", "scenes", "MarkdownEditor.fxml");
 		var sidebarEditor = FXML.load(SidebarCtrl.class, "client", "scenes", "Sidebar.fxml");
 		var noteEditor = FXML.load(NoteEditorCtrl.class, "client", "scenes", "MainUI.fxml");
 		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
 		mainCtrl.initialize(primaryStage, noteEditor, markdownEditor, sidebarEditor);
+
+		var editor = FXML.load(MarkdownEditorCtrl.class, "client", "scenes", "MarkdownEditor.fxml");
+		DialogBoxUtils.createSimpleDialog("Information", "",
+						"Random Divider", e-> { e.consume(); editor.getKey().setDivider(0.4); },
+						"Ok", e-> { System.out.println("Ok"); },
+						"Cancel", e-> { System.out.println("Cancel"); })
+				.appendContent(editor.getValue())
+				.showAndWait();
+
+		var box = DialogBoxUtils.createYesNoDialog("", "", b -> { System.out.println(b ? "YES" : "NO"); })
+				.allowResize(false)
+				.withTitle("You sure about that?")
+				.withMessage("Are you sure you want to this? This action cannot be undone. (Probably...)\n")
+				.appendContent(new ImageView(new Image("https://filmschoolrejects.com/wp-content/uploads/2019/08/rock_driving.jpg")));
+
+		box.mainStage.getIcons().add(new Image("https://cdn-icons-png.freepik.com/256/13776/13776446.png?semt=ais_hybrid"));
+		box.appendContent(editor.getValue());
+
+		box.show();
+		//box.showAndWait();
 	}
 }
