@@ -55,6 +55,17 @@ public class SidebarCtrl {
         }
     }
 
+    public void updateTitle(long id, String newTitle) {
+        for (var titleBoxes : noteContainer.getChildren()) {
+            if (titleBoxes.getId().equals(id + "")) {
+                assert titleBoxes instanceof VBox;
+                VBox titleVBox = (VBox) titleBoxes;
+                Label text = (Label) titleVBox.getChildren().getFirst();
+                text.setText(newTitle);
+            }
+        }
+    }
+
     /**
      * Note click function for action when a specific note in the sidebar is clicked
      * intended behaviour is that the note contents opens.
