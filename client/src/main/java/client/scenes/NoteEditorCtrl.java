@@ -4,9 +4,7 @@ import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
 import java.util.Timer;
@@ -36,6 +34,15 @@ public class NoteEditorCtrl {
     @FXML
     private AnchorPane topMostAnchor;
 
+    @FXML
+    private CheckBox matchAllCheckBox;
+
+    @FXML
+    private ChoiceBox<String> searchInOptionsList;
+
+    @FXML
+    private ToggleButton advSearchButton;
+
     @Inject
     public NoteEditorCtrl(MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
@@ -60,6 +67,9 @@ public class NoteEditorCtrl {
         AnchorPane.setBottomAnchor(markdownParent, 0.0);
         AnchorPane.setLeftAnchor(markdownParent, 0.0);
         AnchorPane.setRightAnchor(markdownParent, 0.0);
+
+        this.searchInOptionsList.getItems().addAll("Title", "Content", "Both");
+        this.matchAllCheckBox.setSelected(true);
     }
 
     /**
@@ -79,9 +89,11 @@ public class NoteEditorCtrl {
      */
     public void onSearchButtonPressed(){
         String searchText = searchBox.getText();
+        boolean matchAll = this.matchAllCheckBox.isSelected();
+        String whereToSearch = this.searchInOptionsList.getSelectionModel().getSelectedItem();
         long collectionId = 0;
         if(!searchText.isEmpty()){
-            mainCtrl.sendSearchRequest(searchText, collectionId, true, 0);
+            mainCtrl.sendSearchRequest(searchText, collectionId, matchAll, whereToSearch);
         }
         else{
             mainCtrl.refreshSideBar();
@@ -105,5 +117,22 @@ public class NoteEditorCtrl {
             }
         }, delayBetweenKeyPresses);
 
+    }
+
+    /** This method expands the topMostAnchor Pane and reveals a checkbox and a choice box whose
+     * values are used in the search to make it broader or more specific depending on the choice.
+     */
+    public void onAdvSearchButtonPressed(){
+        boolean selected = advSearchButton.isSelected();
+        if(selected){
+            topMostAnchor.setPrefHeight(topMostAnchor.getPrefHeight() + 30);
+        }
+        else{
+            topMostAnchor.setPrefHeight(topMostAnchor.getPrefHeight() - 30);
+        }
+        matchAllCheckBox.setDisable(!selected);
+        searchInOptionsList.setDisable(!selected);
+        matchAllCheckBox.setVisible(selected);
+        searchInOptionsList.setVisible(selected);
     }
 }
