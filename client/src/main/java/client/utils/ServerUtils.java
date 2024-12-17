@@ -109,6 +109,18 @@ public class ServerUtils {
 	}
 
 	/**
+	 * Returns a boolean based on if the note exists in the noteRepository
+	 * @param id the id of a note (in the database or not)
+	 * @return a boolean which covers the existence of the note in the database
+	 */
+	public boolean existsNoteById(long id) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/exists/" + id)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<Boolean>() {});
+	}
+
+	/**
 	 * Stores the provided note in the database
 	 * @param note a valid note that needs to be stored in the database
 	 */

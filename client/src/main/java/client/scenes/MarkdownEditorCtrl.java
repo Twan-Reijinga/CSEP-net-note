@@ -102,7 +102,9 @@ public class MarkdownEditorCtrl {
      */
     public void updateNote(long newId) {
         activeNote.content = noteText.getText();
-        serverUtils.updateNote(activeNote);
+        if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
+            serverUtils.updateNote(activeNote);
+        }
         activeNote = serverUtils.getNoteById(newId);
         noteText.setText(activeNote.content);
         requestRefresh();
