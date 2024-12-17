@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.config.Config;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Note;
@@ -46,8 +47,8 @@ public class MarkdownEditorCtrl {
     @FXML
     private WebView markdownPreview;
 
+    // TODO: does it need to be moved to config? and is it actually necessary in the code?
     private final long REFRESH_THRESHOLD = 500;
-    private final long SYNC_THRESHOLD = 5000;
 
     private boolean timeState = false;
     private boolean isContentsSynced = true;
@@ -58,12 +59,14 @@ public class MarkdownEditorCtrl {
     private final ScheduledExecutorService scheduler;
 
     private final ServerUtils serverUtils;
+    private final Config config;
 
     private Note activeNote;
 
     @Inject
-    public MarkdownEditorCtrl(ServerUtils serverUtils) {
+    public MarkdownEditorCtrl(ServerUtils serverUtils, Config config) {
         this.serverUtils = serverUtils;
+        this.config = config;
         this.refreshTimer = new Timer();
 
         var ext = List.of(
@@ -91,7 +94,7 @@ public class MarkdownEditorCtrl {
         scheduler.scheduleAtFixedRate(
                 this::syncNoteContents,
                 0,
-                SYNC_THRESHOLD,
+                config.getSyncThresholdMs(),
                 TimeUnit.MILLISECONDS
         );
     }
