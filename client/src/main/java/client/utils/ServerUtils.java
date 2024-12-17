@@ -20,6 +20,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.net.ConnectException;
 import java.util.List;
 
+import commons.Note;
 import commons.NoteTitle;
 import jakarta.ws.rs.client.Entity;
 import org.glassfish.jersey.client.ClientConfig;
@@ -85,5 +86,47 @@ public class ServerUtils {
 			}
 		}
 		return true;
+	}
+
+
+	public List<Note> getAllNotes() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<List<Note>>() {});
+	}
+
+	/**
+	 * Returns a note corresponding to the provided id
+	 * @param id the id of a valid id of a note in the database
+	 * @return a note which is provided from the database.
+	 */
+	public Note getNoteById(Long id) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + id)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<Note>() {});
+	}
+
+	/**
+	 * Stores the provided note in the database
+	 * @param note a valid note that needs to be stored in the database
+	 */
+	public void addNote(Note note) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes")
+				.request(APPLICATION_JSON)
+				.post(Entity.entity(note, APPLICATION_JSON), Note.class);
+	}
+
+	/**
+	 * Deletes the provided note through the deleteById()
+	 * @param note a valid note that is currently in the database and can be removed
+	 */
+	public void deleteNote(Note note) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/delete/" + note.id)
+				.request(APPLICATION_JSON)
+				.delete();
 	}
 }

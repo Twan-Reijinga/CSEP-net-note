@@ -49,10 +49,7 @@ public class NoteController {
      */
     @PostMapping("")
     public ResponseEntity<Note> add(@RequestBody Note note) {
-        // FIXME: this is not good for two reasons:
-        //  a) too much db logic for a controller;
-        //  b) does not handle newly created constraint
-        if (note.collection == null || note.id <= 0 || note.title == null || noteRepository.existsById(note.id)) {
+        if (note.id < 0 || noteRepository.existsById(note.id)) {
             return ResponseEntity.badRequest().build();
         }
 
