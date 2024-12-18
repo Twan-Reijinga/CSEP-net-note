@@ -38,6 +38,15 @@ public class NoteController {
         return ResponseEntity.ok(noteRepository.findById(id).get());
     }
 
+    /**
+     * Returns a boolean for the existence of a note
+     * @param id    unique identifier of a note
+     * @return      boolean whether the note is found in the database
+     */
+    @GetMapping("/exists/{id}")
+    public boolean existsById(@PathVariable("id") long id) {
+        return noteRepository.existsById(id);
+    }
 
     /**
      * Stores a new note in the database, with the provided arguments.
