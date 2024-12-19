@@ -16,11 +16,11 @@
 package client;
 
 import client.scenes.NoteEditorCtrl;
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import com.google.inject.Scopes;
+import com.google.inject.*;
 
 import client.scenes.MainCtrl;
+import client.config.Config;
+import com.google.inject.Module;
 
 
 public class MyModule implements Module {
@@ -29,5 +29,11 @@ public class MyModule implements Module {
     public void configure(Binder binder) {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(NoteEditorCtrl.class).in(Scopes.SINGLETON);
+    }
+
+    @Provides
+    @Singleton
+    public Config provideConfig() {
+        return Config.load();
     }
 }
