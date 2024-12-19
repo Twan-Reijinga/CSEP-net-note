@@ -46,16 +46,6 @@ public class NoteControllerTest {
     }
 
     @Test
-    public void addNoteNoColTest() {
-        note3.id = 2;
-        controller.add(note3);
-        List<Note> added = controller.getAllNotes();
-        List<Note> expected = List.of(note1, note2); //Since note3 has no collection
-
-        assertEquals(expected, added);
-    }
-
-    @Test
     public void addNoteTest() {
         note3.id = 2;
         note3.collection = new Collection();

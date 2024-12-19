@@ -9,7 +9,7 @@
     <children>
         <ScrollPane hbarPolicy="NEVER" prefHeight="317.0" prefWidth="200.0" AnchorPane.bottomAnchor="49.666666666666686" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <content>
-                <VBox fx:id="noteContainer" minHeight="0.0" minWidth="0.0" prefHeight="315.0" prefWidth="172.0" />
+                <VBox fx:id="noteContainer" minHeight="0.0" minWidth="0.0" prefWidth="172.0" />
             </content>
         </ScrollPane>
       <Button layoutX="14.0" layoutY="329.0" mnemonicParsing="false" text="+" AnchorPane.bottomAnchor="12.666666666666668" AnchorPane.leftAnchor="20.0" />

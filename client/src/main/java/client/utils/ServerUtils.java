@@ -20,6 +20,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.net.ConnectException;
 import java.util.List;
 
+import commons.Note;
 import commons.NoteTitle;
 import jakarta.ws.rs.client.Entity;
 import org.glassfish.jersey.client.ClientConfig;
@@ -60,6 +61,19 @@ public class ServerUtils {
 				.put(Entity.entity(note, APPLICATION_JSON), Note.class);
 	}
 
+	/**
+	 * method for getting a note based on the giving id by which it is stored in the server
+	 * GET request on endpoint /api/notes/{id}
+	 * @param id Server id of the giving note
+	 * @return The note with specified ID, including title and contents
+	 */
+	public Note getNoteById(long id) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + id)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<Note>() {});
+	}
+
 	public boolean isServerAvailable() {
 		try {
 			ClientBuilder.newClient(new ClientConfig()) //
@@ -72,5 +86,59 @@ public class ServerUtils {
 			}
 		}
 		return true;
+	}
+
+
+	public List<Note> getAllNotes() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<List<Note>>() {});
+	}
+
+	/**
+	 * Returns a note corresponding to the provided id
+	 * @param id the id of a valid id of a note in the database
+	 * @return a note which is provided from the database.
+	 */
+	public Note getNoteById(Long id) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + id)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<Note>() {});
+	}
+
+	/**
+	 * Returns a boolean based on if the note exists in the noteRepository
+	 * @param id the id of a note (in the database or not)
+	 * @return a boolean which covers the existence of the note in the database
+	 */
+	public boolean existsNoteById(long id) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/exists/" + id)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<Boolean>() {});
+	}
+
+	/**
+	 * Stores the provided note in the database
+	 * @param note a valid note that needs to be stored in the database
+	 */
+	public void addNote(Note note) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes")
+				.request(APPLICATION_JSON)
+				.post(Entity.entity(note, APPLICATION_JSON), Note.class);
+	}
+
+	/**
+	 * Deletes the provided note through the deleteById()
+	 * @param note a valid note that is currently in the database and can be removed
+	 */
+	public void deleteNote(Note note) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/delete/" + note.id)
+				.request(APPLICATION_JSON)
+				.delete();
 	}
 }

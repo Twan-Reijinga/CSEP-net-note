@@ -84,6 +84,7 @@ public class MarkdownEditorCtrl {
     @FXML
     public void initialize() {
         activeNote = serverUtils.MOCK_getDefaultNote();
+
         noteText.setText(activeNote.content);
         requestRefresh();
 
@@ -93,6 +94,20 @@ public class MarkdownEditorCtrl {
                 SYNC_THRESHOLD,
                 TimeUnit.MILLISECONDS
         );
+    }
+
+    /**
+     * Updating the active note view to display a new note given by the specified ID.
+     * @param newId The database ID of the note that need to be displayed.
+     */
+    public void updateNote(long newId) {
+        activeNote.content = noteText.getText();
+        if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
+            serverUtils.updateNote(activeNote);
+        }
+        activeNote = serverUtils.getNoteById(newId);
+        noteText.setText(activeNote.content);
+        requestRefresh();
     }
 
     public synchronized void onKeyTyped(KeyEvent e) {
