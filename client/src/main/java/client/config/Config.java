@@ -12,8 +12,6 @@ public class Config {
 
     private int syncThresholdMs;
 
-    private Language language;
-
     private List<Collection> remoteCollections;
 
     // FIXME: not sustainable; collections are weak entities of server (IDs are only server-unique), yikes...
@@ -23,9 +21,8 @@ public class Config {
         // for object mapper
     }
 
-    public Config(int syncThresholdMs, Language language) {
+    public Config(int syncThresholdMs) {
         this.syncThresholdMs = syncThresholdMs;
-        this.language = language;
         this.remoteCollections = new ArrayList<>();
         this.defaultCollectionId = -1;
     }
@@ -38,7 +35,7 @@ public class Config {
         } catch (IOException e) {
             System.out.println("Creating default config...");
             System.out.println(e.getMessage());
-            return new Config(5000, Language.English);
+            return new Config(5000);
         }
     }
 
@@ -58,15 +55,6 @@ public class Config {
 
     public void setSyncThresholdMs(int syncThresholdMs) {
         this.syncThresholdMs = syncThresholdMs;
-        save();
-    }
-
-    public Language getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(Language language) {
-        this.language = language;
         save();
     }
 
