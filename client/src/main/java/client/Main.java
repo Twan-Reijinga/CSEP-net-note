@@ -43,9 +43,9 @@ public class Main extends Application {
 		ResourceBundle dutchBundle = ResourceBundle.getBundle("dutch");
 		ResourceBundle spanishBundle = ResourceBundle.getBundle("spanish");
 		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, englishBundle,"client", "scenes", "MarkdownEditor.fxml");
-		var sidebarEditorEnglish = FXML.load(SidebarCtrl.class, englishBundle, "client", "scenes", "Sidebar.fxml");
-		var noteEditorEnglish = FXML.load(NoteEditorCtrl.class, englishBundle,"client", "scenes", "MainUI.fxml");
+		var sidebarEditor = FXML.load(SidebarCtrl.class, englishBundle, "client", "scenes", "Sidebar.fxml");
+		var noteEditor = FXML.load(NoteEditorCtrl.class, englishBundle,"client", "scenes", "MainUI.fxml");
 		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-		mainCtrl.initialize(primaryStage, markdownEditor, noteEditorEnglish, sidebarEditorEnglish);
+		mainCtrl.initialize(primaryStage, markdownEditor, noteEditor, sidebarEditor);
 	}
 }

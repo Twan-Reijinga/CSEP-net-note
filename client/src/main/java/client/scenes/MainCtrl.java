@@ -27,27 +27,24 @@ public class MainCtrl {
     private Scene noteEditorEnglish;
 
     private MarkdownEditorCtrl markdownEditorCtrl;
-    private Scene markdownEditor;
-
     private SidebarCtrl sidebarCtrl;
 
 
     public void initialize(
             Stage primaryStage,
             Pair<MarkdownEditorCtrl, Parent> markdownEditor,
-            Pair<NoteEditorCtrl, Parent> noteEditorEnglish,
-            Pair<SidebarCtrl, Parent> sidebarEditorEnglish
+            Pair<NoteEditorCtrl, Parent> noteEditor,
+            Pair<SidebarCtrl, Parent> sidebarEditor
     )
     {
         this.primaryStage = primaryStage;
 
-        this.noteEditorCtrl = noteEditorEnglish.getKey();
-        this.noteEditorEnglish = new Scene(noteEditorEnglish.getValue());
+        this.noteEditorCtrl = noteEditor.getKey();
+        this.noteEditorEnglish = new Scene(noteEditor.getValue());
 
         this.markdownEditorCtrl = markdownEditor.getKey();
-        this.markdownEditor = new Scene(markdownEditor.getValue());
 
-        this.sidebarCtrl = sidebarEditorEnglish.getKey();
+        this.sidebarCtrl = sidebarEditor.getKey();
 
         noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue());
         markdownEditorCtrl.initialize();
