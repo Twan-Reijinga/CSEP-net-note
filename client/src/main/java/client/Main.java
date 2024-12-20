@@ -25,6 +25,8 @@ import client.scenes.MarkdownEditorCtrl;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.util.ResourceBundle;
+
 
 public class Main extends Application {
 
@@ -37,11 +39,13 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, "client", "scenes", "MarkdownEditor.fxml");
-		var sidebarEditor = FXML.load(SidebarCtrl.class, "client", "scenes", "Sidebar.fxml");
-		var noteEditor = FXML.load(NoteEditorCtrl.class, "client", "scenes", "MainUI.fxml");
+		ResourceBundle englishBundle = ResourceBundle.getBundle("english");
+		ResourceBundle dutchBundle = ResourceBundle.getBundle("dutch");
+		ResourceBundle spanishBundle = ResourceBundle.getBundle("spanish");
+		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, englishBundle,"client", "scenes", "MarkdownEditor.fxml");
+		var sidebarEditor = FXML.load(SidebarCtrl.class, englishBundle, "client", "scenes", "Sidebar.fxml");
+		var noteEditor = FXML.load(NoteEditorCtrl.class, englishBundle,"client", "scenes", "MainUI.fxml");
 		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-
-		mainCtrl.initialize(primaryStage, noteEditor, markdownEditor, sidebarEditor);
+		mainCtrl.initialize(primaryStage, markdownEditor, noteEditor, sidebarEditor);
 	}
 }

@@ -24,31 +24,27 @@ public class MainCtrl {
 
     private Stage primaryStage;
     private NoteEditorCtrl noteEditorCtrl;
-    private Scene noteEditor;
+    private Scene noteEditorEnglish;
 
     private MarkdownEditorCtrl markdownEditorCtrl;
-    private Scene markdownEditor;
-
     private SidebarCtrl sidebarCtrl;
-    private Scene sidebar;
+
 
     public void initialize(
             Stage primaryStage,
-            Pair<NoteEditorCtrl, Parent> noteEditor,
             Pair<MarkdownEditorCtrl, Parent> markdownEditor,
+            Pair<NoteEditorCtrl, Parent> noteEditor,
             Pair<SidebarCtrl, Parent> sidebarEditor
     )
     {
         this.primaryStage = primaryStage;
 
         this.noteEditorCtrl = noteEditor.getKey();
-        this.noteEditor = new Scene(noteEditor.getValue());
+        this.noteEditorEnglish = new Scene(noteEditor.getValue());
 
         this.markdownEditorCtrl = markdownEditor.getKey();
-        this.markdownEditor = new Scene(markdownEditor.getValue());
 
         this.sidebarCtrl = sidebarEditor.getKey();
-        this.sidebar = new Scene(sidebarEditor.getValue());
 
         noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue());
         markdownEditorCtrl.initialize();
@@ -65,7 +61,24 @@ public class MainCtrl {
         primaryStage.setTitle("NoteEditor");
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(500);
-        primaryStage.setScene(noteEditor);
+        primaryStage.setScene(noteEditorEnglish);
+    }
+
+    /**
+     * Sets a new UI language based on user selection
+     * Builds a new scene but with all components translated
+     * and parses the main stage the root node of the scene
+     * @param language the chosen language by the user
+     */
+    public void changeUILanguage(String language) {
+        switch (language){
+            case "English":
+                break;
+            case "Dutch":
+                break;
+            case "Spanish":
+                break;
+        }
     }
 
     /**

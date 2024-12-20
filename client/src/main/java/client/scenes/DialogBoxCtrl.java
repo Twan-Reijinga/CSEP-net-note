@@ -48,7 +48,7 @@ public class DialogBoxCtrl {
      * @return a new instance of DialogBoxCtrl
      */
     public static DialogBoxCtrl createDialog() {
-        var pair = FXML.load(DialogBoxCtrl.class, "client", "scenes", "DialogTemplate.fxml");
+        var pair = FXML.load(DialogBoxCtrl.class, null, "client", "scenes", "DialogTemplate.fxml");
         var inst = pair.getKey();
         inst.mainStage.setScene(new Scene(pair.getValue()));
         inst.mainStage.sizeToScene();
