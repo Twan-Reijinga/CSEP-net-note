@@ -10,19 +10,25 @@ public class NoteEditorCtrl {
     private final MainCtrl mainCtrl;
 
     @FXML
-    private ComboBox<String> languageDropDown;
+    private AnchorPane sidebarContainer;
 
     @FXML
-    private AnchorPane sideBarContainer;
+    private AnchorPane markdownEditorContainer;
 
     @FXML
-    private AnchorPane markdownPaneContainer;
+    private TextField searchBox;
 
     @FXML
-    private Label appTitle;
+    private Button searchButton;
 
     @FXML
-    private AnchorPane topMostAnchor;
+    private ToggleButton advancedSearchButton;
+
+    @FXML
+    private ComboBox<String> collectionsDropdown;
+
+    @FXML
+    private ComboBox<String> languageDropdown;
 
     @Inject
     public NoteEditorCtrl(MainCtrl mainCtrl) {
@@ -36,33 +42,19 @@ public class NoteEditorCtrl {
      */
     @FXML
     public void initialize(Parent sideBarParent, Parent markdownParent) {
-        centerTextField();
-        topMostAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
-            centerTextField();
-        });
-        sideBarContainer.getChildren().add(sideBarParent);
+        sidebarContainer.getChildren().add(sideBarParent);
         AnchorPane.setTopAnchor(sideBarParent, 0.0);
         AnchorPane.setBottomAnchor(sideBarParent, 0.0);
-        markdownPaneContainer.getChildren().add(markdownParent);
+        markdownEditorContainer.getChildren().add(markdownParent);
         AnchorPane.setTopAnchor(markdownParent, 0.0);
         AnchorPane.setBottomAnchor(markdownParent, 0.0);
         AnchorPane.setLeftAnchor(markdownParent, 0.0);
         AnchorPane.setRightAnchor(markdownParent, 0.0);
         String[] availableLanguages = new String[] {"English", "Dutch", "Spanish"};
-        languageDropDown.getItems().addAll(availableLanguages);
-        languageDropDown.setOnAction(actionEvent -> {
-            String chosenLanguage = languageDropDown.getSelectionModel().getSelectedItem();
+        languageDropdown.getItems().addAll(availableLanguages);
+        languageDropdown.setOnAction(actionEvent -> {
+            String chosenLanguage = languageDropdown.getSelectionModel().getSelectedItem();
             mainCtrl.changeUILanguage(chosenLanguage);
         });
-    }
-
-    /**
-     * translates the NetNote title to always be center aligned to the anchor pane it is in
-     */
-    public void centerTextField() {
-        double anchorWidth = topMostAnchor.getWidth();
-        double textFieldWidth = appTitle.getWidth();
-        appTitle.setLayoutX((anchorWidth - textFieldWidth) / 2);
-        appTitle.relocate(appTitle.getLayoutX(), appTitle.getLayoutY());
     }
 }
