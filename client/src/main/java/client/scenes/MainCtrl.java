@@ -47,7 +47,7 @@ public class MainCtrl {
         this.sidebarCtrl = sidebarEditor.getKey();
 
         noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue());
-        markdownEditorCtrl.initialize();
+        markdownEditorCtrl.initialize(sidebarCtrl);
         sidebarCtrl.initialize(markdownEditorCtrl);
 
         showNoteEditor();

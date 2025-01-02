@@ -64,6 +64,17 @@ public class SidebarCtrl {
         }
     }
 
+    public void updateTitle(long id, String newTitle) {
+        for (var titleBoxes : noteContainer.getChildren()) {
+            if (titleBoxes.getId().equals(id + "")) {
+                assert titleBoxes instanceof VBox;
+                VBox titleVBox = (VBox) titleBoxes;
+                Label text = (Label) titleVBox.getChildren().getFirst();
+                text.setText(newTitle);
+            }
+        }
+    }
+
     /**
      * Creates a new title that is unique to the other title in the format "New note: #"
      * 
