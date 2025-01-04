@@ -33,6 +33,11 @@ public class TestCollectionRepository implements CollectionRepository {
     }
 
     @Override
+    public Boolean existsByName(String name) {
+        return false;
+    }
+
+    @Override
     public void flush() {
         call("flush");
     }

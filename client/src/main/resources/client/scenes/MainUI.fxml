@@ -31,8 +31,8 @@
                   <Button fx:id="searchButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="56.0" text="%searchButton" />
                   <ToggleButton fx:id="advancedSearchButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="26.0" text="ToggleButton" />
                   <Region HBox.hgrow="ALWAYS" />
-                  <ComboBox fx:id="collectionsDropdown" prefHeight="26.0" prefWidth="80.0" />
-                  <ComboBox fx:id="languageDropdown" prefHeight="26.0" prefWidth="80.0" />
+                  <ComboBox fx:id="collectionDropdown" onAction="#onCollectionDropdownAction" prefHeight="26.0" prefWidth="80.0" />
+                  <ComboBox fx:id="languageDropdown" onAction="#onLanguageDropdownAction" prefHeight="26.0" prefWidth="80.0" />
                </children>
                <BorderPane.margin>
                   <Insets />

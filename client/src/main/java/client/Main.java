@@ -30,8 +30,8 @@ import java.util.ResourceBundle;
 
 public class Main extends Application {
 
-	private static final Injector INJECTOR = createInjector(new MyModule());
-	private static final MyFXML FXML = new MyFXML(INJECTOR);
+	private static final Injector INJECTOR = createInjector(new GuiceModule());
+	private static final LoaderFXML FXML = INJECTOR.getInstance(LoaderFXML.class);
 
 	public static void main(String[] args) {
 		launch(args);
@@ -42,10 +42,13 @@ public class Main extends Application {
 		ResourceBundle englishBundle = ResourceBundle.getBundle("english");
 		ResourceBundle dutchBundle = ResourceBundle.getBundle("dutch");
 		ResourceBundle spanishBundle = ResourceBundle.getBundle("spanish");
+
 		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, englishBundle,"client", "scenes", "MarkdownEditor.fxml");
 		var sidebarEditor = FXML.load(SidebarCtrl.class, englishBundle, "client", "scenes", "Sidebar.fxml");
 		var noteEditor = FXML.load(NoteEditorCtrl.class, englishBundle,"client", "scenes", "MainUI.fxml");
+
 		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+
 		mainCtrl.initialize(primaryStage, markdownEditor, noteEditor, sidebarEditor);
 	}
 }
