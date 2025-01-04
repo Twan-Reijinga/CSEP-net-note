@@ -45,8 +45,6 @@ public class MainCtrl {
         this.noteEditorCtrl = noteEditor.getKey();
         this.noteEditorEnglish = new Scene(noteEditor.getValue());
 
-        this.shortcutHandler = new ShortcutHandler(sidebarCtrl);
-        shortcutHandler.attach(noteEditorEnglish);
 
         this.markdownEditorCtrl = markdownEditor.getKey();
 
@@ -55,6 +53,9 @@ public class MainCtrl {
         noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue());
         markdownEditorCtrl.initialize(sidebarCtrl);
         sidebarCtrl.initialize(this);
+
+        this.shortcutHandler = new ShortcutHandler(sidebarCtrl);
+        shortcutHandler.attach(noteEditorEnglish);
 
         showNoteEditor();
         primaryStage.show();
