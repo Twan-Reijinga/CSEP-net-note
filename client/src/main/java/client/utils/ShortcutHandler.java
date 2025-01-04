@@ -1,6 +1,7 @@
 package client.utils;
 
 import client.scenes.MainCtrl;
+import client.scenes.SidebarCtrl;
 import commons.Note;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -14,16 +15,16 @@ import java.util.Stack;
  * across any JavaFX Scene. It is independent of specific scenes or controllers.
  */
 public class ShortcutHandler {
-    private final MainCtrl mainCtrl;
+    private final SidebarCtrl sidebarCtrl;
     private final Stack<NoteAction> actionStack = new Stack<>();
     private final HashMap<Long, Long> idMapping = new HashMap<>();
 
     /**
      * Initialization for the ShortcutHandler.
-     * @param mainCtrl The main controller for executing action in the app.
+     * @param sidebarCtrl The sidebar controller to change things in the sidebar.
      */
-    public ShortcutHandler(MainCtrl mainCtrl) {
-        this.mainCtrl = mainCtrl;
+    public ShortcutHandler(SidebarCtrl sidebarCtrl) {
+        this.sidebarCtrl = sidebarCtrl;
     }
 
     /**
@@ -42,7 +43,7 @@ public class ShortcutHandler {
         if (event.isControlDown() && event.getCode() == KeyCode.Z) {
             this.undo();
         } else if (event.isControlDown() && event.getCode() == KeyCode.R) {
-            mainCtrl.refreshSidebar();
+            sidebarCtrl.refresh();
         }
     }
 
@@ -76,7 +77,7 @@ public class ShortcutHandler {
      */
     private void undoAdd(AddNoteAction action) {
         long id = idMapping.getOrDefault(action.getId(), action.getId());
-        mainCtrl.deleteNote(id);
+        sidebarCtrl.deleteNoteById(id, false);
     }
 
     /**
@@ -85,7 +86,7 @@ public class ShortcutHandler {
      */
     private void undoDelete(DeleteNoteAction action) {
         Note note = action.getNote();
-        long newNoteId = mainCtrl.addNote(note);
+        long newNoteId = sidebarCtrl.addNote(note);
         if (newNoteId != -1) {
             idMapping.put(action.getNote().id, newNoteId);
         }
