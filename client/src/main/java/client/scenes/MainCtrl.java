@@ -15,6 +15,8 @@
  */
 package client.scenes;
 
+import client.utils.ShortcutHandler;
+import commons.Note;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -28,6 +30,7 @@ public class MainCtrl {
 
     private MarkdownEditorCtrl markdownEditorCtrl;
     private SidebarCtrl sidebarCtrl;
+    private ShortcutHandler shortcutHandler;
 
 
     public void initialize(
@@ -42,13 +45,16 @@ public class MainCtrl {
         this.noteEditorCtrl = noteEditor.getKey();
         this.noteEditorEnglish = new Scene(noteEditor.getValue());
 
+        this.shortcutHandler = new ShortcutHandler(this);
+        shortcutHandler.attach(noteEditorEnglish);
+
         this.markdownEditorCtrl = markdownEditor.getKey();
 
         this.sidebarCtrl = sidebarEditor.getKey();
 
         noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue());
         markdownEditorCtrl.initialize(sidebarCtrl);
-        sidebarCtrl.initialize(markdownEditorCtrl);
+        sidebarCtrl.initialize(this);
 
         showNoteEditor();
         primaryStage.show();
@@ -81,6 +87,10 @@ public class MainCtrl {
         }
     }
 
+    public void updateNote(long id) {
+        markdownEditorCtrl.updateNote(id);
+    }
+
     /**
      * Getter for the id of the selected note
      * in the sidebar based on which item is clicked last.
@@ -93,4 +103,39 @@ public class MainCtrl {
     public long getSelectedNoteId() {
         return sidebarCtrl.getSelectedNoteId();
     }
+
+    /**
+     * record the action of adding a note so the noteId can be locally stored and reversed with an undo later.
+     * @param noteId The noteId of the added note.
+     */
+    public void recordAdd(Long noteId) {
+        shortcutHandler.recordAdd(noteId);
+    }
+
+    /**
+     * record the action of deleting a note so the note can be locally stored and reversed with an undo later.
+     * @param note A copy of the note that can be revered.
+     */
+    public void recordDelete(Note note) {
+        shortcutHandler.recordDelete(note);
+    }
+
+    /**
+     * Execute action of adding a note.
+     * @param note The note with contents and title that needs to be added again.
+     * @return The id of the newly created note.
+     */
+    public long addNote(Note note) {
+        return sidebarCtrl.addNote(note);
+    }
+
+    /**
+     * Execute action of deleting a note.
+     * @param noteId The note that needs to be deleted.
+     */
+    public void deleteNote(Long noteId) {
+        sidebarCtrl.deleteNoteById(noteId, false);
+    }
+
+
 }
