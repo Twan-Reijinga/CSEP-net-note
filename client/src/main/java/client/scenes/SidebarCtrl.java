@@ -22,7 +22,7 @@ public class SidebarCtrl {
 
     @FXML
     public VBox noteContainer;
-    private MarkdownEditorCtrl markdownEditorCtrl;
+    private MainCtrl mainCtrl;
 
     /**
      * Sidebar control constructor for functionality behind the sidebar UI element.
@@ -39,8 +39,12 @@ public class SidebarCtrl {
         this.defaultCollection.isDefault = true;
     }
 
-    public void initialize(MarkdownEditorCtrl markdownEditorCtrl) {
-        this.markdownEditorCtrl = markdownEditorCtrl;
+    /**
+     * initializer for the SidebarCtrl object.
+     * @param mainCtrl The mainCtrl to execute actions outside the sidebar.
+     */
+    public void initialize(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
     }
 
     /**
@@ -64,6 +68,11 @@ public class SidebarCtrl {
         }
     }
 
+    /**
+     * change title on the fly, from the note editor, so you don't have to refresh every time.
+     * @param id The id of the note to change the title of.
+     * @param newTitle The new title for this note.
+     */
     public void updateTitle(long id, String newTitle) {
         for (var titleBoxes : noteContainer.getChildren()) {
             if (titleBoxes.getId().equals(id + "")) {
@@ -110,39 +119,80 @@ public class SidebarCtrl {
     /**
      * Adds a default note to the database with a unique title, unique id, content and a default collection, 
      * or the collection of the selected note. 
-     * Afterwards selects the newly created note (last note).
+     * Afterward selects the newly created note (last note).
      */
-    public void addNote() {
+    public void createNote() {
         Collection collection = defaultCollection;
         if (getSelectedNoteId() > 0) {
-            collection = server.getNoteById(getSelectedNoteId()).collection;;
+            collection = server.getNoteById(getSelectedNoteId()).collection;
         }
+
         int input = createDefaultTitle(1);
         Note newNote = new Note("New note: " + input, "Edit content here.", collection);
-        newNote.createdAt = new Date();
-        server.addNote(newNote);
+
+        addNote(newNote);
+        mainCtrl.recordAdd(selectedNoteId);
+    }
+
+    /**
+     * Adds a specific note to the database.
+     * The ID will not remain the same!
+     * @param note The specific note object to add.
+     * @return The new ID of the note OR -1 if the note could not be added.
+     */
+    public long addNote(Note note) {
+        if (server.existsNoteById(note.id)) {
+            return -1; // note already exists
+        }
+
+        note.createdAt = new Date();
+        server.addNote(note);
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getLast().getId());
         noteClick(selectedNoteId);
+        return selectedNoteId;
     }
     
     /**
      * Deletes the selected note, and if there is no note -> 
-     * creates a new default note.
-     * Afterwards selects the first note.
+     * creates a new default note.signaturized
+     * Afterward selects the first note.
      */
-    public void deleteNote() {
-        if (getSelectedNoteId() > 0) {
-            Note note1 = server.getNoteById(getSelectedNoteId());
-            server.deleteNote(note1);
-            selectedNoteId = -1;
-            if (server.getAllNotes().isEmpty()){
-                addNote();
-            }
-            refresh();
-            selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
-            noteClick(selectedNoteId);
+    public void deleteSelectedNote() {
+        deleteNoteById(selectedNoteId, true);
+    }
+
+    /**
+     * Deletes the note with specified id, and with options to reverse so it can be stored in the undo history.
+     * A normal delete needs to be reversible with the undo command.
+     * But if it deletes a note as part of an undo action it does not need to record it again.
+     * @param id The ID of the note that needs to be deleted.
+     * @param isReversible The option to record the action so it can be reverse with an undo action.
+     */
+    public void deleteNoteById(long id, boolean isReversible) {
+        if (!server.existsNoteById(id)) {
+            return; // note didn't exist anymore //
         }
+
+        if (id <= 0) {
+            return;
+        }
+
+        if (server.getAllNotes().size() < 2){
+            createNote();
+        }
+
+        Note note = server.getNoteById(id);
+
+        server.deleteNote(note);
+        if (isReversible) {
+            mainCtrl.recordDelete(note);
+        }
+
+
+        refresh();
+        selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
+        noteClick(selectedNoteId);
     }
 
     /**
@@ -159,7 +209,7 @@ public class SidebarCtrl {
             }
         }
         selectedNoteId = id;
-        markdownEditorCtrl.updateNote(id);
+        mainCtrl.updateNote(id);
     }
 
     /**
