@@ -29,11 +29,45 @@ import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
 
-import commons.Note;
+import commons.Collection;
 
 public class ServerUtils {
 
 	private static final String SERVER = "http://localhost:8080/";
+
+	public List<Collection> getAllCollections() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/collections")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<>() {});
+	}
+
+	public Collection addCollection(Collection collection) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/collections")
+				.request(APPLICATION_JSON)
+				.post(Entity.entity(collection, APPLICATION_JSON), Collection.class);
+	}
+
+	public Collection updateCollection(Collection collection) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/collections")
+				.request(APPLICATION_JSON)
+				.put(Entity.entity(collection, APPLICATION_JSON), Collection.class);
+	}
+
+	public String getUniqueCollectionName() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/collections/unique-name")
+				.request().get(String.class);
+	}
+
+	public void deleteCollection(Collection collection) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/collections/delete/" + collection.id)
+				.request(APPLICATION_JSON)
+				.delete();
+	}
 
 	/**
 	 * method for requesting titles in a List of NoteTitles from the server.
@@ -44,14 +78,14 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/titles") //
 				.request(APPLICATION_JSON) //
-				.get(new GenericType<List<NoteTitle>>() {});
+				.get(new GenericType<>() {});
 	}
 
 	public Note MOCK_getDefaultNote() {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER).path("api/notes/mock")
 				.request(APPLICATION_JSON)
-				.get(new GenericType<Note>() {});
+				.get(new GenericType<>() {});
 	}
 
 	public Note updateNote(Note note) {
@@ -71,7 +105,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER).path("api/notes/" + id)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<Note>() {});
+				.get(new GenericType<>() {});
 	}
 
 	public boolean isServerAvailable() {
@@ -93,7 +127,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER).path("api/notes")
 				.request(APPLICATION_JSON)
-				.get(new GenericType<List<Note>>() {});
+				.get(new GenericType<>() {});
 	}
 
 	/**
@@ -105,7 +139,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER).path("api/notes/" + id)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<Note>() {});
+				.get(new GenericType<>() {});
 	}
 
 	/**
