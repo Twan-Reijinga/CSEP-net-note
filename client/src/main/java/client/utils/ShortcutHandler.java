@@ -41,6 +41,8 @@ public class ShortcutHandler {
     private void handleKeyPresses(KeyEvent event) {
         if (event.isControlDown() && event.getCode() == KeyCode.Z) {
             this.undo();
+        } else if (event.isControlDown() && event.getCode() == KeyCode.R) {
+            mainCtrl.refreshSidebar();
         }
     }
 
