@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface CollectionRepository extends JpaRepository<Collection, Long> {
     // Find the first collection where isDefault is true
     Optional<Collection> findFirstByIsDefaultTrue();
+
+    Boolean existsByName(String name);
 }

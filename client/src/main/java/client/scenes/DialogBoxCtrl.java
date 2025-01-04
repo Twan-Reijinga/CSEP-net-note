@@ -15,8 +15,8 @@
  */
 package client.scenes;
 
-import client.MyFXML;
-import client.MyModule;
+import client.GuiceModule;
+import client.LoaderFXML;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -40,7 +40,8 @@ import static com.google.inject.Guice.createInjector;
  * It provides methods to customize the dialog's title, content, buttons, modality, and style.
  */
 public class DialogBoxCtrl {
-    private static final MyFXML FXML = new MyFXML(createInjector(new MyModule()));
+    // TODO: should be replaced with proper DI
+    private static final LoaderFXML FXML = new LoaderFXML(createInjector(new GuiceModule()));
 
     /**
      * Creates a new instance of DialogBoxCtrl and initializes the dialog box with the default template.

@@ -15,20 +15,28 @@
  */
 package client;
 
+import client.scenes.CollectionSettingsCtrl;
 import client.scenes.NoteEditorCtrl;
 import com.google.inject.*;
-
 import client.scenes.MainCtrl;
 import client.config.Config;
 import com.google.inject.Module;
 
 
-public class MyModule implements Module {
+public class GuiceModule implements Module {
 
     @Override
     public void configure(Binder binder) {
+        // TODO: what controllers (fxml) should be here?
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(NoteEditorCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(CollectionSettingsCtrl.class).in(Scopes.SINGLETON);
+    }
+
+    @Provides
+    @Singleton
+    public LoaderFXML provideLoaderFXML(Injector injector) {
+        return new LoaderFXML(injector);
     }
 
     @Provides

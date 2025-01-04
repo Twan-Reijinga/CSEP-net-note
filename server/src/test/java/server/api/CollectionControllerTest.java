@@ -4,6 +4,8 @@ import commons.Collection;
 import commons.Note;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.services.CollectionService;
+import server.services.RandomService;
 
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class CollectionControllerTest {
     public void setUp() {
         TestCollectionRepository repo = new TestCollectionRepository();
         TestNoteRepository noteRepo = new TestNoteRepository();
+        CollectionService s = new CollectionService(new RandomService(), repo);
 
         collection1 = new Collection("Name 1", "Title 1");
         repo.save(collection1);
@@ -40,7 +43,7 @@ public class CollectionControllerTest {
 
         collection3 = new Collection("Name 3", "Title 3");
 
-        controller = new CollectionController(repo, noteRepo);
+        controller = new CollectionController(repo, noteRepo, s);
     }
 
 

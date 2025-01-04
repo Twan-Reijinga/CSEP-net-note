@@ -30,11 +30,11 @@ import javafx.util.BuilderFactory;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
-public class MyFXML {
+public class LoaderFXML {
 
     private Injector injector;
 
-    public MyFXML(Injector injector) {
+    public LoaderFXML(Injector injector) {
         this.injector = injector;
     }
 
@@ -52,7 +52,7 @@ public class MyFXML {
 
     private URL getLocation(String... parts) {
         var path = Path.of("", parts).toString();
-        return MyFXML.class.getClassLoader().getResource(path);
+        return LoaderFXML.class.getClassLoader().getResource(path);
     }
 
     private class MyFactory implements BuilderFactory, Callback<Class<?>, Object> {
