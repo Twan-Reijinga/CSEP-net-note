@@ -17,7 +17,6 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import java.io.File;
 import java.net.ConnectException;
 import java.util.List;
 
