@@ -58,6 +58,7 @@ public class MainCtrl {
 
         showNoteEditor();
         primaryStage.show();
+        this.refreshSidebar();
     }
 
     /**
@@ -137,5 +138,10 @@ public class MainCtrl {
         sidebarCtrl.deleteNoteById(noteId, false);
     }
 
-
+    /**
+     * Refreshes the titles from the server into the sidebar, so all changes are displayed.
+     */
+    public void refreshSidebar() {
+        sidebarCtrl.refresh();
+    }
 }
