@@ -23,6 +23,8 @@ import java.util.UUID;
 
 import client.config.Config;
 import com.google.inject.Inject;
+
+import commons.EmbeddedFile;
 import commons.Note;
 import commons.NoteTags;
 import commons.NoteTitle;
@@ -277,5 +279,26 @@ public class ServerUtils {
 				.target(server).path("api/tags/list")
 				.request(APPLICATION_JSON)
 				.post(Entity.entity(noteIds, APPLICATION_JSON), new GenericType<>(){});
+	}
+
+	public void addFileToNote(EmbeddedFile file) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/" + file.note.id + "/embedded/" + file.id)
+				.request(APPLICATION_JSON)
+				.post(Entity.entity(file, APPLICATION_JSON), EmbeddedFile.class);
+	}
+
+	public List<EmbeddedFile> getAllFilesFromNote(Note note) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/" + note.id + "/embedded")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<List<EmbeddedFile>>() {});
+	}
+
+	public EmbeddedFile getFileFromNote(Note note, long fileId) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/" + note.id + "/embedded/" + fileId)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<EmbeddedFile>() {});
 	}
 }
