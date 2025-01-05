@@ -17,9 +17,11 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import java.io.File;
 import java.net.ConnectException;
 import java.util.List;
 
+import commons.EmbeddedFile;
 import commons.Note;
 import commons.NoteTitle;
 import jakarta.ws.rs.client.Entity;
@@ -140,5 +142,26 @@ public class ServerUtils {
 				.target(SERVER).path("api/notes/delete/" + note.id)
 				.request(APPLICATION_JSON)
 				.delete();
+	}
+
+	public void addFileToNote(EmbeddedFile file) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + file.note.id + "/embedded/" + file.id)
+				.request(APPLICATION_JSON)
+				.post(Entity.entity(file, APPLICATION_JSON), EmbeddedFile.class);
+	}
+
+	public List<EmbeddedFile> getAllFilesFromNote(Note note) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + note.id + "/embedded")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<List<EmbeddedFile>>() {});
+	}
+
+	public EmbeddedFile getFileFromNote(Note note, long fileId) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + note.id + "/embedded/" + fileId)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<EmbeddedFile>() {});
 	}
 }

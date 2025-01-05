@@ -12,8 +12,10 @@
                 <VBox fx:id="noteContainer" minHeight="0.0" minWidth="0.0" prefWidth="172.0" />
             </content>
         </ScrollPane>
-      <Button layoutX="14.0" layoutY="329.0" mnemonicParsing="false" text="+" AnchorPane.bottomAnchor="12.666666666666668" AnchorPane.leftAnchor="20.0" />
-      <Button layoutX="74.0" layoutY="329.0" mnemonicParsing="false" prefWidth="24.666" text="-" AnchorPane.bottomAnchor="12.666666666666668" AnchorPane.leftAnchor="64.666" />
+      <Button layoutX="14.0" layoutY="329.0" mnemonicParsing="false" onAction="#addNote" text="+" AnchorPane.bottomAnchor="12.666666666666668" AnchorPane.leftAnchor="20.0" />
+      <Button layoutX="74.0" layoutY="329.0" mnemonicParsing="false" onAction="#deleteNote" prefWidth="24.666" text="-" AnchorPane.bottomAnchor="12.666666666666668" AnchorPane.leftAnchor="64.666" />
       <Button layoutX="128.0" layoutY="329.0" mnemonicParsing="false" onAction="#refresh" text="%refresh" AnchorPane.bottomAnchor="12.6666" AnchorPane.leftAnchor="109.2" />
+      <Button layoutX="168.0" layoutY="316.0" mnemonicParsing="false" onAction="#addFile" prefHeight="25.0" prefWidth="32.0" text="+F" />
+      <Button layoutX="168.0" layoutY="341.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="32.0" text="-F" />
     </children>
 </AnchorPane>

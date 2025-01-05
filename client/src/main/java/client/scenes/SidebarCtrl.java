@@ -1,6 +1,7 @@
 package client.scenes;
 
 import commons.Collection;
+import commons.EmbeddedFile;
 import commons.Note;
 import commons.NoteTitle;
 import client.utils.ServerUtils;
@@ -10,8 +11,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-import java.util.Date;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 
 public class SidebarCtrl {
@@ -132,6 +133,21 @@ public class SidebarCtrl {
             selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
             noteClick(selectedNoteId);
         }
+    }
+
+    public void addFile() throws FileNotFoundException {
+        Note note = server.getNoteById(selectedNoteId);
+        File thisFile = new File("test.txt/");
+        String fileString;
+        try (FileInputStream input = new FileInputStream(thisFile)) {
+            byte[] fileBytes = new byte[(int) thisFile.length()];
+            input.read(fileBytes);
+            fileString = Base64.getEncoder().encodeToString(fileBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        EmbeddedFile file = new EmbeddedFile("Title", note, fileString);
+        server.addFileToNote(file);
     }
 
     /**
