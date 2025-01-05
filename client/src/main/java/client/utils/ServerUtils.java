@@ -30,8 +30,6 @@ import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
 
-import commons.Note;
-
 public class ServerUtils {
 
 	private static final String SERVER = "http://localhost:8080/";

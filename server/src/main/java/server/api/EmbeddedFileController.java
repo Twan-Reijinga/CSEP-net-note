@@ -3,12 +3,10 @@ package server.api;
 import java.util.*;
 
 import commons.EmbeddedFile;
-import commons.Note;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.EmbeddedFileRepository;
-import server.database.NoteRepository;
 
 @RestController
 @RequestMapping("/api/notes/{noteId}/embedded")
