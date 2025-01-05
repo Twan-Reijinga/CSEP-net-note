@@ -30,7 +30,6 @@ public class CollectionControllerTest {
         note1 = new Note("NoteTitle 1", "Content 1", collection1);
         noteRepo.save(note1);
 
-        collection1.notes.add(note1);
         repo.save(collection1);
 
 
@@ -41,8 +40,6 @@ public class CollectionControllerTest {
         note3 = new Note("NoteTitle 3", "Content 3", collection2);
         noteRepo.save(note3);
 
-        collection2.notes.add(note2);
-        collection2.notes.add(note3);
         repo.save(collection2);
 
 

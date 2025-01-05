@@ -53,9 +53,6 @@ public class DataInitializer {
         noteRepository.save(note1);
         noteRepository.save(note2);
         noteRepository.save(note3);
-        defaultCollection.notes.add(note1);
-        defaultCollection.notes.add(note2);
-        defaultCollection.notes.add(note3);
 
         System.out.println("Boilerplate notes created.");
     }

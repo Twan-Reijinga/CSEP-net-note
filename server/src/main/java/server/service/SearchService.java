@@ -6,27 +6,27 @@ import commons.NoteTitle;
 import net.java.frej.Regex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import server.database.CollectionRepository;
+import server.api.CollectionController;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class SearchService {
-    private final CollectionRepository collectionRepository;
+    private final CollectionController collectionController;
 
     @Autowired
-    public SearchService(CollectionRepository collectionRepository) {
-        this.collectionRepository = collectionRepository;
+    public SearchService(CollectionController collectionController) {
+        this.collectionController = collectionController;
     }
 
     public List<NoteTitle> getSearchResults(long id, String keywords, boolean matchAll, String searchIn){
         String[] words = keywords.split(" ");
-        Collection coll = (Collection)collectionRepository.findAll().toArray()[0];
+        Collection coll = collectionController.getAllCollections().get(0);
         //List<Note> notesInCollection = collectionRepository.findById(id).get().notes;
         int searchInValue = getSearchInValue(searchIn);
 
-        List<Note> notesInCollection = coll.notes;
+        List<Note> notesInCollection = collectionController.getNotesInCollection(coll.id);
         List<NoteTitle> resultNotes = new ArrayList<>();
 
         for (Note note : notesInCollection) {

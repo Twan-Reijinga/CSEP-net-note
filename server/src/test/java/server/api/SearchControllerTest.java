@@ -33,7 +33,6 @@ public class SearchControllerTest {
         noteRepo.save(note1);
 
         collection1 = new Collection("Name 1", "Title 1");
-        collection1.notes.add(note1);
         repo.save(collection1);
 
         note2 = new Note("NoteTitle 2", "Content 2", collection2);
@@ -42,12 +41,10 @@ public class SearchControllerTest {
         noteRepo.save(note3);
 
         collection2 = new Collection("Name 2", "Title 2");
-        collection2.notes.add(note2);
-        collection2.notes.add(note3);
         repo.save(collection2);
 
         controller = new CollectionController(repo, noteRepo);
-        searchController = new SearchController(new SearchService(repo));
+        searchController = new SearchController(new SearchService(controller));
     }
 
     @Test
