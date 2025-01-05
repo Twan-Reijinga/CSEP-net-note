@@ -281,6 +281,11 @@ public class ServerUtils {
 				.post(Entity.entity(noteIds, APPLICATION_JSON), new GenericType<>(){});
 	}
 
+
+	/**
+	 * Adds the file to the database
+	 * @param file the file that needs to be stored
+	 */
 	public void addFileToNote(EmbeddedFile file) {
 		ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/" + file.note.id + "/embedded/" + file.id)
@@ -288,16 +293,25 @@ public class ServerUtils {
 				.post(Entity.entity(file, APPLICATION_JSON), EmbeddedFile.class);
 	}
 
+	/**
+	 * Deletes the specified file
+	 * @param note the note the file is located in
+	 * @param file the file that needs to be removed
+	 */
 	public void deleteFileToNote(Note note, EmbeddedFile file) {
 		ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes/" + note.id + "/embedded/" + file.id)
+				.target(server).path("api/notes/" + note.id + "/embedded/" + file.id)
 				.request(APPLICATION_JSON)
 				.delete();
 	}
 
+	/**
+	 * Deletes all files from a specified note
+	 * @param note The note that needs its files cleared
+	 */
 	public void deleteAllFilesToNote(Note note) {
 		ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes/" + note.id + "/embedded")
+				.target(server).path("api/notes/" + note.id + "/embedded")
 				.request(APPLICATION_JSON)
 				.delete();
 	}

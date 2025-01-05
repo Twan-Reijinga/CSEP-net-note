@@ -40,6 +40,12 @@ public class EmbeddedFileController {
         return embeddedFileRepository.existsById(id);
     }
 
+    /**
+     * Stores the file in the EmbeddedFileRep, stores the file as base64
+     * @param id Unique file id (every file must be stored on note/embedded/{fileId}
+     * @param file the file that needs to be saved
+     * @return  HTTP response
+     */
     @PostMapping("/{id}")
     public ResponseEntity<EmbeddedFile> addFile(@PathVariable("id") long id, @RequestBody EmbeddedFile file) {
         if (file.id < 0 || embeddedFileRepository.existsById(file.id)) {
@@ -50,6 +56,11 @@ public class EmbeddedFileController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * Deletes the specified file
+     * @param id The unique file id that needs to be removed
+     * @return HTTP response based on valid file
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<EmbeddedFile> deleteFile(@PathVariable("id") long id) {
         if (id < 0 || !embeddedFileRepository.existsById(id)){
@@ -60,6 +71,11 @@ public class EmbeddedFileController {
         return ResponseEntity.ok(removed);
     }
 
+    /**
+     * Deletes all the files in a note
+     * @param id The unique id of a note
+     * @return  - HTTP response
+     */
     @DeleteMapping("")
     public ResponseEntity<List<EmbeddedFile>> deleteAllFiles(@PathVariable("noteId") long id) {
         if (id < 0) {
