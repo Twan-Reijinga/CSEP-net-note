@@ -288,6 +288,20 @@ public class ServerUtils {
 				.post(Entity.entity(file, APPLICATION_JSON), EmbeddedFile.class);
 	}
 
+	public void deleteFileToNote(Note note, EmbeddedFile file) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + note.id + "/embedded/" + file.id)
+				.request(APPLICATION_JSON)
+				.delete();
+	}
+
+	public void deleteAllFilesToNote(Note note) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + note.id + "/embedded")
+				.request(APPLICATION_JSON)
+				.delete();
+	}
+
 	public List<EmbeddedFile> getAllFilesFromNote(Note note) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/" + note.id + "/embedded")

@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.config.Config;
 import commons.Collection;
+import commons.EmbeddedFile;
 import commons.Note;
 import commons.NoteTitle;
 import client.utils.ServerUtils;
@@ -226,6 +227,7 @@ public class SidebarCtrl {
         }
 
         Note note = server.getNoteById(id);
+        server.deleteAllFilesToNote(note);
 
         server.deleteNote(note);
         mainCtrl.deleteTags(note.id);
@@ -237,6 +239,16 @@ public class SidebarCtrl {
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
         noteClick(selectedNoteId);
+    }
+
+    public void deleteFile() {
+        Note note = server.getNoteById(getSelectedNoteId());
+        List<EmbeddedFile> files = server.getAllFilesFromNote(note);
+        if (!files.isEmpty()) {
+            EmbeddedFile file = files.getFirst();
+            server.deleteFileToNote(note, file);
+        }
+
     }
 
     /**
