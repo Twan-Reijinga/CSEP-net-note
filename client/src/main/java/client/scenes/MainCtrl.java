@@ -45,8 +45,6 @@ public class MainCtrl {
         this.noteEditorCtrl = noteEditor.getKey();
         this.noteEditorEnglish = new Scene(noteEditor.getValue());
 
-        this.shortcutHandler = new ShortcutHandler(this);
-        shortcutHandler.attach(noteEditorEnglish);
 
         this.markdownEditorCtrl = markdownEditor.getKey();
 
@@ -56,9 +54,12 @@ public class MainCtrl {
         markdownEditorCtrl.initialize(sidebarCtrl);
         sidebarCtrl.initialize(this);
 
+        this.shortcutHandler = new ShortcutHandler(sidebarCtrl);
+        shortcutHandler.attach(noteEditorEnglish);
+
         showNoteEditor();
         primaryStage.show();
-        this.refreshSidebar();
+        sidebarCtrl.refresh();
     }
 
     /**
@@ -119,29 +120,5 @@ public class MainCtrl {
      */
     public void recordDelete(Note note) {
         shortcutHandler.recordDelete(note);
-    }
-
-    /**
-     * Execute action of adding a note.
-     * @param note The note with contents and title that needs to be added again.
-     * @return The id of the newly created note.
-     */
-    public long addNote(Note note) {
-        return sidebarCtrl.addNote(note);
-    }
-
-    /**
-     * Execute action of deleting a note.
-     * @param noteId The note that needs to be deleted.
-     */
-    public void deleteNote(Long noteId) {
-        sidebarCtrl.deleteNoteById(noteId, false);
-    }
-
-    /**
-     * Refreshes the titles from the server into the sidebar, so all changes are displayed.
-     */
-    public void refreshSidebar() {
-        sidebarCtrl.refresh();
     }
 }

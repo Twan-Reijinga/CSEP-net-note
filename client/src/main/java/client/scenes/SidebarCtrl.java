@@ -200,7 +200,7 @@ public class SidebarCtrl {
      * intended behaviour is that the note contents opens.
      * @param id identifier that is linked to a specific note that corresponds to the servers note ID.
      */
-    private void noteClick(long id) {
+    public void noteClick(long id) {
         for (var titleBoxes : noteContainer.getChildren()) {
             if (titleBoxes.getId().equals(id + "")) {
                 titleBoxes.setStyle("-fx-background-color: #98c1d9");
@@ -224,4 +224,30 @@ public class SidebarCtrl {
     public long getSelectedNoteId() {
         return selectedNoteId;
     }
+
+    public long getNextNoteId(long id) {
+        boolean isNext = false;
+        for (var titleBoxes : noteContainer.getChildren()) {
+            if (isNext) {
+                return Long.parseLong(titleBoxes.getId());
+            }
+            if (titleBoxes.getId().equals(id + "")) {
+                isNext = true;
+            }
+        }
+        return -1;
+    }
+
+    public long getPreviousNoteId(long id) {
+        long previousNoteId = -1;
+        for (var titleBoxes : noteContainer.getChildren()) {
+            if (titleBoxes.getId().equals(id + "")) {
+                return previousNoteId;
+            }
+            previousNoteId = Long.parseLong(titleBoxes.getId());
+        }
+        // never reached
+        return previousNoteId;
+    }
+
 }
