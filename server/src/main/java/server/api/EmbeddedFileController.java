@@ -40,14 +40,34 @@ public class EmbeddedFileController {
         return embeddedFileRepository.existsById(id);
     }
 
-
     @PostMapping("/{id}")
-    public ResponseEntity<EmbeddedFile> add(@PathVariable("id") long id, @RequestBody EmbeddedFile file) {
+    public ResponseEntity<EmbeddedFile> addFile(@PathVariable("id") long id, @RequestBody EmbeddedFile file) {
         if (file.id < 0 || embeddedFileRepository.existsById(file.id)) {
             return ResponseEntity.badRequest().build();
         }
 
         EmbeddedFile saved = embeddedFileRepository.save(file);
         return ResponseEntity.ok(saved);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<EmbeddedFile> deleteFile(@PathVariable("id") long id) {
+        if (id < 0 || !embeddedFileRepository.existsById(id)){
+            return ResponseEntity.badRequest().build();
+        }
+        EmbeddedFile removed = embeddedFileRepository.findById(id).get();
+        embeddedFileRepository.deleteById(id);
+        return ResponseEntity.ok(removed);
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<List<EmbeddedFile>> deleteAllFiles(@PathVariable("noteId") long id) {
+        if (id < 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<EmbeddedFile> removed = embeddedFileRepository.findAll();
+        removed.removeIf(CurrentFile -> CurrentFile.note.id!=id);
+        embeddedFileRepository.deleteAll(removed);
+        return ResponseEntity.ok(removed);
     }
 }

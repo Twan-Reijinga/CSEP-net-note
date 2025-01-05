@@ -124,6 +124,7 @@ public class SidebarCtrl {
     public void deleteNote() {
         if (getSelectedNoteId() > 0) {
             Note note1 = server.getNoteById(getSelectedNoteId());
+            server.deleteAllFilesToNote(note1);
             server.deleteNote(note1);
             selectedNoteId = -1;
             if (server.getAllNotes().isEmpty()){
@@ -148,6 +149,16 @@ public class SidebarCtrl {
         }
         EmbeddedFile file = new EmbeddedFile("Title", note, fileString);
         server.addFileToNote(file);
+    }
+
+    public void deleteFile() {
+        Note note = server.getNoteById(getSelectedNoteId());
+        List<EmbeddedFile> files = server.getAllFilesFromNote(note);
+        if (!files.isEmpty()) {
+            EmbeddedFile file = files.getFirst();
+            server.deleteFileToNote(note, file);
+        }
+
     }
 
     /**
