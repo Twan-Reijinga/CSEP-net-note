@@ -136,6 +136,11 @@ public class SidebarCtrl {
         }
     }
 
+    /**
+     * Adds (now a default) file to be stored in the database
+     *  File is saved in base64, this can store all filetypes and large files (also works with JSON)
+     * @throws FileNotFoundException when the file isn't available
+     */
     public void addFile() throws FileNotFoundException {
         Note note = server.getNoteById(selectedNoteId);
         File thisFile = new File("test.txt/");
@@ -151,6 +156,9 @@ public class SidebarCtrl {
         server.addFileToNote(file);
     }
 
+    /**
+     * Deletes a file (for now the first file in the selected note)
+     */
     public void deleteFile() {
         Note note = server.getNoteById(getSelectedNoteId());
         List<EmbeddedFile> files = server.getAllFilesFromNote(note);
