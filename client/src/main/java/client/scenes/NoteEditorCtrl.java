@@ -8,7 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import commons.Collection;
@@ -19,16 +19,10 @@ import java.util.List;
 
 public class NoteEditorCtrl {
     @FXML
-    private ComboBox<String> languageDropDown;
+    private AnchorPane sidebarContainer;
 
     @FXML
-    private AnchorPane sideBarContainer;
-
-    @FXML
-    private AnchorPane markdownPaneContainer;
-
-    @FXML
-    private Label appTitle;
+    private AnchorPane markdownEditorContainer;
 
     @FXML
     private TextField searchBox;
@@ -37,10 +31,13 @@ public class NoteEditorCtrl {
     private Button searchButton;
 
     @FXML
+    private ToggleButton advancedSearchButton;
+
+    @FXML
     private ComboBox<String> collectionDropdown;
 
     @FXML
-    private AnchorPane topMostAnchor;
+    private ComboBox<String> languageDropdown;
 
     // Injectable
     private final LoaderFXML FXML;
@@ -61,31 +58,26 @@ public class NoteEditorCtrl {
      */
     @FXML
     public void initialize(Parent sideBarParent, Parent markdownParent) {
-        centerTextField();
-        topMostAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
-            centerTextField();
-        });
-
-        sideBarContainer.getChildren().add(sideBarParent);
+        sidebarContainer.getChildren().add(sideBarParent);
         AnchorPane.setTopAnchor(sideBarParent, 0.0);
         AnchorPane.setBottomAnchor(sideBarParent, 0.0);
 
-        markdownPaneContainer.getChildren().add(markdownParent);
+        markdownEditorContainer.getChildren().add(markdownParent);
         AnchorPane.setTopAnchor(markdownParent, 0.0);
         AnchorPane.setBottomAnchor(markdownParent, 0.0);
         AnchorPane.setLeftAnchor(markdownParent, 0.0);
         AnchorPane.setRightAnchor(markdownParent, 0.0);
-        String[] availableLanguages = new String[] {"English", "Dutch", "Spanish"};
-        languageDropDown.getItems().addAll(availableLanguages);
-        languageDropDown.setOnAction(actionEvent -> {
-            String chosenLanguage = languageDropDown.getSelectionModel().getSelectedItem();
-            mainCtrl.changeUILanguage(chosenLanguage);
-        });
 
-        loadCollectionsDropdown();
+        loadLanguageDropdown();
+        loadCollectionDropdown();
     }
 
-    private void loadCollectionsDropdown() {
+    private void loadLanguageDropdown() {
+        String[] availableLanguages = new String[] {"English", "Dutch", "Spanish"};
+        languageDropdown.getItems().addAll(availableLanguages);
+    }
+
+    private void loadCollectionDropdown() {
         List<Collection> collections = serverUtils.getAllCollections();
         List<String> titles = collections.stream().map(c -> c.title).toList();
 
@@ -105,6 +97,13 @@ public class NoteEditorCtrl {
         }
     }
 
+    @FXML
+    private void onLanguageDropdownAction() {
+        String chosenLanguage = languageDropdown.getSelectionModel().getSelectedItem();
+        mainCtrl.changeUILanguage(chosenLanguage);
+    }
+
+
     private void openCollectionSettings() {
         var popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL); // Blocks interaction with the main window
@@ -115,19 +114,9 @@ public class NoteEditorCtrl {
         var popupNode = popup.getValue();
         var popupScene = new Scene(popupNode);
 
-        popupStage.setOnCloseRequest(_ -> loadCollectionsDropdown());
+        popupStage.setOnCloseRequest(_ -> loadCollectionDropdown());
 
         popupStage.setScene(popupScene);
         popupStage.show();
-    }
-
-    /**
-     * translates the NetNote title to always be center aligned to the anchor pane it is in
-     */
-    private void centerTextField() {
-        double anchorWidth = topMostAnchor.getWidth();
-        double textFieldWidth = appTitle.getWidth();
-        appTitle.setLayoutX((anchorWidth - textFieldWidth) / 2);
-        appTitle.relocate(appTitle.getLayoutX(), appTitle.getLayoutY());
     }
 }
