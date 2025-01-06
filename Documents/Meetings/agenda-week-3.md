@@ -1,173 +1,137 @@
-| Key          | Value                         |
-| ------------ |-------------------------------|
-| Date :       | 04/12/2024                    |
-| Time :       | 13:45                         |
-| Location :   | Drebbelweg-Instruction Room 1 |
-| Chair        | Oleh                          |
-| Minute Taker | Pepijn                        |
-| Attendees :  | Everyone                      |
+| Key            | Value                         |
+| -------------- | ----------------------------- |
+| Date :         | 27/11/2024                    |
+| Start Time :   | 13:45                         |
+| End Time :     | 14:45                         |
+| Location :     | Drebbelweg-Instruction Room 1 |
+| Chair :        | Tushit Jain                   |
+| Minute Taker : | Oleh Dzoba                    |
+| Attendees :    | 6                             |
 
 # Agenda Items
 
-## Opening by Chair (1min)
+- Opening by chair (2 min )
+- Check - in : How is everyone doing? (2 min )
+- Quick summary on the structure of this meeting (1 min)
+- Approval of the agenda - Does anyone have any additions or would like to add anything at the end? (0-2 min )
+- Announcements by the TA (5 min, more if required )
 
-- Welcome everyone!
+- Talking Points : ( Inform / brainstorm / decision making / discuss )
+- < Agenda - item 1 > Let the TA know about the meeting this Monday (2 min )
+- < Agenda - item 2 > Talk about the assignment, how the tasks were devided and what everyone is working on (5 min )
+- < Agenda - item 3 > Talk to TA about git issues, and whether the task distribution is too broad (2 min)
+- < Agenda - item 4 > If team members want to speak on what they have done so far/ their progress(3 mins per person if required)
+- < Agenda - item 5 > Speak on the client side confusion about adding/changing notes (5 mins, more if required)
+- < Agenda - item 6 > Get feedback on Code of Conduct (5 mins if required)
+- < Agenda - item 7 > Talk about Liviu opting out of the meeting on Monday (5 mins if required)
+- < Agenda - item 8> Talk about any additional items other team members might raise (2 mins)
 
-## Check-in: How is everyone doing? (2min)
+- Summarize action points : Who, what, when? TODO's discussed in the meeting (5 min)
+- Feedback round : What went well and what can be improved next time (5 mins )
+- Planned meeting duration (60 min )
+- Question round(5 min )
+- Closure (1 min )
 
-## Agenda Announcement (3min)
+## Minutes
 
-- Did everyone read the detailed agenda for today?
-- Announce the topics of this agenda
-- Does anyone want to add anything to the agenda?
+Roles:
 
-## Approval of Minutes from Previous Meeting (3min)
+- Chair: Tushit
+- Minute taker: Oleh
 
-- Did everyone read the minutes from previous agenda?
-- Is there anything that needs to be said about it?
+Present:
 
-## Elaboration: Feedback on Previous Agenda (3min)
+- Tushit
+- Oleh
+- Petar
+- Twan
+- Liviu
+- Pepijn
 
-- Ensure that minute taker will have enough time to write down necessary information
-- Ensure that the conclusion is clear for every (actionable) agenda item
-- Ensure that everyone has a say in discussion by explicitly asking if everyone agrees on a given topic
+### Actions
 
-## Showcase Progress to TA (5min)
+> The outline of the meeting can lies in next sections.
 
-- Present application prototype to the TA
+- Next chair (Oleh): Prepares agenda for the next meetings (Mn, Wd) and reserves a room for Monday.
 
-## Quick Recap: Meeting on Monday
+- Current chair (Tushit): Creates and assigns issues on GitLab for the current sprint.
 
-- Sprint Review (what has been done?) (4min)
-- Sprint Retrospective (what was commited and can be improved?) (4min)
-- Sprint Planning (what will be done?): Make sure that everyone opened their issues (10min)
+- Everyone should test their code if it actually resolves the issued assigned to them before the next meeting.
 
-## Discussion Topics
+- Petar and Twan should discuss the implementaion and their collaboration on the sidebar.
 
-### 1. How and when specifically we update our issues on Friday? (7min)
+- Liviu should implement the Markdown view with two panes and no tabs (by the end of the sprint).
 
-- Liviu raised a proposal that everyone updates the rest of the team about their progress on a given issue
-- We agreed that these updates should be delivered through the GitLab Issues
-- We only vaguely specified what we want to mention in these updates and more importantly when (by what time) they should be delivered
+- Twan should remove tabs (for collections) from the sidebar UI (by the end of the sprint).
 
-### 2. Leaving out the implementation details when assigning tasks (8min)
+- Everyone should verify if they have anything to change in the Code of Conduct by Friday.
 
-- Goal: Reduce time for planning the tasks and providing more room for creative solutions
-- Reason: Implementation details are bounded to individual skills and time availability of a person implementing the feature
-- Note: Dependencies between tasks MUST be discussed to avoid conflicts and code duplication
+- Minute taker (Oleh) should upload the updated CoC (if changed) by Friday 23:59.
 
-## Quick Remarks (3min)
+- Everyone will show up on all future Monday meeting.
 
-- Establish how we assign reviewers and who merges the MRs: the person who wrote the code of the one who reviewed
-- Discuss epics and milestones (pages on GitLab) and decide if we want to use them
+- The team has next meeting on Monday, December 2nd at 14:00.
 
-## Discussing feedback on Code of Conduct (5min)
+- The team must decide on the ID attribute for `Note` by the end of the sprint.
 
-## Questions & Extra Topics (if any) (5min)
+### Introduction & Announcements
 
-## Announcements by the TA (if any) (5min)
+We started of by achknowledging our TA of our meeting on Monday.
 
-## Meeting Closure (2min)
+We established that chair plans a meeting for Monday and Wednesday. That includes writing agenda and reserving a place for the meeting.
 
-- Thank everyone for participation!
+We agreed that meetings on Monday are helpful to get some work done before mandatory meeting with the TA.
 
-# Minutes
+TA clarified that issues (on GitLab) can be prepared well in advance and don't have to be resolved right away in the active sprint.
 
-### Roles:
+We discussed that splitting of the tasks on front-end and back-end tasks is a good approach as long as features are actually delivered (that implies well-tested code). These tasks (front-/back-end) have to be interchanged for each individual team member, so that everyone knows the codebase.
 
- - Chair: Oleh
- - Minute taker: Pepijn
+It was clarified that Jackson is built-in into Sprint Boot, therefore by using Sprint Boot non-functional requirement to use Jackson (for data de-/serialization) is fullfilled.
 
-### Present:
+### Individual Tasks & Concerns
 
- - Liviu
- - Pepijn
- - Petar
- - Oleh
- - Tushit
- - Twan
+Petar and Twan should discuss the impementation of sidebar because they might run into conflicts or redoing the same functionality.
 
-## Tasks:
+Collaborative note editing - the implementation of this feature is complex. Therefore we leave the feature out (as was mentioned in the backlog).
 
-- Next Chair: Pepijn prepares the next meetings (Monday, Wednesday) and reserves a space for Monday meeting.
+Contents of the note will be stored in the database table until one wants to implement collaborative note editing. Then they may decide if it should be changed.
 
-- Everyone: should make issues for their implementation on gitlab (if they haven't done so).
+For the sidebar, we stick to the design provided to us: there will be filtering functionality as a drop-down in right-top corner, hence tabs (to change between collections) are unnecessary.
 
-- Twan and Tushit have to discuss what to do with the sidebar to embed it into the main UI or keep it separate.
-
-- Liviu and Pepijn should discuss if pop-ups should be integrated with deleting notes this sprint.
-
-- Liviu should implement a pop-up feature for key actions by the user (e.g. deleting notes).
-
-- Pepijn: should implement the client side of adding and deleting notes, through buttons.
-
-- Petar: should implement the functionality of the searchbar, being able to search on words in a collection.
-
-- Oleh: should implement the synchronization of the current note with the content in the database.
-
-- Twan: should implement displaying the note in both edit- and markdown panel, being able to change the title and highlight the current selected note in the sidebar.
-
-- Tushit: should combine the UI elements (e.g. The markdown, sidebar, main UI).
-
-- Everyone: should make sure their feature does what the issue states.
-
-- Everyone: should announce if they have any changes for the CoC(Code of Conduct) by Friday.
-
-- Current Minute taker (Pepijn): should upload the repair of the CoC(Code of Conduct) to Brightspace (before Friday).
-
-- The next meeting is on Monday 16 december 2024 (keeping the midterm week for exams).
-
-## Meeting
-
-### Opening
-
-- The chair(Oleh) started by announcing that he will leave time for the minute taker to write notes, and after everyone agrees providing a conclusion of the topic. (Feedback from previous meeting)
-
-- We presented our work of the previous sprint to the TA.
-
-- We updated the TA on our previous Monday meeting on 2nd december.
-
-- We discussed our tasks for this sprint.
-
-- We agreed that updating the issues when we're done with a task is a good idea.
-
-- We agreed that the issues should be updated before Friday, so everyone is on track.
-
-- We discussed the purpose of our Monday meetings.
-
-- We discussed the way we want to review merge requests in the future.
-
-## Agreements:
-
-We agreed that on Monday meetings we will start a new sprint. Furthermore, we plan to keep Monday meetings for distributing tasks and discuss the potential dependencies.
-In the Monday meetings we won't be focussing as much on the implementation of the tasks.
-
-For next sprint we want to plan the reviewers for an issue in the sprint planning, so during the Monday meeting.
-
-### Implementation details:
-
-We agreed that the highlighting of a note should only happen to the selected note and not if your cursor hovers over a note.
-
-We have agreed that the synchronization should wait for an update (aka: key press) before synchronizing the database, to minimize database calls.
-
-We haven't come to an agreement for the searching algorithm, this should be further discussed, we did find it a good idea to just make it work for now and optimize it later.
+For the Markdown view, there will be one pane for the actively edited text and one for the rendered view. Tabs will introduce extra (unnecessary) complexity, therefore are not priority.
 
 ### Organizational
 
-We have to adjust the code of conduct to the provided feedback and submit it on Brightspace.
+We may change the Code of Conduct (CoC) until Friday 23:59. The updated version must be submitted to the Brightspace. After the deadline we'll recieve formative feedback upon which we can improve our CoC. The final version (for summative assessment) must be submitted to the Brightspace and the deadline for it is in later weeks.
 
-## TA announcements:
+### No-show
 
-- Merge requests should be merged before sunday 23.59, since the knock-out criteria end at that time.
-- Tushit will be able to attend the meeting on 18 december online.
-- Week 4 and 5 are combined for the knock-out criteria, should still be one weeks work. However still needs to be checked.
-- The knock-out criteria run from Monday (00.00) till Sunday (23.59).
-- For the meetings we should prepare a demo of the work you did the **previous** sprint.
-- Meetings should be less technical and more about the overall project and teamwork.
+Liviu did not show up to the meeting the team planned to have on Monday because he was feeling unwell. He understands that such behaviour is decremental to the team's progress and will adhere to the future agreements regarding meeting with the team.
 
-### Next TA meeting:
+Everyone agreed to the importance of meeting: both mandatory and extra ones. Everyone understands that meeting are crucial to the team's performance.
 
-For next meeting everyone should be able to explain and (if applicable) show a demo of their feature.
-This demo should be prepared beforehand, so the meeting will flow better.
+### Next Meeting
 
-For next meeting everyone should have looked at the agenda and previous minutes.
+We agreed that the next meeting will take place on Monday, December 2nd at 14:00.
+
+Rooms must be booked well in advance for the meetings.
+
+### Code Contribution & Technical Details
+
+#### Updating documentation
+
+Updated documentation should be merged to main without creating extra MRs. Creating an MR for every document would introduce additional overhead which needs to be avoided.
+
+#### ID attribute for `Note`
+
+We did not agree on the ID field for the `Note` entity. Two options were discussed, namely: using `Name` as ID, and created a dedicated autoincrement ID attribute.
+
+Different arguments were raised to support one option or the other, yet no final decision was made. The topic requires further discussion.
+
+### Closing (by TA)
+
+It was explained about the importance of weekly contributions: every team member has to submit at least one MR and contribute 100+ lines of code to pass the knock-out criteria. If the contribution is not sufficient a team member will recieve a warning by email. Insufficient contribution two weeks in a row will lead to a team member getting expelled from the team.
+
+It was pointed out that agreements in the CoC must be SMART (specific, measurable, acceptable, realistic, time-bound). The CoC must contain agreements on how and when to contact the TA if conflicts arise.
+
+By the next TA meeting the team is expected to deliver a product that can be presented to the TA and every team member should be able to explain what they contributed to the project. This way the progress of the team can be monitored.

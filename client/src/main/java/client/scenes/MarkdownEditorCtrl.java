@@ -15,13 +15,16 @@
  */
 package client.scenes;
 
+import client.config.Config;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Note;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebView;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
@@ -43,11 +46,15 @@ import java.util.TimerTask;
 public class MarkdownEditorCtrl {
     @FXML
     private TextArea noteText;
+
+    @FXML
+    private TextField titleField;
+
     @FXML
     private WebView markdownPreview;
 
+    // TODO: does it need to be moved to config? and is it actually necessary in the code?
     private final long REFRESH_THRESHOLD = 500;
-    private final long SYNC_THRESHOLD = 5000;
 
     private boolean timeState = false;
     private boolean isContentsSynced = true;
@@ -58,12 +65,15 @@ public class MarkdownEditorCtrl {
     private final ScheduledExecutorService scheduler;
 
     private final ServerUtils serverUtils;
+    private final Config config;
 
     private Note activeNote;
+    private SidebarCtrl sidebarCtrl;
 
     @Inject
-    public MarkdownEditorCtrl(ServerUtils serverUtils) {
+    public MarkdownEditorCtrl(ServerUtils serverUtils, Config config) {
         this.serverUtils = serverUtils;
+        this.config = config;
         this.refreshTimer = new Timer();
 
         var ext = List.of(
@@ -79,21 +89,28 @@ public class MarkdownEditorCtrl {
         this.parser = Parser.builder().extensions(ext).build();
         this.renderer = HtmlRenderer.builder().extensions(ext).build();
         this.scheduler = Executors.newScheduledThreadPool(1);
+
     }
 
     @FXML
-    public void initialize() {
+    public void initialize(SidebarCtrl sidebarCtrl) {
+        this.sidebarCtrl = sidebarCtrl;
         activeNote = serverUtils.MOCK_getDefaultNote();
 
         noteText.setText(activeNote.content);
+        titleField.setText(activeNote.title);
         requestRefresh();
 
         scheduler.scheduleAtFixedRate(
                 this::syncNoteContents,
                 0,
-                SYNC_THRESHOLD,
+                config.getSyncThresholdMs(),
                 TimeUnit.MILLISECONDS
         );
+
+        // let title field fill 100% width of left plane //
+        AnchorPane.setLeftAnchor(titleField, 0.0);
+        AnchorPane.setRightAnchor(titleField, 0.0);
     }
 
     /**
@@ -102,15 +119,25 @@ public class MarkdownEditorCtrl {
      */
     public void updateNote(long newId) {
         activeNote.content = noteText.getText();
-        serverUtils.updateNote(activeNote);
+        if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
+            serverUtils.updateNote(activeNote);
+        }
         activeNote = serverUtils.getNoteById(newId);
         noteText.setText(activeNote.content);
+        titleField.setText(activeNote.title);
         requestRefresh();
     }
 
     public synchronized void onKeyTyped(KeyEvent e) {
         isContentsSynced = false;
         requestRefresh();
+    }
+
+    public synchronized void onTitleEdit() {
+        activeNote.title = titleField.getText();
+        isContentsSynced = false;
+        requestRefresh();
+        sidebarCtrl.updateTitle(activeNote.id, activeNote.title);
     }
 
     public synchronized void requestRefresh() {
@@ -125,7 +152,8 @@ public class MarkdownEditorCtrl {
 
     private synchronized void refreshView() {
         setTimeState(false);
-        String html = convertMarkdownToHtml(noteText.getText());
+        String titleMarkdown = "# " + titleField.getText() + "\n\n";
+        String html = convertMarkdownToHtml(titleMarkdown + noteText.getText());
 
 
         // FIXME (edited): intuition: hangs the application when UI is closed; maybe that's not the problem

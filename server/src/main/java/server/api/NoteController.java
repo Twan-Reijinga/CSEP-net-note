@@ -38,6 +38,15 @@ public class NoteController {
         return ResponseEntity.ok(noteRepository.findById(id).get());
     }
 
+    /**
+     * Returns a boolean for the existence of a note
+     * @param id    unique identifier of a note
+     * @return      boolean whether the note is found in the database
+     */
+    @GetMapping("/exists/{id}")
+    public boolean existsById(@PathVariable("id") long id) {
+        return noteRepository.existsById(id);
+    }
 
     /**
      * Stores a new note in the database, with the provided arguments.
@@ -49,10 +58,7 @@ public class NoteController {
      */
     @PostMapping("")
     public ResponseEntity<Note> add(@RequestBody Note note) {
-        // FIXME: this is not good for two reasons:
-        //  a) too much db logic for a controller;
-        //  b) does not handle newly created constraint
-        if (note.collection == null || note.id <= 0 || note.title == null || noteRepository.existsById(note.id)) {
+        if (note.id < 0 || noteRepository.existsById(note.id)) {
             return ResponseEntity.badRequest().build();
         }
 

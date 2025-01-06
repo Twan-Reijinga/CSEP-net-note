@@ -20,6 +20,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.net.ConnectException;
 import java.util.List;
 
+import commons.Note;
 import commons.NoteTitle;
 import jakarta.ws.rs.client.Entity;
 import org.glassfish.jersey.client.ClientConfig;
@@ -28,11 +29,45 @@ import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
 
-import commons.Note;
+import commons.Collection;
 
 public class ServerUtils {
 
 	private static final String SERVER = "http://localhost:8080/";
+
+	public List<Collection> getAllCollections() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/collections")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<>() {});
+	}
+
+	public Collection addCollection(Collection collection) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/collections")
+				.request(APPLICATION_JSON)
+				.post(Entity.entity(collection, APPLICATION_JSON), Collection.class);
+	}
+
+	public Collection updateCollection(Collection collection) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/collections")
+				.request(APPLICATION_JSON)
+				.put(Entity.entity(collection, APPLICATION_JSON), Collection.class);
+	}
+
+	public String getUniqueCollectionName() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/collections/unique-name")
+				.request().get(String.class);
+	}
+
+	public void deleteCollection(Collection collection) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/collections/delete/" + collection.id)
+				.request(APPLICATION_JSON)
+				.delete();
+	}
 
 	/**
 	 * method for requesting titles in a List of NoteTitles from the server.
@@ -43,14 +78,14 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/titles") //
 				.request(APPLICATION_JSON) //
-				.get(new GenericType<List<NoteTitle>>() {});
+				.get(new GenericType<>() {});
 	}
 
 	public Note MOCK_getDefaultNote() {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER).path("api/notes/mock")
 				.request(APPLICATION_JSON)
-				.get(new GenericType<Note>() {});
+				.get(new GenericType<>() {});
 	}
 
 	public Note updateNote(Note note) {
@@ -70,7 +105,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER).path("api/notes/" + id)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<Note>() {});
+				.get(new GenericType<>() {});
 	}
 
 	public boolean isServerAvailable() {
@@ -85,6 +120,60 @@ public class ServerUtils {
 			}
 		}
 		return true;
+	}
+
+
+	public List<Note> getAllNotes() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<>() {});
+	}
+
+	/**
+	 * Returns a note corresponding to the provided id
+	 * @param id the id of a valid id of a note in the database
+	 * @return a note which is provided from the database.
+	 */
+	public Note getNoteById(Long id) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + id)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<>() {});
+	}
+
+	/**
+	 * Returns a boolean based on if the note exists in the noteRepository
+	 * @param id the id of a note (in the database or not)
+	 * @return a boolean which covers the existence of the note in the database
+	 */
+	public boolean existsNoteById(long id) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/exists/" + id)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<Boolean>() {});
+	}
+
+	/**
+	 * Stores the provided note in the database
+	 * @param note a valid note that needs to be stored in the database
+	 */
+	public void addNote(Note note) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes")
+				.request(APPLICATION_JSON)
+				.post(Entity.entity(note, APPLICATION_JSON), Note.class);
+	}
+
+	/**
+	 * Deletes the provided note through the deleteById()
+	 * @param note a valid note that is currently in the database and can be removed
+	 */
+	public void deleteNote(Note note) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/delete/" + note.id)
+				.request(APPLICATION_JSON)
+				.delete();
 	}
 
 	/** Sends a GET request to the server with the provided parameters.

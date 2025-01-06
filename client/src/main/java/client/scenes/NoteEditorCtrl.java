@@ -1,29 +1,38 @@
 package client.scenes;
 
+import client.LoaderFXML;
+import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import commons.Collection;
+import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.util.List;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class NoteEditorCtrl {
-    private final MainCtrl mainCtrl;
     private Timer timeKeyPresses = new Timer();
     private int delayBetweenKeyPresses = 1000;
 
     @FXML
-    private AnchorPane sideBarContainer;
+    private AnchorPane sidebarContainer;
 
     @FXML
-    private AnchorPane markdownPaneContainer;
-
-    @FXML
-    private Label appTitle;
+    private AnchorPane markdownEditorContainer;
 
     @FXML
     private TextField searchBox;
@@ -32,7 +41,18 @@ public class NoteEditorCtrl {
     private Button searchButton;
 
     @FXML
-    private AnchorPane topMostAnchor;
+    private ToggleButton advancedSearchButton;
+
+    @FXML
+    private ComboBox<String> collectionDropdown;
+
+    @FXML
+    private ComboBox<String> languageDropdown;
+
+    // Injectable
+    private final LoaderFXML FXML;
+    private final ServerUtils serverUtils;
+    private final MainCtrl mainCtrl;
 
     @FXML
     private CheckBox matchAllCheckBox;
@@ -43,8 +63,13 @@ public class NoteEditorCtrl {
     @FXML
     private ToggleButton advSearchButton;
 
+    @FXML
+    private HBox advSearchHBox;
+
     @Inject
-    public NoteEditorCtrl(MainCtrl mainCtrl) {
+    public NoteEditorCtrl(LoaderFXML FXML, ServerUtils serverUtils, MainCtrl mainCtrl) {
+        this.FXML = FXML;
+        this.serverUtils = serverUtils;
         this.mainCtrl = mainCtrl;
     }
 
@@ -55,31 +80,72 @@ public class NoteEditorCtrl {
      */
     @FXML
     public void initialize(Parent sideBarParent, Parent markdownParent) {
-        centerTextField();
-        topMostAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
-            centerTextField();
-        });
-        sideBarContainer.getChildren().add(sideBarParent);
+        sidebarContainer.getChildren().add(sideBarParent);
         AnchorPane.setTopAnchor(sideBarParent, 0.0);
         AnchorPane.setBottomAnchor(sideBarParent, 0.0);
-        markdownPaneContainer.getChildren().add(markdownParent);
+
+        markdownEditorContainer.getChildren().add(markdownParent);
         AnchorPane.setTopAnchor(markdownParent, 0.0);
         AnchorPane.setBottomAnchor(markdownParent, 0.0);
         AnchorPane.setLeftAnchor(markdownParent, 0.0);
         AnchorPane.setRightAnchor(markdownParent, 0.0);
 
+        advSearchHBox.setSpacing(10.0);
+
+        this.searchInOptionsList.getItems().clear();
         this.searchInOptionsList.getItems().addAll("Title", "Content", "Both");
         this.matchAllCheckBox.setSelected(true);
+
+        loadLanguageDropdown();
+        loadCollectionDropdown();
     }
 
-    /**
-     * translates the NetNote title to always be center aligned to the anchor pane it is in
-     */
-    public void centerTextField() {
-        double anchorWidth = topMostAnchor.getWidth();
-        double textFieldWidth = appTitle.getWidth();
-        appTitle.setLayoutX((anchorWidth - textFieldWidth) / 2);
-        appTitle.relocate(appTitle.getLayoutX(), appTitle.getLayoutY());
+    private void loadLanguageDropdown() {
+        String[] availableLanguages = new String[] {"English", "Dutch", "Spanish"};
+        languageDropdown.getItems().addAll(availableLanguages);
+    }
+
+    private void loadCollectionDropdown() {
+        List<Collection> collections = serverUtils.getAllCollections();
+        List<String> titles = collections.stream().map(c -> c.title).toList();
+
+        collectionDropdown.getItems().clear();
+
+        collectionDropdown.getItems().add("Show all");
+        collectionDropdown.getItems().addAll(titles);
+        collectionDropdown.getItems().add("Edit collections...");
+    }
+
+    @FXML
+    private void onCollectionDropdownAction() {
+        String selectedItem = collectionDropdown.getSelectionModel().getSelectedItem();
+
+        if (selectedItem != null && selectedItem.equals("Edit collections...")) {
+            openCollectionSettings();
+        }
+    }
+
+    @FXML
+    private void onLanguageDropdownAction() {
+        String chosenLanguage = languageDropdown.getSelectionModel().getSelectedItem();
+        mainCtrl.changeUILanguage(chosenLanguage);
+    }
+
+
+    private void openCollectionSettings() {
+        var popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL); // Blocks interaction with the main window
+        popupStage.setTitle("Edit collections...");
+
+        var popup = FXML.load(CollectionSettingsCtrl.class, null,"client", "scenes", "CollectionSettings.fxml");
+
+        var popupNode = popup.getValue();
+        var popupScene = new Scene(popupNode);
+
+        popupStage.setOnCloseRequest(_ -> loadCollectionDropdown());
+
+        popupStage.setScene(popupScene);
+        popupStage.show();
     }
 
 
@@ -125,10 +191,10 @@ public class NoteEditorCtrl {
     public void onAdvSearchButtonPressed(){
         boolean selected = advSearchButton.isSelected();
         if(selected){
-            topMostAnchor.setPrefHeight(topMostAnchor.getPrefHeight() + 30);
+            advSearchHBox.setPrefHeight(advSearchHBox.getPrefHeight() + 30);
         }
         else{
-            topMostAnchor.setPrefHeight(topMostAnchor.getPrefHeight() - 30);
+            advSearchHBox.setPrefHeight(advSearchHBox.getPrefHeight() - 30);
         }
         matchAllCheckBox.setDisable(!selected);
         searchInOptionsList.setDisable(!selected);

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ResourceBundle;
 
 import com.google.inject.Injector;
 
@@ -29,17 +30,18 @@ import javafx.util.BuilderFactory;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
-public class MyFXML {
+public class LoaderFXML {
 
     private Injector injector;
 
-    public MyFXML(Injector injector) {
+    public LoaderFXML(Injector injector) {
         this.injector = injector;
     }
 
-    public <T> Pair<T, Parent> load(Class<T> c, String... parts) {
+    public <T> Pair<T, Parent> load(Class<T> c, ResourceBundle bundle, String... parts) {
         try {
             var loader = new FXMLLoader(getLocation(parts), null, null, new MyFactory(), StandardCharsets.UTF_8);
+            loader.setResources(bundle);
             Parent parent = loader.load();
             T ctrl = loader.getController();
             return new Pair<>(ctrl, parent);
@@ -50,7 +52,7 @@ public class MyFXML {
 
     private URL getLocation(String... parts) {
         var path = Path.of("", parts).toString();
-        return MyFXML.class.getClassLoader().getResource(path);
+        return LoaderFXML.class.getClassLoader().getResource(path);
     }
 
     private class MyFactory implements BuilderFactory, Callback<Class<?>, Object> {

@@ -26,6 +26,12 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initializeData() {
         return args -> {
+
+            // FIXME: potential over-complication (right now). We are using memdb so why bother checking
+            //  if default collection exists, furthermore, if we were to use filedb data initializer would
+            //  create to many same titles, collections, etc. Maybe data initializer should have different
+            //  modes: one for dev one for prod
+
             Optional<Collection> collectionResult = collectionRepository.findFirstByIsDefaultTrue();
 
             if (collectionResult.isPresent()) return;
@@ -34,26 +40,29 @@ public class DataInitializer {
             Collection defaultCollection = new commons.Collection("default", "Default Collection");
             defaultCollection.isDefault = true;
 
+            // Add another collection to show off multi-collection support
+            Collection arbitraryCollection = new commons.Collection("arbitrary", "Arbitrary Collection");
+
             collectionRepository.save(defaultCollection);
+            collectionRepository.save(arbitraryCollection);
+
+            System.out.println("Boilerplate collections created.");
 
             // Create some boilerplate notes in the default collection
-            createBoilerplateNotes(defaultCollection);
-
-            System.out.println("Default collection created.");
+            createBoilerplateNotes(defaultCollection, 3);
+            createBoilerplateNotes(arbitraryCollection, 1);
         };
     }
 
-    private void createBoilerplateNotes(Collection defaultCollection) {
-        // List of boilerplate notes to add
-        Note note1 = new Note("Sample Note 1", "This is the content of the first sample note.", defaultCollection);
-        Note note2 = new Note("Sample Note 2", "This is the content of the second sample note.", defaultCollection);
-        Note note3 = new Note("Sample Note 3", "This is the content of the third sample note.", defaultCollection);
+    private void createBoilerplateNotes(Collection collection, int count) {
+        for (int i = 1; i < count + 1; i++) {
+            Note note = new Note(
+                    "Sample Note " + i,
+                    "This is the content of the note #" + i,
+                    collection);
+            noteRepository.save(note);
+        }
 
-        // Save the notes to the repository (i.e., store them in the database)
-        noteRepository.save(note1);
-        noteRepository.save(note2);
-        noteRepository.save(note3);
-
-        System.out.println("Boilerplate notes created.");
+        System.out.println("Boilerplate notes created for: " + collection.name);
     }
 }
