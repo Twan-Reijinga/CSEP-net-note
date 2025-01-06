@@ -6,6 +6,8 @@ import commons.NoteTitle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.service.SearchService;
+import server.services.CollectionService;
+import server.services.RandomService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,7 @@ public class SearchControllerTest {
         note3 = new Note("NoteTitle 3", "Content 3", collection2);
         noteRepo.save(note3);
 
-        controller = new CollectionController(repo, noteRepo);
+        controller = new CollectionController(repo, noteRepo, new CollectionService(new RandomService(), repo));
         searchController = new SearchController(new SearchService(controller));
     }
 
