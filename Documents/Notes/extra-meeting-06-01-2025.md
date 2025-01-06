@@ -21,5 +21,7 @@ Petar should fix his issues with the tags and get a working demo for Wednesday t
 ### Tasks for next sprint:
 
 Oleh: Plans to finish filtering by collection and continue his work on multi-collection. Also intends to come up with suggestions for the Checkstyle rules.
+
 Twan: Will take on the tasks that were assigned to Tushit (The language switch epic)
+
 Petar: Intends to finish his work on tags, and to start implementing note links.
