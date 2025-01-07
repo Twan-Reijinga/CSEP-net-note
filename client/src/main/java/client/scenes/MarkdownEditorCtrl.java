@@ -168,7 +168,6 @@ public class MarkdownEditorCtrl {
         if (activeNote == null) return;
 
         // TODO: lazy implementation of threading (not sure of the performance)
-        // noinspection LineLength
         // https://openjfx.io/javadoc/23/javafx.graphics/javafx/application/Platform.html#runLater(java.lang.Runnable)
         Platform.runLater(() -> {
             activeNote.content = noteText.getText();
