@@ -81,7 +81,7 @@ public class ServerUtils {
 				.get(new GenericType<>() {});
 	}
 
-	public Note MOCK_getDefaultNote() {
+	public Note mockGetDefaultNote() {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER).path("api/notes/mock")
 				.request(APPLICATION_JSON)

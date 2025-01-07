@@ -95,7 +95,7 @@ public class MarkdownEditorCtrl {
     @FXML
     public void initialize(SidebarCtrl sidebarCtrl) {
         this.sidebarCtrl = sidebarCtrl;
-        activeNote = serverUtils.MOCK_getDefaultNote();
+        activeNote = serverUtils.mockGetDefaultNote();
 
         noteText.setText(activeNote.content);
         titleField.setText(activeNote.title);
@@ -168,7 +168,8 @@ public class MarkdownEditorCtrl {
         if (activeNote == null) return;
 
         // TODO: lazy implementation of threading (not sure of the performance)
-        // read: https://openjfx.io/javadoc/23/javafx.graphics/javafx/application/Platform.html#runLater(java.lang.Runnable)
+        // noinspection LineLength
+        // https://openjfx.io/javadoc/23/javafx.graphics/javafx/application/Platform.html#runLater(java.lang.Runnable)
         Platform.runLater(() -> {
             activeNote.content = noteText.getText();
             serverUtils.updateNote(activeNote);

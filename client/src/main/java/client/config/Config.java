@@ -8,7 +8,7 @@ import commons.Collection;
 
 public class Config {
 
-    private static final String configLocation = "user-config.json";
+    private static final String CONFIG_LOCATION = "user-config.json";
 
     private int syncThresholdMs;
 
@@ -29,7 +29,7 @@ public class Config {
 
     public static Config load() {
         ObjectMapper objectMapper = new ObjectMapper();
-        File configFile = new File(configLocation);
+        File configFile = new File(CONFIG_LOCATION);
         try {
             return objectMapper.readValue(configFile, Config.class);
         } catch (IOException e) {
@@ -41,7 +41,7 @@ public class Config {
 
     public void save() {
         ObjectMapper objectMapper = new ObjectMapper();
-        File configFile = new File(configLocation);
+        File configFile = new File(CONFIG_LOCATION);
         try {
             objectMapper.writeValue(configFile, this);
         } catch (IOException e) {

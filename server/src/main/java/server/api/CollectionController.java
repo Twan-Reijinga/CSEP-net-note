@@ -57,12 +57,12 @@ public class CollectionController {
      * Collection can not have empty values.
      * The method needs to be addressed through making a client.Post.
      * <p>
-     * {@code @Param} collection  the entity that needs to be stored in database
-     * {@code @Return} a http Response, either bad-build or good
+     * @param collection  the entity that needs to be stored in database
+     * @return a response entity containing a collection if successfully created
      */
     @PostMapping(path = {"", "/"})
     public ResponseEntity<Collection> add(@RequestBody Collection collection) {
-        if (collection == null || collection.name == null || collection.title == null || collectionRepository.findById(collection.id).isPresent()){
+        if (collectionRepository.findById(collection.id).isPresent()){
             return ResponseEntity.badRequest().build();
         }
         Collection added = collectionRepository.save(collection);
