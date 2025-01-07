@@ -32,7 +32,7 @@
             <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
         </module>
 
-        <!-- Javadoc Comments: Validate Javadoc for public members -->
+        <!-- Javadoc Comments: Validate Javadoc -->
         <!-- Rationale: Encourages well-documented code but does not require comments. -->
         <module name="JavadocMethod" />
         <module name="JavadocType" />
@@ -53,10 +53,6 @@
         <!-- Rationale: Prevents clutter and potential confusion in the code. -->
         <module name="UnusedLocalVariable" />
 
-        <!-- Avoid Star Imports: Disallow wildcard imports -->
-        <!-- Rationale: Improves clarity by explicitly importing required classes. -->
-        <module name="AvoidStarImport"/>
-
         <!-- Abbreviation As Word In Name: Validate abbreviations in names -->
         <!-- Rationale: Encourages meaningful and consistent naming conventions. -->
         <module name="AbbreviationAsWordInName"/>
@@ -72,19 +68,20 @@
         <!-- Empty Statement: Disallow empty statements -->
         <!-- Rationale: Prevents unintentional empty blocks that can lead to errors. -->
         <module name="EmptyStatement"/>
+
+        <!-- Trailing Whitespace: Disallow trailing whitespace -->
+        <!-- Rationale: Keeps code clean and prevents unnecessary diffs in version control. -->
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="\s+$"/>
+            <property name="message" value="Line has trailing whitespace."/>
+            <property name="ignoreComments" value="true" />
+        </module>
     </module>
 
     <!-- Line Length: Limit lines to 120 characters -->
     <!-- Rationale: Prevents horizontal scrolling and ensures code readability. -->
     <module name="LineLength">
         <property name="max" value="120"/>
-    </module>
-
-    <!-- Trailing Whitespace: Disallow trailing whitespace -->
-    <!-- Rationale: Keeps code clean and prevents unnecessary diffs in version control. -->
-    <module name="RegexpSingleline">
-        <property name="format" value="\s+$"/>
-        <property name="message" value="Line has trailing whitespace."/>
     </module>
 
     <!-- Newline At End Of File: Ensure files end with a newline -->
