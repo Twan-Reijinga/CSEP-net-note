@@ -35,6 +35,13 @@
 			<artifactId>commons</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>net.java.libs</groupId>
+			<artifactId>frej-library</artifactId>
+			<version>1.3.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/frej.jar</systemPath>
+		</dependency>
 
 		<!-- test -->
 		<dependency>

@@ -2,6 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
@@ -9,6 +11,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.NoteEditorCtrl">
@@ -21,26 +24,37 @@
             <AnchorPane fx:id="sidebarContainer" prefHeight="339.0" prefWidth="115.0" BorderPane.alignment="CENTER" />
          </left>
          <top>
-            <HBox prefHeight="26.0" prefWidth="614.0" spacing="10.0" style="-fx-background-color: black;" BorderPane.alignment="CENTER">
+            <VBox prefHeight="66.0" prefWidth="600.0" BorderPane.alignment="CENTER">
                <children>
-                  <TextField fx:id="searchBox" prefHeight="26.0" prefWidth="154.0" promptText="%searchBar">
-                     <font>
-                        <Font name="Candara" size="12.0" />
-                     </font>
-                  </TextField>
-                  <Button fx:id="searchButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="56.0" text="%searchButton" />
-                  <ToggleButton fx:id="advancedSearchButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="26.0" text="ToggleButton" />
-                  <Region HBox.hgrow="ALWAYS" />
-                  <ComboBox fx:id="collectionDropdown" onAction="#onCollectionDropdownAction" prefHeight="26.0" prefWidth="80.0" />
-                  <ComboBox fx:id="languageDropdown" onAction="#onLanguageDropdownAction" prefHeight="26.0" prefWidth="80.0" />
+                  <HBox prefHeight="26.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: black;">
+                     <children>
+                        <TextField fx:id="searchBox" layoutX="12.999999999999986" layoutY="18.0" onKeyTyped="#onSearchBarInput" prefHeight="26.0" prefWidth="154.0" promptText="Search...">
+                           <font>
+                              <Font name="Candara" size="12.0" />
+                           </font>
+                        </TextField>
+                        <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onSearchButtonPressed" text="Search" />
+                        <ToggleButton fx:id="advSearchButton" mnemonicParsing="false" onAction="#onAdvSearchButtonPressed" prefHeight="26.0" prefWidth="26.0" text="Search options" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <ComboBox fx:id="collectionDropdown" onAction="#onCollectionDropdownAction" prefHeight="26.0" prefWidth="80.0" />
+                        <ComboBox fx:id="languageDropdown" onAction="#onLanguageDropdownAction" prefHeight="26.0" prefWidth="80.0" />
+                     </children>
+                     <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </padding>
+                  </HBox>
+                  <HBox fx:id="advSearchHBox" minHeight="-Infinity" prefHeight="0.0" prefWidth="600.0" style="-fx-background-color: black;">
+                     <children>
+                        <ChoiceBox fx:id="searchInOptionsList" disable="true" prefHeight="19.0" prefWidth="150.0" visible="false" />
+                        <CheckBox fx:id="matchAllCheckBox" disable="true" mnemonicParsing="false" prefHeight="22.0" prefWidth="74.0" text="Match all" textFill="WHITE" visible="false" />
+                        <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                     </children>
+                     <padding>
+                        <Insets left="20.0" right="20.0" />
+                     </padding>
+                  </HBox>
                </children>
-               <BorderPane.margin>
-                  <Insets />
-               </BorderPane.margin>
-               <padding>
-                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-               </padding>
-            </HBox>
+            </VBox>
          </top>
       </BorderPane>
    </children>

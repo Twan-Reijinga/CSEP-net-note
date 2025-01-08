@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+
 @Entity
 public class Collection {
     @Id
@@ -17,6 +18,7 @@ public class Collection {
 
     @Column(nullable = false)
     public String title;
+
 
     public boolean isDefault;
 

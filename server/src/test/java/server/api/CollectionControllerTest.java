@@ -30,18 +30,21 @@ public class CollectionControllerTest {
         CollectionService s = new CollectionService(new RandomService(), repo);
 
         collection1 = new Collection("Name 1", "Title 1");
-        repo.save(collection1);
         note1 = new Note("NoteTitle 1", "Content 1", collection1);
         noteRepo.save(note1);
 
+        repo.save(collection1);
+
+
         collection2 = new Collection("Name 2", "Title 2");
-        repo.save(collection2);
+        collection3 = new Collection("Name 3", "Title 3");
         note2 = new Note("NoteTitle 2", "Content 2", collection2);
         noteRepo.save(note2);
         note3 = new Note("NoteTitle 3", "Content 3", collection2);
         noteRepo.save(note3);
 
-        collection3 = new Collection("Name 3", "Title 3");
+        repo.save(collection2);
+
 
         controller = new CollectionController(repo, noteRepo, s);
     }
@@ -96,5 +99,6 @@ public class CollectionControllerTest {
         List<Collection> expected = List.of(collection1);
         assertEquals(expected, collections);
     }
+
 }
 
