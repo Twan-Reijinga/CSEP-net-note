@@ -15,12 +15,16 @@
  */
 package client.scenes;
 
+import client.utils.ServerUtils;
+import commons.NoteTitle;
 import client.utils.ShortcutHandler;
 import commons.Note;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
+import java.util.List;
 
 public class MainCtrl {
 
@@ -30,6 +34,8 @@ public class MainCtrl {
 
     private MarkdownEditorCtrl markdownEditorCtrl;
     private SidebarCtrl sidebarCtrl;
+    private Scene sidebar;
+    private ServerUtils serverUtils;
     private ShortcutHandler shortcutHandler;
 
 
@@ -41,6 +47,8 @@ public class MainCtrl {
     )
     {
         this.primaryStage = primaryStage;
+
+        this.serverUtils = new ServerUtils();
 
         this.noteEditorCtrl = noteEditor.getKey();
         this.noteEditorEnglish = new Scene(noteEditor.getValue());
@@ -121,4 +129,23 @@ public class MainCtrl {
     public void recordDelete(Note note) {
         shortcutHandler.recordDelete(note);
     }
+
+    /** This method sends data for the creation of a get request to the server and passes the returned data
+     *  to the sidebar, forcing it to update itself.
+     *
+     * @param text  text for the search request
+     * @param collectionId id of collection to search
+     * @param matchAll option to match all keywords or not
+     * @param whereToSearch option to search specific parts of a note
+     */
+    public void sendSearchRequest(String text, long collectionId, boolean matchAll, String whereToSearch){
+        List<NoteTitle> results = serverUtils.searchNotesInCollection(collectionId, text, matchAll, whereToSearch);
+        updateSideBar(results);
+    }
+
+    public void updateSideBar(List<NoteTitle> titles){
+        sidebarCtrl.loadSideBar(titles);
+    }
+
+    public void refreshSideBar(){ sidebarCtrl.refresh(); }
 }

@@ -53,9 +53,29 @@ public class SidebarCtrl {
      * Functionality will be used when pressed on the refresh button in the GUI.
      */
     public void refresh() {
+        List<NoteTitle> titles = server.getNoteTitles();
+        loadSideBar(titles);
+    }
+
+    /**
+     * Note click function for action when a specific note in the sidebar is clicked
+     * intended behaviour is that the note contents opens.
+     * @param id identifier that is linked to a specific note that corresponds to the servers note ID.
+     */
+    private void noteClick(Long id) {
+        System.out.println("Clicked on note " + id);
+    }
+
+
+    /**
+     * Load function to load all desired objects in the sidebar.
+     * The function will be called everytime the sidebar is refreshed and also
+     * on every search performed in order to load the search results.
+     * @param titles the notes that are supposed to be loaded into the sidebar.
+     */
+    public void loadSideBar(List<NoteTitle> titles) {
         noteContainer.getChildren().clear();
 
-        List<NoteTitle> titles = server.getNoteTitles();
         for (NoteTitle title : titles) {
             Label label = new Label(title.getTitle());
             VBox wrapper = new VBox(label);
