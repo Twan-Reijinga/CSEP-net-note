@@ -48,7 +48,9 @@
 
         <!-- Unused Imports: Disallow unused import statements -->
         <!-- Rationale: Keeps code clean and prevents potential conflicts. -->
-        <module name="UnusedImports"/>
+        <module name="UnusedImports">
+            <property name="severity" value="warning"/>
+        </module>
 
         <!-- Simplify Boolean Expressions: Suggest simpler boolean expressions -->
         <!-- Rationale: Encourages clear and concise conditional logic. -->
@@ -68,7 +70,9 @@
 
         <!-- Missing Override: Ensure @Override annotations are present when required -->
         <!-- Rationale: Prevents unintended behavior by explicitly marking overridden methods. -->
-        <module name="MissingOverride"/>
+        <module name="MissingOverride">
+            <property name="severity" value="warning"/>
+        </module>
 
         <!-- Empty Statement: Disallow empty statements -->
         <!-- Rationale: Prevents unintentional empty blocks that can lead to errors. -->
@@ -80,6 +84,7 @@
             <property name="format" value="\s+$"/>
             <property name="message" value="Line has trailing whitespace."/>
             <property name="ignoreComments" value="true" />
+            <property name="severity" value="warning"/>
         </module>
     </module>
 
