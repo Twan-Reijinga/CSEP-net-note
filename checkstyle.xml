@@ -2,11 +2,6 @@
 <!DOCTYPE module PUBLIC "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 <module name="Checker">
-    <!-- Suppression filter to exclude tests directory -->
-    <module name="SuppressionFilter">
-        <property name="file" value="suppressions.xml"/>
-    </module>
-
     <module name="TreeWalker">
         <!-- Indentation: Enforce consistent 4-space indentation -->
         <!-- Rationale: Promotes readability and consistent code style across the project. -->

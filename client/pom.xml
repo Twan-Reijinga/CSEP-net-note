@@ -163,7 +163,7 @@
 					<configLocation>../checkstyle.xml</configLocation>
 					<sourceDirectories>${project.basedir}</sourceDirectories>
 					<includes>src/**/*.java,**/*.xml,**/*.yml</includes>
-					<excludes>**/target/**</excludes>
+					<excludes>**/target/**, **/test/**</excludes>
 				</configuration>
 				<executions>
 					<execution>
