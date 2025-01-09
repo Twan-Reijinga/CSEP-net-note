@@ -16,6 +16,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import client.utils.TagFilteringHandler;
 import commons.NoteTitle;
 import client.utils.ShortcutHandler;
 import commons.Note;
@@ -37,6 +38,7 @@ public class MainCtrl {
     private Scene sidebar;
     private ServerUtils serverUtils;
     private ShortcutHandler shortcutHandler;
+    private TagFilteringHandler tagFilteringHandler;
 
 
     public void initialize(
@@ -49,6 +51,7 @@ public class MainCtrl {
         this.primaryStage = primaryStage;
 
         this.serverUtils = new ServerUtils();
+        this.tagFilteringHandler = new TagFilteringHandler(new ServerUtils());
 
         this.noteEditorCtrl = noteEditor.getKey();
         this.noteEditorEnglish = new Scene(noteEditor.getValue());

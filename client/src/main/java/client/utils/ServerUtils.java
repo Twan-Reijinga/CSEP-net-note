@@ -194,11 +194,24 @@ public class ServerUtils {
 	/**
 	 * Returns a list of NoteTags each containing an id of the note it represents and all tags in that note.
 	 * @param collectionId the id of the collection whose notes are used
+	 * @return a list of NoteTags
 	 */
 	public List<NoteTags> getAllNoteTags(Long collectionId) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER).path("api/tags/" + collectionId)
 				.request(APPLICATION_JSON)
 				.get(new GenericType<>() {});
+	}
+
+	/**
+	 * Used to load the tags of notes that are rendered into the sidebar, when they come from multiple collections.
+	 * @param noteIds the id's of all notes whose tags are requested
+	 * @return a list of NoteTags for each id of a note in the list.
+	 */
+	public List<NoteTags> getNoteTags(List<Long> noteIds) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/tags/list")
+				.request(APPLICATION_JSON)
+				.post(Entity.entity(noteIds, APPLICATION_JSON), new GenericType<>(){});
 	}
 }

@@ -42,4 +42,19 @@ public class TagController {
 
         return ResponseEntity.ok(noteTags);
     }
+
+    @PostMapping(path = {"", "/list"})
+    public ResponseEntity<List<NoteTags>> getSpecifiedNoteTags(@RequestBody List<Long> requested) {
+        List<NoteTags> response = new ArrayList<>();
+
+        for (Long noteId : requested) {
+            Note note = noteRepository.findById(noteId).orElse(null);
+            if (note == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            response.add(tagService.getTags(note));
+        }
+
+        return ResponseEntity.ok(response);
+    }
 }
