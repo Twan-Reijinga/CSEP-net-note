@@ -101,7 +101,7 @@ It was confirmed that Tushit will no longer be working on the project as he has 
 
 - Next chair (Petar): Prepares agenda for the next meetings (Mon 13 Jan, Wed 15 Jan). And reserves a room in the library.
 
-- Everyone: Epics should not be milestones, delete the crurrent milestones and make them labels instead. Assign the labels to corresponding issues.
+- Everyone: Epics should not be milestones, delete the current milestones and make them labels instead. Assign the labels to corresponding issues.
 
 - Everyone: Add milestone for week 7 and assign it to issues that will be completed this week.
 
@@ -113,17 +113,17 @@ It was confirmed that Tushit will no longer be working on the project as he has 
 
 - Liviu and Pepijn: to discuss how to split the embedded files extension 
 
-#### Reminder: Add timetracking to issues.
+#### Reminder: Add time-tracking to issues.
 
 
 ## Meeting
 
 ### Start 
 - Tushit wasn't present since he no longer works with the team.
-- Pepijn was online, it was not clear whether he had notified the TA about that.
+- Pepijn was online, but it was not clear whether he had notified the TA about that.
 - Liviu was online because he was feeling under the weather. The TA had not been notified and while there was a reason for the absence, failing to notify the TA beforehand should be avoided.
 
-- Showcase of work for previous week:
+- Showcase of work from the previous week:
     1. Oleh: collection settings popup and dropdown to select a collection.
     2. Twan: Refresh sidebar(Ctrl + r), navigate through notes(arrows), and undo last action (Delete/Add)
     3. Petar: demo build failed.
@@ -131,9 +131,9 @@ It was confirmed that Tushit will no longer be working on the project as he has 
 ### Agreements
 - Checkstyle needs 10 rules that break the pipeline, additional rules may be warnings.
 
-- Expired milestiones should be taken care of(deleted).
+- Expired milestones should be taken care of(deleted).
 
-- Milestone for week 7 should be created and everyone will assign it to their tasks for the week.
+- A milestone for week 7 should be created and everyone will assign it to their tasks for the week.
 
 ### Workflow Improvements
 #### 1. Reviewing MRs
@@ -145,14 +145,14 @@ It was confirmed that Tushit will no longer be working on the project as he has 
 ### Implementation Details
 
 #### 1. Behaviour of searching and filtering
-- It's left to the team to decide what the behaviour of the app will be in the case when searching is performed and tags are already selected as filters and vice-verca. 
+- It's left to the team to decide what the behaviour of the app will be in the case when searching is performed and tags are already selected as filters and vice-versa. 
 
 #### 2. Collections from multiple servers
 - A client should be connected to one server at a time and therefore can load only collections from the same server. (May change based on TA's response)
 
 ### TA announcements
 
-- Deadline for Implemented features and HCI is Friday, 10 Jan 23:59 
+- The deadline for Implemented features and HCI is Friday, 10 Jan 23:59 
     - Progress should be pushed and merged into main by then, in order to receive feedback on it.
 
 
