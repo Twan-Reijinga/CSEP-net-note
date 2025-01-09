@@ -5,6 +5,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.Scene;
@@ -12,22 +13,22 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ListCell;
 import javafx.scene.layout.AnchorPane;
 import commons.Collection;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.util.List;
+import java.util.UUID;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class NoteEditorCtrl {
-    private Timer timeKeyPresses = new Timer();
-    private int delayBetweenKeyPresses = 1000;
-
     @FXML
     private AnchorPane sidebarContainer;
 
@@ -41,20 +42,6 @@ public class NoteEditorCtrl {
     private Button searchButton;
 
     @FXML
-    private ToggleButton advancedSearchButton;
-
-    @FXML
-    private ComboBox<String> collectionDropdown;
-
-    @FXML
-    private ComboBox<String> languageDropdown;
-
-    // Injectable
-    private final LoaderFXML FXML;
-    private final ServerUtils serverUtils;
-    private final MainCtrl mainCtrl;
-
-    @FXML
     private CheckBox matchAllCheckBox;
 
     @FXML
@@ -66,6 +53,29 @@ public class NoteEditorCtrl {
     @FXML
     private HBox advSearchHBox;
 
+    @FXML
+    private ComboBox<Pair<UUID, String>> collectionDropdown;
+
+    @FXML
+    private ComboBox<String> languageDropdown;
+
+    // Injectable
+    private final LoaderFXML FXML;
+    private final ServerUtils serverUtils;
+    private final MainCtrl mainCtrl;
+
+    // Search debouncing parameters
+    private Timer timeKeyPresses = new Timer();
+    private int delayBetweenKeyPresses = 1000;
+
+    private SidebarCtrl sidebarCtrl;
+    private MarkdownEditorCtrl markdownEditorCtrl;
+
+    private final Pair<UUID, String> SHOW_ALL = new Pair<>(null, "Show all");
+    private final Pair<UUID, String> EDIT_COLLECTIONS = new Pair<>(null, "Edit collections...");
+
+    private Pair<UUID, String> chosenCollectionFilter = SHOW_ALL;
+
     @Inject
     public NoteEditorCtrl(LoaderFXML FXML, ServerUtils serverUtils, MainCtrl mainCtrl) {
         this.FXML = FXML;
@@ -75,20 +85,22 @@ public class NoteEditorCtrl {
 
     /**
      * JavaFX method that automatically runs when this controller is initialized.
-     * @param sideBarParent root element of the Sidebar fxml
-     * @param markdownParent root element of the Markdown fxml
+     * @param sidebar root element of the Sidebar fxml
+     * @param markdownEditor root element of the Markdown fxml
      */
     @FXML
-    public void initialize(Parent sideBarParent, Parent markdownParent) {
-        sidebarContainer.getChildren().add(sideBarParent);
-        AnchorPane.setTopAnchor(sideBarParent, 0.0);
-        AnchorPane.setBottomAnchor(sideBarParent, 0.0);
+    public void initialize(Pair<SidebarCtrl, Parent> sidebar, Pair<MarkdownEditorCtrl, Parent> markdownEditor) {
+        sidebarCtrl = sidebar.getKey();
+        Node sidebarNode = sidebar.getValue();
 
-        markdownEditorContainer.getChildren().add(markdownParent);
-        AnchorPane.setTopAnchor(markdownParent, 0.0);
-        AnchorPane.setBottomAnchor(markdownParent, 0.0);
-        AnchorPane.setLeftAnchor(markdownParent, 0.0);
-        AnchorPane.setRightAnchor(markdownParent, 0.0);
+        markdownEditorCtrl = markdownEditor.getKey();
+        Node markdownEditorNode = markdownEditor.getValue();
+
+        appendSidebar(sidebarNode);
+        appendMarkdownEditor(markdownEditorNode);
+
+        collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
+        collectionDropdown.setButtonCell(createCollectionDropdownOption());
 
         advSearchHBox.setSpacing(10.0);
 
@@ -100,6 +112,34 @@ public class NoteEditorCtrl {
         loadCollectionDropdown();
     }
 
+    private void appendSidebar(Node sidebarNode) {
+        sidebarContainer.getChildren().add(sidebarNode);
+        AnchorPane.setTopAnchor(sidebarNode, 0.0);
+        AnchorPane.setBottomAnchor(sidebarNode, 0.0);
+    }
+
+    private void appendMarkdownEditor(Node markdownEditorNode) {
+        markdownEditorContainer.getChildren().add(markdownEditorNode);
+        AnchorPane.setTopAnchor(markdownEditorNode, 0.0);
+        AnchorPane.setBottomAnchor(markdownEditorNode, 0.0);
+        AnchorPane.setLeftAnchor(markdownEditorNode, 0.0);
+        AnchorPane.setRightAnchor(markdownEditorNode, 0.0);
+    }
+
+    private ListCell<Pair<UUID, String>> createCollectionDropdownOption() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(Pair<UUID, String> item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    setText(item.getValue());
+                }
+            }
+        };
+    }
+
     private void loadLanguageDropdown() {
         String[] availableLanguages = new String[] {"English", "Dutch", "Spanish"};
         languageDropdown.getItems().addAll(availableLanguages);
@@ -107,21 +147,21 @@ public class NoteEditorCtrl {
 
     private void loadCollectionDropdown() {
         List<Collection> collections = serverUtils.getAllCollections();
-        List<String> titles = collections.stream().map(c -> c.title).toList();
+        List<Pair<UUID, String>> titles = collections.stream()
+                .map(c -> new Pair<>(c.id, c.title)).toList();
 
         collectionDropdown.getItems().clear();
 
-        collectionDropdown.getItems().add("Show all");
+        collectionDropdown.getItems().add(SHOW_ALL);
         collectionDropdown.getItems().addAll(titles);
-        collectionDropdown.getItems().add("Edit collections...");
-    }
+        collectionDropdown.getItems().add(EDIT_COLLECTIONS);
 
-    @FXML
-    private void onCollectionDropdownAction() {
-        String selectedItem = collectionDropdown.getSelectionModel().getSelectedItem();
-
-        if (selectedItem != null && selectedItem.equals("Edit collections...")) {
-            openCollectionSettings();
+        // If chosen collection is removed, SHOW_ALL is shown
+        if (collectionDropdown.getItems().contains(chosenCollectionFilter)) {
+            collectionDropdown.setValue(chosenCollectionFilter);
+        } else {
+            collectionDropdown.setValue(SHOW_ALL);
+            chosenCollectionFilter = SHOW_ALL;
         }
     }
 
@@ -131,10 +171,23 @@ public class NoteEditorCtrl {
         mainCtrl.switchLanguage(chosenLanguage);
     }
 
+    @FXML
+    private void onCollectionDropdownAction() {
+        Pair<UUID, String> selectedItem = collectionDropdown.getSelectionModel().getSelectedItem();
+
+        if (selectedItem == null) return;
+
+        if (selectedItem.equals(EDIT_COLLECTIONS)) {
+            openCollectionSettings();
+        } else {
+            chosenCollectionFilter = selectedItem;
+            sidebarCtrl.setSelectedCollectionId(selectedItem.getKey());
+        }
+    }
 
     private void openCollectionSettings() {
         var popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL); // Blocks interaction with the main window
+        popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setTitle("Edit collections...");
 
         var popup = FXML.load(CollectionSettingsCtrl.class, null,"client", "scenes", "CollectionSettings.fxml");
@@ -157,7 +210,8 @@ public class NoteEditorCtrl {
         String searchText = searchBox.getText();
         boolean matchAll = this.matchAllCheckBox.isSelected();
         String whereToSearch = this.searchInOptionsList.getSelectionModel().getSelectedItem();
-        long collectionId = 0;
+
+        UUID collectionId = chosenCollectionFilter.getKey();
         if(!searchText.isEmpty()){
             mainCtrl.sendSearchRequest(searchText, collectionId, matchAll, whereToSearch);
         }

@@ -8,8 +8,10 @@ import server.services.CollectionService;
 import server.services.RandomService;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class CollectionControllerTest {
 
@@ -73,7 +75,7 @@ public class CollectionControllerTest {
 
     @Test
     public void addCollectionTest() {
-        collection3.id = 2;
+        collection3.id = UUID.randomUUID();
         controller.add(collection3);
         List<Collection> collections = controller.getAllCollections();
         List<Collection> expected = List.of(collection1, collection2, collection3);
@@ -83,12 +85,12 @@ public class CollectionControllerTest {
 
     @Test
     public void removeCollectionTest() {
-        Long tempId = collection1.id;
+        UUID tempId = collection1.id;
         controller.remove(collection1.id);
 
         List<Note> noteCol1 = controller.getNotesInCollection(tempId);
 
-        assertEquals(null, noteCol1);
+        assertNull(noteCol1);
     }
 
     @Test

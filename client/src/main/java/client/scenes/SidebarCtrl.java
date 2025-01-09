@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.config.Config;
 import commons.Collection;
 import commons.Note;
 import commons.NoteTitle;
@@ -12,32 +13,31 @@ import javafx.scene.layout.VBox;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 
 public class SidebarCtrl {
-
-    private final ServerUtils server;
     private long selectedNoteId;
-    private Collection defaultCollection;
+    private UUID selectedCollectionId;
 
     @FXML
     public VBox noteContainer;
     private MainCtrl mainCtrl;
 
+    // Injectable
+    private final ServerUtils server;
+    private final Config config;
+
     /**
      * Sidebar control constructor for functionality behind the sidebar UI element.
      * @param server Server utilities for requests and functionality dependent on the server.
-     * @param defaultCollection default collection where notes will be created
+     * @param config a client config
      */
     @Inject
-    public SidebarCtrl(ServerUtils server, Collection defaultCollection) {
+    public SidebarCtrl(ServerUtils server, Config config) {
         this.server = server;
-        this.defaultCollection = defaultCollection;
+        this.config = config;
         selectedNoteId = -1;
-
-        this.defaultCollection = new Collection("default", "Default Collection");
-        this.defaultCollection.id = 1;
-        this.defaultCollection.isDefault = true;
     }
 
     /**
@@ -53,19 +53,17 @@ public class SidebarCtrl {
      * Functionality will be used when pressed on the refresh button in the GUI.
      */
     public void refresh() {
-        List<NoteTitle> titles = server.getNoteTitles();
+        noteContainer.getChildren().clear();
+
+        List<NoteTitle> titles;
+        if (selectedCollectionId == null) {
+            titles = server.getNoteTitles();
+        } else {
+            titles = server.getNoteTitlesInCollection(selectedCollectionId);
+        }
+
         loadSideBar(titles);
     }
-
-    /**
-     * Note click function for action when a specific note in the sidebar is clicked
-     * intended behaviour is that the note contents opens.
-     * @param id identifier that is linked to a specific note that corresponds to the servers note ID.
-     */
-    private void noteClick(Long id) {
-        System.out.println("Clicked on note " + id);
-    }
-
 
     /**
      * Load function to load all desired objects in the sidebar.
@@ -87,6 +85,11 @@ public class SidebarCtrl {
             });
             noteContainer.getChildren().add(wrapper);
         }
+    }
+
+    public void setSelectedCollectionId(UUID collectionId) {
+        selectedCollectionId = collectionId;
+        refresh();
     }
 
     /**
@@ -143,7 +146,11 @@ public class SidebarCtrl {
      * Afterward selects the newly created note (last note).
      */
     public void createNote() {
-        Collection collection = defaultCollection;
+        // If no collection is selected, create notes in default one
+        UUID destinationCollectionId = selectedCollectionId == null ?
+                config.getDefaultCollectionId() : selectedCollectionId;
+
+        Collection collection = server.getCollectionById(destinationCollectionId);
         if (getSelectedNoteId() > 0) {
             collection = server.getNoteById(getSelectedNoteId()).collection;
         }
@@ -231,6 +238,13 @@ public class SidebarCtrl {
         }
         selectedNoteId = id;
         mainCtrl.updateNote(id);
+    }
+
+    private void selectFirstNote() {
+        if (noteContainer.getChildren().isEmpty()) return;
+
+        long id = Long.parseLong(noteContainer.getChildren().getFirst().getId());
+        noteClick(id);
     }
 
     /**

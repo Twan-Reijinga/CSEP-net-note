@@ -48,8 +48,8 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		ResourceBundle resourceBundle = ResourceBundle.getBundle("english");
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
-		loader.setResources(resourceBundle);
+//		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
+//		loader.setResources(resourceBundle);
 
 		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, resourceBundle,
 				"client", "scenes", "MarkdownEditor.fxml");
