@@ -10,6 +10,7 @@ import server.api.CollectionController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class SearchService {
@@ -20,11 +21,13 @@ public class SearchService {
         this.collectionController = collectionController;
     }
 
-    public List<NoteTitle> getSearchResults(long id, String keywords, boolean matchAll, String searchIn){
+    public List<NoteTitle> getSearchResults(UUID id, String keywords, boolean matchAll, String searchIn) {
         String[] words = keywords.split(" ");
         Collection coll = collectionController.getAllCollections().get(0);
         //List<Note> notesInCollection = collectionRepository.findById(id).get().notes;
         int searchInValue = getSearchInValue(searchIn);
+
+        // TODO: IMPLEMENT PROPER FILTERING BY CHOSEN COLLECTION
 
         List<Note> notesInCollection = collectionController.getNotesInCollection(coll.id);
         List<NoteTitle> resultNotes = new ArrayList<>();

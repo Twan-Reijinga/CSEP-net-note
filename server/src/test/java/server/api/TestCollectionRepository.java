@@ -11,6 +11,7 @@ import server.database.CollectionRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 public class TestCollectionRepository implements CollectionRepository {
@@ -22,19 +23,18 @@ public class TestCollectionRepository implements CollectionRepository {
         called.add(name);
     }
 
-    public Optional<Collection> find(long id) {
-        return collections.stream().filter(x -> x.id == id).findFirst();
-    }
-
-    @Override
-    public Optional<Collection> findFirstByIsDefaultTrue() {
-        call("findFirstByIsDefaultTrue");
-        return collections.stream().filter(c -> c.isDefault).findFirst();
+    public Optional<Collection> find(UUID id) {
+        return collections.stream().filter(x -> x.id.equals(id)).findFirst();
     }
 
     @Override
     public Boolean existsByName(String name) {
         return false;
+    }
+
+    @Override
+    public Optional<Collection> getCollectionByName(String name) {
+        return Optional.empty();
     }
 
     @Override
@@ -49,15 +49,15 @@ public class TestCollectionRepository implements CollectionRepository {
         return entity;
     }
 
-    public Optional<Collection> findById(Long aLong) {
+    public Optional<Collection> findById(UUID id) {
         call("findById");
-        return find(aLong);
+        return find(id);
     }
 
     @Override
-    public boolean existsById(Long aLong) {
+    public boolean existsById(UUID id) {
         call("existsById");
-        return find(aLong).isPresent();
+        return find(id).isPresent();
     }
 
     @Override
@@ -75,7 +75,7 @@ public class TestCollectionRepository implements CollectionRepository {
     @Override
     public <S extends Collection> S save(S entity) {
         call("save");
-        entity.id = (long) collections.size();
+        entity.id = UUID.randomUUID();
         collections.add(entity);
         return entity;
     }
@@ -88,11 +88,11 @@ public class TestCollectionRepository implements CollectionRepository {
     }
 
     @Override
-    public void deleteById(Long aLong) {
+    public void deleteById(UUID id) {
         call("deleteById");
         int i = 0;
         for(Collection currentCollection : collections) {
-            if(currentCollection.id == aLong) {
+            if(currentCollection.id.equals(id)) {
                 collections.remove(currentCollection);
             }
             if (collections.size() <= i)
@@ -108,9 +108,9 @@ public class TestCollectionRepository implements CollectionRepository {
     }
 
     @Override
-    public void deleteAllByIdInBatch(Iterable<Long> longs) {
+    public void deleteAllByIdInBatch(Iterable<UUID> ids) {
         call("deleteAllByIdInBatch");
-        longs.forEach(this::deleteById);
+        ids.forEach(this::deleteById);
     }
 
     @Override
@@ -120,28 +120,28 @@ public class TestCollectionRepository implements CollectionRepository {
     }
 
     /**
-     * @param aLong
+     * @param id
      * @deprecated
      */
     @Override
-    public Collection getOne(Long aLong) {
-        return getReferenceById(aLong);
+    public Collection getOne(UUID id) {
+        return getReferenceById(id);
     }
 
     /**
-     * @param aLong
+     * @param id
      * @deprecated
      */
     @Override
-    public Collection getById(Long aLong) {
-        return getReferenceById(aLong);
+    public Collection getById(UUID id) {
+        return getReferenceById(id);
 
     }
 
     @Override
-    public Collection getReferenceById(Long aLong) {
+    public Collection getReferenceById(UUID id) {
         call("getReferenceById");
-        return find(aLong).get();
+        return find(id).get();
     }
 
     @Override
@@ -186,7 +186,7 @@ public class TestCollectionRepository implements CollectionRepository {
     }
 
     @Override
-    public List<Collection> findAllById(Iterable<Long> longs) {
+    public List<Collection> findAllById(Iterable<UUID> ids) {
         return List.of();
     }
 
@@ -196,7 +196,7 @@ public class TestCollectionRepository implements CollectionRepository {
     }
 
     @Override
-    public void deleteAllById(Iterable<? extends Long> longs) {
+    public void deleteAllById(Iterable<? extends UUID> ids) {
 
     }
 

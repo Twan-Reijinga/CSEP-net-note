@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface NoteRepository extends JpaRepository<Note, Long> {
@@ -16,5 +17,5 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
      * @return A list of all notes in the specified collection.
      */
     @Query("SELECT n FROM Note n WHERE n.collection.id = :collectionId")
-    List<Note> findByCollectionId(@Param("collectionId") long collectionId);
+    List<Note> findByCollectionId(@Param("collectionId") UUID collectionId);
 }

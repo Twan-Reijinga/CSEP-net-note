@@ -6,9 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CollectionRepository extends JpaRepository<Collection, Long> {
-    // Find the first collection where isDefault is true
-    Optional<Collection> findFirstByIsDefaultTrue();
-
+public interface CollectionRepository extends JpaRepository<Collection, UUID> {
     Boolean existsByName(String name);
+
+    Optional<Collection> getCollectionByName(String name);
 }

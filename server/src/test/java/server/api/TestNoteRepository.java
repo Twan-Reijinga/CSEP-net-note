@@ -9,10 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
 import server.database.NoteRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 public class TestNoteRepository implements NoteRepository {
@@ -29,7 +26,7 @@ public class TestNoteRepository implements NoteRepository {
     }
 
     @Override
-    public List<Note> findByCollectionId(long collectionId) {
+    public List<Note> findByCollectionId(UUID collectionId) {
         Collection collection = new Collection("first collection", "title");
 
         Map<Long, Note> fakeDB =
