@@ -157,8 +157,10 @@ public class MainCtrl {
      * @param note The note that was changed.
      */
     public void updateTags(Note note){
-        this.tagFilteringHandler.onNoteUpdated(note);
-        //TODO note updates dont update the list of tags for the button
+        if(this.tagFilteringHandler.onNoteUpdated(note)){
+            this.noteEditorCtrl.clearSelectedTagsFromHBox();
+        }
+        this.applyFilters();
     }
 
     /**

@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class TagFilteringHandler {
     private List<NoteTags> loadedNoteTags;
@@ -31,7 +32,6 @@ public class TagFilteringHandler {
 
     public void loadNewNoteTags(List<Long> noteIds){
         this.loadedNoteTags = this.serverUtils.getNoteTags(noteIds);
-        clearTags();
     }
 
     public void onNoteDeleted(Long noteId){
@@ -40,14 +40,22 @@ public class TagFilteringHandler {
 
     public void onNoteAdded(Note note){
         this.loadedNoteTags.add(extractNoteTags(note));
-        clearTags();
     }
 
-    public void onNoteUpdated(Note note){
+    public boolean onNoteUpdated(Note note){
         NoteTags currentTags = this.loadedNoteTags.stream()
                 .filter(x -> x.getId().equals(note.id))
                 .findFirst().get();
-        currentTags.setTags(extractNoteTags(note).getTags());
+        HashSet<String> newTags = extractNoteTags(note).getTags();
+
+        HashSet<String> removedTags = new HashSet<>();
+        for(String tag: currentTags.getTags()){
+            if(!newTags.contains(tag)){
+                removedTags.add(tag);
+            }
+        }
+        currentTags.setTags(newTags);
+        return this.removedReferenceToTag(removedTags);
     }
 
     public void clearTags(){
@@ -94,5 +102,22 @@ public class TagFilteringHandler {
 
         NoteTags noteTags = new NoteTags(note.id, tags);
         return noteTags;
+    }
+
+    public boolean removedReferenceToTag(HashSet<String> removedTags) {
+        List<String> allTags = this.loadedNoteTags.stream().map(x -> x.getTags())
+                .flatMap(hashSet -> hashSet.stream())
+                .collect(Collectors.toList());
+        HashSet<String> tags = new HashSet<>(allTags);
+
+        boolean anyRemoved = false;
+        for (String tag : removedTags) {
+            if (!tags.contains(tag)) {
+                this.removeTag(tag);
+                anyRemoved = true;
+            }
+        }
+
+        return anyRemoved;
     }
 }

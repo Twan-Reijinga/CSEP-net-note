@@ -243,10 +243,7 @@ public class NoteEditorCtrl {
     public void addSelectedTagToHBox(String tag){
         if(!tagAlreadyDisplayed(tag)){
             Label selectedTagLabel = new Label(tag);
-            selectedTagLabel.setStyle("-fx-border-color: black;");
-            selectedTagLabel.setStyle("-fx-border-width: 1px;");
-            selectedTagLabel.setStyle("-fx-border-radius: 10px;");
-            //TODO this doesnt change the lable at all, so I have to fix it.
+            selectedTagLabel.setStyle(getSelectedTagStyle());
 
             int index = this.tagContainerHBox.getChildren().size() - 3;
             this.tagContainerHBox.getChildren().add(index, selectedTagLabel);
@@ -269,5 +266,12 @@ public class NoteEditorCtrl {
             }
         }
         return alreadyIn;
+    }
+
+    private String getSelectedTagStyle(){
+        return "-fx-border-color: black;"
+                + "-fx-border-width: 1px;"
+                + "-fx-border-radius: 10px;"
+                + "-fx-padding: 1px 5px 1px 5px;";
     }
 }
