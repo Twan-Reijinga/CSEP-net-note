@@ -41,7 +41,6 @@ public class MainCtrl {
     private MarkdownEditorCtrl markdownEditorCtrl;
     private SidebarCtrl sidebarCtrl;
     private Scene sidebar;
-    private ServerUtils serverUtils;
     private ShortcutHandler shortcutHandler;
 
     private final Config config;
