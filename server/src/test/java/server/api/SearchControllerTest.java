@@ -54,8 +54,7 @@ public class SearchControllerTest {
         List<NoteTitle> expected = new ArrayList<NoteTitle>();
         expected.add(nt1);
 
-        List<NoteTitle> result = searchController.searchNotes(String.valueOf(collection1.id),
-                                                    "Notettl", "true", "0").getBody();
+        List<NoteTitle> result = searchController.searchNotes("Notettl", "true", "0").getBody();
         assertEquals(expected, result);
     }
 
@@ -65,8 +64,7 @@ public class SearchControllerTest {
         List<NoteTitle> expected = new ArrayList<NoteTitle>();
         expected.add(nt1);
 
-        List<NoteTitle> result = searchController.searchNotes(String.valueOf(collection1.id),
-                                                    "Notetitle and random", "false", "0").getBody();
+        List<NoteTitle> result = searchController.searchNotes("Notetitle and random", "false", "0").getBody();
         assertEquals(expected, result);
     }
 }
