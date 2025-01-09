@@ -21,6 +21,7 @@ import java.net.ConnectException;
 import java.util.List;
 
 import commons.Note;
+import commons.NoteTags;
 import commons.NoteTitle;
 import jakarta.ws.rs.client.Entity;
 import org.glassfish.jersey.client.ClientConfig;
@@ -190,4 +191,14 @@ public class ServerUtils {
 				.get(new GenericType<List<NoteTitle>>() {});
 	}
 
+	/**
+	 * Returns a list of NoteTags each containing an id of the note it represents and all tags in that note.
+	 * @param collectionId the id of the collection whose notes are used
+	 */
+	public List<NoteTags> getAllNoteTags(Long collectionId) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/tags/" + collectionId)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<>() {});
+	}
 }
