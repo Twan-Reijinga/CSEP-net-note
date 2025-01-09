@@ -147,7 +147,7 @@ public class MainCtrl {
     }
 
     public void updateSideBar(List<NoteTitle> titles){
-        sidebarCtrl.loadSideBar(titles);
+        sidebarCtrl.loadNoteTitles(titles);
     }
 
     public void refreshSideBar(){ sidebarCtrl.refresh(); }
@@ -175,5 +175,17 @@ public class MainCtrl {
      */
     public void addTags(Note note){
         this.tagFilteringHandler.onNoteAdded(note);
+    }
+
+    /**
+     * Used to get the ids of the notes that should be displayed after
+     * applying filters and then display them.
+     */
+    public void applyFilters(){
+        this.sidebarCtrl.displayNoteTitles(this.tagFilteringHandler.getDisplayNotes());
+    }
+
+    public void loadNewNoteTags(List<Long> noteTagIds){
+        this.tagFilteringHandler.loadNewNoteTags(noteTagIds);
     }
 }

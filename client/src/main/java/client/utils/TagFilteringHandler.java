@@ -27,7 +27,7 @@ public class TagFilteringHandler {
 
     public void onNoteDeleted(Long noteId){
         this.loadedNoteTags.removeIf(x -> x.getId().equals(noteId));
-        displayNotes();
+        getDisplayNotes();
     }
 
     public void onNoteAdded(Note note){
@@ -45,20 +45,20 @@ public class TagFilteringHandler {
 
     public void clearTags(){
         this.tagsSelected.clear();
-        displayNotes();
+        getDisplayNotes();
     }
 
     public void addTag(String tag){
         tagsSelected.add(tag);
-        displayNotes();
+        getDisplayNotes();
     }
 
     public void removeTag(String tag){
         tagsSelected.remove(tag);
-        displayNotes();
+        getDisplayNotes();
     }
 
-    public void displayNotes(){
+    public List<Long> getDisplayNotes(){
         List<Long> matching = new ArrayList<>();
         HashSet<String> availableTags = new HashSet<>();
 
@@ -77,13 +77,8 @@ public class TagFilteringHandler {
         }
 
         availableTags.removeAll(tagsSelected);
-
-        //TODO tell the sidebar to load only the NoteTitles that match the tags
-        // maybe set the others vboxpanels to visible false and disable them?
-        // but then they might get selected after a deletion and the user wont see anything.
-        // probably better to have it remember all NoteTitles in a list and only display certain parts of that list.
-        // use observable list?
-        // use availableTags to update the listBox options
+        return matching;
+        //TODO use availableTags to update the listBox options
     }
 
     public NoteTags extractNoteTags(Note note){

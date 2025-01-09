@@ -10,6 +10,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class SidebarCtrl {
     private final ServerUtils server;
     private long selectedNoteId;
     private Collection defaultCollection;
+    private List<NoteTitle> noteTitles = new ArrayList<>();
 
     @FXML
     public VBox noteContainer;
@@ -52,30 +54,30 @@ public class SidebarCtrl {
      * Functionality will be used when pressed on the refresh button in the GUI.
      */
     public void refresh() {
-        List<NoteTitle> titles = server.getNoteTitles();
-        loadSideBar(titles);
-    }
-
-    /**
-     * Note click function for action when a specific note in the sidebar is clicked
-     * intended behaviour is that the note contents opens.
-     * @param id identifier that is linked to a specific note that corresponds to the servers note ID.
-     */
-    private void noteClick(Long id) {
-        System.out.println("Clicked on note " + id);
-    }
-
-
-    /**
-     * Load function to load all desired objects in the sidebar.
-     * The function will be called everytime the sidebar is refreshed and also
-     * on every search performed in order to load the search results.
-     * @param titles the notes that are supposed to be loaded into the sidebar.
-     */
-    public void loadSideBar(List<NoteTitle> titles) {
         noteContainer.getChildren().clear();
+        loadNoteTitles(server.getNoteTitles());
+    }
 
-        for (NoteTitle title : titles) {
+    /**
+     * This method updates the noteTitles field and calls the loadNewNoteTags method from mainCtrl.
+     * Then it calls the applyFilters method from main, which displays the NoteTitles of
+     * the Notes that have the selected tags.
+     * @param titles The new list of titles that is stored (before filtering)
+     */
+    public void loadNoteTitles(List<NoteTitle> titles){
+        noteTitles = titles;
+        mainCtrl.loadNewNoteTags(titles.stream().map(x -> x.getId()).toList());
+        mainCtrl.applyFilters();
+    }
+
+    /**
+     * This method is used to display the items in the sidebar.
+     * @param ids the ids of the noteTitles which should be displayed.
+     */
+    public void displayNoteTitles(List<Long> ids){
+        List<NoteTitle> toDisplay = noteTitles.stream().filter(x -> ids.contains(x.getId())).toList();
+
+        for (NoteTitle title : toDisplay) {
             Label label = new Label(title.getTitle());
             VBox wrapper = new VBox(label);
             wrapper.setId(title.getId() + "");
