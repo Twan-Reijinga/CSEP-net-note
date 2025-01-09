@@ -27,7 +27,7 @@ public class TagFilteringHandler {
 
     public void onNoteDeleted(Long noteId){
         this.loadedNoteTags.removeIf(x -> x.getId().equals(noteId));
-        display();
+        displayNotes();
     }
 
     public void onNoteAdded(Note note){
@@ -45,20 +45,20 @@ public class TagFilteringHandler {
 
     public void clearTags(){
         this.tagsSelected.clear();
-        display();
+        displayNotes();
     }
 
     public void addTag(String tag){
         tagsSelected.add(tag);
-        display();
+        displayNotes();
     }
 
     public void removeTag(String tag){
         tagsSelected.remove(tag);
-        display();
+        displayNotes();
     }
 
-    public void display(){
+    public void displayNotes(){
         List<Long> matching = new ArrayList<>();
         HashSet<String> availableTags = new HashSet<>();
 

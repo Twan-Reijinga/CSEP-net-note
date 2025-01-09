@@ -151,4 +151,29 @@ public class MainCtrl {
     }
 
     public void refreshSideBar(){ sidebarCtrl.refresh(); }
+
+    /**
+     * Called when a note is updated, checks the new content for tags and updates it if there are any.
+     * @param note The note that was changed.
+     */
+    public void updateTags(Note note){
+        this.tagFilteringHandler.onNoteUpdated(note);
+    }
+
+    /**
+     * Called when a note is deleted, deletes it's tags from the list of available tags
+     * (unless another note has them too).
+     * @param id The id of the note that was deleted.
+     */
+    public void deleteTags(Long id){
+        this.tagFilteringHandler.onNoteDeleted(id);
+    }
+
+    /**
+     * Called when a note is added, checks for any tags in the new note.
+     * @param note The note that was added.
+     */
+    public void addTags(Note note){
+        this.tagFilteringHandler.onNoteAdded(note);
+    }
 }

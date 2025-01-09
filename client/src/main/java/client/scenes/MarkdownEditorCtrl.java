@@ -70,15 +70,17 @@ public class MarkdownEditorCtrl {
 
     private final ServerUtils serverUtils;
     private final Config config;
+    private final MainCtrl mainCtrl;
 
     private Note activeNote;
     private SidebarCtrl sidebarCtrl;
 
     @Inject
-    public MarkdownEditorCtrl(ServerUtils serverUtils, Config config) {
+    public MarkdownEditorCtrl(ServerUtils serverUtils, Config config, MainCtrl mainCtrl) {
         this.serverUtils = serverUtils;
         this.config = config;
         this.refreshTimer = new Timer();
+        this.mainCtrl = mainCtrl;
 
         var ext = List.of(
                 TablesExtension.create(),
@@ -125,6 +127,7 @@ public class MarkdownEditorCtrl {
         activeNote.content = noteText.getText();
         if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
             serverUtils.updateNote(activeNote);
+            mainCtrl.updateTags(activeNote);
         }
         activeNote = serverUtils.getNoteById(newId);
         noteText.setText(activeNote.content);
@@ -188,6 +191,7 @@ public class MarkdownEditorCtrl {
         Platform.runLater(() -> {
             activeNote.content = noteText.getText();
             serverUtils.updateNote(activeNote);
+            mainCtrl.updateTags(activeNote);
             isContentsSynced = true;
         });
     }

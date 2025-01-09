@@ -167,6 +167,7 @@ public class SidebarCtrl {
 
         note.createdAt = new Date();
         server.addNote(note);
+        mainCtrl.addTags(note);
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getLast().getId());
         noteClick(selectedNoteId);
@@ -205,6 +206,7 @@ public class SidebarCtrl {
         Note note = server.getNoteById(id);
 
         server.deleteNote(note);
+        mainCtrl.deleteTags(note.id);
         if (isReversible) {
             mainCtrl.recordDelete(note);
         }
