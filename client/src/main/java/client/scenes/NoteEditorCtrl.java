@@ -5,6 +5,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.Scene;
@@ -18,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Timer;
@@ -66,6 +68,12 @@ public class NoteEditorCtrl {
     @FXML
     private HBox advSearchHBox;
 
+    @FXML
+    private MenuButton tagOptionsButton;
+
+    @FXML
+    private HBox tagContainerHBox;
+
     @Inject
     public NoteEditorCtrl(LoaderFXML FXML, ServerUtils serverUtils, MainCtrl mainCtrl) {
         this.FXML = FXML;
@@ -98,6 +106,7 @@ public class NoteEditorCtrl {
 
         loadLanguageDropdown();
         loadCollectionDropdown();
+        this.setTagOptions();
     }
 
     private void loadLanguageDropdown() {
@@ -200,5 +209,65 @@ public class NoteEditorCtrl {
         searchInOptionsList.setDisable(!selected);
         matchAllCheckBox.setVisible(selected);
         searchInOptionsList.setVisible(selected);
+    }
+
+    public void onClearAllTagsPressed(){
+        mainCtrl.clearTags();
+        this.clearSelectedTagsFromHBox();
+    }
+
+    public void setTagOptions(){
+        this.tagOptionsButton.getItems().clear();
+        List<MenuItem> items = new ArrayList<>();
+        List<String> availableTagOptions = mainCtrl.getTagOptions();
+        if(availableTagOptions.isEmpty()){
+            items.add(new MenuItem("No tags."));
+        }
+        else{
+            for(String tag: availableTagOptions){
+                MenuItem newItem = new MenuItem(tag);
+
+                newItem.setOnAction(e -> {
+                    this.tagOptionSelected(newItem.getText());
+                });
+                items.add(newItem);
+            }
+        }
+        this.tagOptionsButton.getItems().addAll(items);
+    }
+
+    public void tagOptionSelected(String tag){
+        mainCtrl.addTag(tag);
+    }
+
+    public void addSelectedTagToHBox(String tag){
+        if(!tagAlreadyDisplayed(tag)){
+            Label selectedTagLabel = new Label(tag);
+            selectedTagLabel.setStyle("-fx-border-color: black;");
+            selectedTagLabel.setStyle("-fx-border-width: 1px;");
+            selectedTagLabel.setStyle("-fx-border-radius: 10px;");
+            //TODO this doesnt change the lable at all, so I have to fix it.
+
+            int index = this.tagContainerHBox.getChildren().size() - 3;
+            this.tagContainerHBox.getChildren().add(index, selectedTagLabel);
+        }
+    }
+
+    public void clearSelectedTagsFromHBox(){
+        while(this.tagContainerHBox.getChildren().size() > 4){
+            this.tagContainerHBox.getChildren().remove(1);
+        }
+    }
+
+    private boolean tagAlreadyDisplayed(String tag){
+        boolean alreadyIn = false;
+        for(Node node: this.tagContainerHBox.getChildren()){
+            if(node.getClass() == Label.class){
+                if((((Label) node).getText().equals(tag))){
+                    alreadyIn = true;
+                }
+            }
+        }
+        return alreadyIn;
     }
 }

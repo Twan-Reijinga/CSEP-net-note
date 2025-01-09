@@ -54,7 +54,6 @@ public class SidebarCtrl {
      * Functionality will be used when pressed on the refresh button in the GUI.
      */
     public void refresh() {
-        noteContainer.getChildren().clear();
         loadNoteTitles(server.getNoteTitles());
     }
 
@@ -75,6 +74,7 @@ public class SidebarCtrl {
      * @param ids the ids of the noteTitles which should be displayed.
      */
     public void displayNoteTitles(List<Long> ids){
+        noteContainer.getChildren().clear();
         List<NoteTitle> toDisplay = noteTitles.stream().filter(x -> ids.contains(x.getId())).toList();
 
         for (NoteTitle title : toDisplay) {
@@ -169,7 +169,7 @@ public class SidebarCtrl {
 
         note.createdAt = new Date();
         server.addNote(note);
-        mainCtrl.addTags(note);
+        mainCtrl.recordNewTags(note);
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getLast().getId());
         noteClick(selectedNoteId);

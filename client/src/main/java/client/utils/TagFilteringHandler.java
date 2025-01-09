@@ -4,6 +4,7 @@ import commons.Note;
 import commons.NoteTags;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -13,11 +14,19 @@ public class TagFilteringHandler {
     private List<NoteTags> loadedNoteTags;
     private ServerUtils serverUtils;
     private List<String> tagsSelected;
+    private HashSet<String> availableTags;
 
     public TagFilteringHandler(ServerUtils serverUtils) {
         loadedNoteTags = new ArrayList<>();
         this.serverUtils = serverUtils;
         tagsSelected = new ArrayList<>();
+        availableTags = new HashSet<>();
+    }
+
+    public List<String> getAvailableTags() {
+        List<String> availableTagsList = new ArrayList<>(availableTags.stream().toList());
+        Collections.sort(availableTagsList);
+        return availableTagsList;
     }
 
     public void loadNewNoteTags(List<Long> noteIds){
@@ -27,13 +36,11 @@ public class TagFilteringHandler {
 
     public void onNoteDeleted(Long noteId){
         this.loadedNoteTags.removeIf(x -> x.getId().equals(noteId));
-        getDisplayNotes();
     }
 
     public void onNoteAdded(Note note){
         this.loadedNoteTags.add(extractNoteTags(note));
-        // TODO what happens when the new note added, doesnt match the selected tags, should the tags be cleared?
-        // clearTags();
+        clearTags();
     }
 
     public void onNoteUpdated(Note note){
@@ -45,17 +52,14 @@ public class TagFilteringHandler {
 
     public void clearTags(){
         this.tagsSelected.clear();
-        getDisplayNotes();
     }
 
     public void addTag(String tag){
         tagsSelected.add(tag);
-        getDisplayNotes();
     }
 
     public void removeTag(String tag){
         tagsSelected.remove(tag);
-        getDisplayNotes();
     }
 
     public List<Long> getDisplayNotes(){
@@ -77,8 +81,8 @@ public class TagFilteringHandler {
         }
 
         availableTags.removeAll(tagsSelected);
+        this.availableTags = availableTags;
         return matching;
-        //TODO use availableTags to update the listBox options
     }
 
     public NoteTags extractNoteTags(Note note){

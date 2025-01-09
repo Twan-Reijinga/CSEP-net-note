@@ -158,6 +158,7 @@ public class MainCtrl {
      */
     public void updateTags(Note note){
         this.tagFilteringHandler.onNoteUpdated(note);
+        //TODO note updates dont update the list of tags for the button
     }
 
     /**
@@ -167,14 +168,16 @@ public class MainCtrl {
      */
     public void deleteTags(Long id){
         this.tagFilteringHandler.onNoteDeleted(id);
+        this.clearTags();
     }
 
     /**
      * Called when a note is added, checks for any tags in the new note.
      * @param note The note that was added.
      */
-    public void addTags(Note note){
+    public void recordNewTags(Note note){
         this.tagFilteringHandler.onNoteAdded(note);
+        this.clearTags();
     }
 
     /**
@@ -183,9 +186,27 @@ public class MainCtrl {
      */
     public void applyFilters(){
         this.sidebarCtrl.displayNoteTitles(this.tagFilteringHandler.getDisplayNotes());
+        this.noteEditorCtrl.setTagOptions();
     }
 
     public void loadNewNoteTags(List<Long> noteTagIds){
         this.tagFilteringHandler.loadNewNoteTags(noteTagIds);
+        this.clearTags();
+    }
+
+    public void clearTags(){
+        this.tagFilteringHandler.clearTags();
+        this.noteEditorCtrl.clearSelectedTagsFromHBox();
+        this.applyFilters();
+    }
+
+    public void addTag(String tag){
+        this.tagFilteringHandler.addTag(tag);
+        this.applyFilters();
+        this.noteEditorCtrl.addSelectedTagToHBox(tag);
+    }
+
+    public List<String> getTagOptions(){
+        return this.tagFilteringHandler.getAvailableTags();
     }
 }

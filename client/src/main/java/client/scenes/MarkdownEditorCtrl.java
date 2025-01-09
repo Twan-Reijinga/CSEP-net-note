@@ -235,8 +235,7 @@ public class MarkdownEditorCtrl {
     }
 
     public void tagClick(String tag){
-        System.out.println(tag);
-        //todo clicking a tag should select it as a filter
+        this.mainCtrl.addTag("#" + tag);
     }
 
     private String getLinkCSS(){
