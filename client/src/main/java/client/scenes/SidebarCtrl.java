@@ -27,6 +27,7 @@ public class SidebarCtrl {
     /**
      * Sidebar control constructor for functionality behind the sidebar UI element.
      * @param server Server utilities for requests and functionality dependent on the server.
+     * @param defaultCollection default collection where notes will be created
      */
     @Inject
     public SidebarCtrl(ServerUtils server, Collection defaultCollection) {
@@ -106,7 +107,7 @@ public class SidebarCtrl {
 
     /**
      * Creates a new title that is unique to the other title in the format "New note: #"
-     * 
+     * <p>
      * @param input an integer that indicates what the first default title should be (usually 1)
      * 				every other title will have a higher number.
      * @return an integer which increments the current highest "New note: #", so that every note is unique in title.
@@ -122,10 +123,10 @@ public class SidebarCtrl {
         			correctTitle = false;
         		}
         		for (char currentChar : chars) {
-        			if (!Character.isDigit(currentChar))	
+        			if (!Character.isDigit(currentChar))
         				correctTitle = false;
         		}
-        		if (correctTitle == true && currentNote.getTitle().startsWith("New note: ")) {
+        		if (correctTitle && currentNote.getTitle().startsWith("New note: ")) {
         			int tempInt = Integer.parseInt(currentNote.getTitle().split(" ")[2]);
         			if (tempInt >= input) {
         				input = tempInt + 1;
@@ -137,8 +138,8 @@ public class SidebarCtrl {
     }
 
     /**
-     * Adds a default note to the database with a unique title, unique id, content and a default collection, 
-     * or the collection of the selected note. 
+     * Adds a default note to the database with a unique title, unique id, content and a default collection,
+     * or the collection of the selected note.
      * Afterward selects the newly created note (last note).
      */
     public void createNote() {
@@ -172,9 +173,9 @@ public class SidebarCtrl {
         noteClick(selectedNoteId);
         return selectedNoteId;
     }
-    
+
     /**
-     * Deletes the selected note, and if there is no note -> 
+     * Deletes the selected note, and if there is no note ->
      * creates a new default note.signaturized
      * Afterward selects the first note.
      */

@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Entity
 @Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"collection_id", "title"})
+    @UniqueConstraint(columnNames = {"collection_id", "title"})
 })
 public class Note {
     @Id
