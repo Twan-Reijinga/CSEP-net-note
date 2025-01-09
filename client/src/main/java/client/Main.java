@@ -23,12 +23,20 @@ import client.scenes.NoteEditorCtrl;
 import client.scenes.MainCtrl;
 import client.scenes.MarkdownEditorCtrl;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 
 public class Main extends Application {
+	public enum Language {
+		EN,
+		NL,
+		ES;
+	}
+	private static Language currentLanguage = Language.EN;
 
 	private static final Injector INJECTOR = createInjector(new GuiceModule());
 	private static final LoaderFXML FXML = INJECTOR.getInstance(LoaderFXML.class);
@@ -39,18 +47,25 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		ResourceBundle englishBundle = ResourceBundle.getBundle("english");
-//		ResourceBundle dutchBundle = ResourceBundle.getBundle("dutch");
-//		ResourceBundle spanishBundle = ResourceBundle.getBundle("spanish");
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("english");
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
+		loader.setResources(resourceBundle);
 
-		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, englishBundle,
+		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, resourceBundle,
 				"client", "scenes", "MarkdownEditor.fxml");
 
-		var sidebarEditor = FXML.load(SidebarCtrl.class, englishBundle, "client", "scenes", "Sidebar.fxml");
-		var noteEditor = FXML.load(NoteEditorCtrl.class, englishBundle,"client", "scenes", "MainUI.fxml");
+		var sidebarEditor = FXML.load(SidebarCtrl.class, resourceBundle, "client", "scenes", "Sidebar.fxml");
+		var noteEditor = FXML.load(NoteEditorCtrl.class, resourceBundle,"client", "scenes", "MainUI.fxml");
 
 		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
 		mainCtrl.initialize(primaryStage, markdownEditor, noteEditor, sidebarEditor);
+	}
+
+	public static void switchLanguage(Language language) throws Exception {
+		currentLanguage = language;
+		Main main = new Main();
+		Stage stage = new Stage();
+		main.start(stage);
 	}
 }

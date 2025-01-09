@@ -128,7 +128,7 @@ public class NoteEditorCtrl {
     @FXML
     private void onLanguageDropdownAction() {
         String chosenLanguage = languageDropdown.getSelectionModel().getSelectedItem();
-        mainCtrl.changeUILanguage(chosenLanguage);
+        mainCtrl.switchLanguage(chosenLanguage);
     }
 
 

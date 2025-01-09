@@ -15,6 +15,8 @@
  */
 package client.scenes;
 
+import client.Main;
+import client.Main.Language;
 import client.utils.ServerUtils;
 import commons.NoteTitle;
 import client.utils.ShortcutHandler;
@@ -30,7 +32,7 @@ public class MainCtrl {
 
     private Stage primaryStage;
     private NoteEditorCtrl noteEditorCtrl;
-    private Scene noteEditorEnglish;
+    private Scene noteEditor;
 
     private MarkdownEditorCtrl markdownEditorCtrl;
     private SidebarCtrl sidebarCtrl;
@@ -51,7 +53,7 @@ public class MainCtrl {
         this.serverUtils = new ServerUtils();
 
         this.noteEditorCtrl = noteEditor.getKey();
-        this.noteEditorEnglish = new Scene(noteEditor.getValue());
+        this.noteEditor = new Scene(noteEditor.getValue());
 
 
         this.markdownEditorCtrl = markdownEditor.getKey();
@@ -63,7 +65,7 @@ public class MainCtrl {
         sidebarCtrl.initialize(this);
 
         this.shortcutHandler = new ShortcutHandler(sidebarCtrl);
-        shortcutHandler.attach(noteEditorEnglish);
+        shortcutHandler.attach(this.noteEditor);
 
         showNoteEditor();
         primaryStage.show();
@@ -77,23 +79,26 @@ public class MainCtrl {
         primaryStage.setTitle("NoteEditor");
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(500);
-        primaryStage.setScene(noteEditorEnglish);
+        primaryStage.setScene(noteEditor);
     }
 
     /**
      * Sets a new UI language based on user selection
      * Builds a new scene but with all components translated
      * and parses the main stage the root node of the scene
-     * @param language the chosen language by the user
+     * @param languageStr the chosen language by the user
      */
-    public void changeUILanguage(String language) {
-        switch (language){
-            case "English":
-                break;
-            case "Dutch":
-                break;
-            case "Spanish":
-                break;
+    public void switchLanguage(String languageStr) {
+        Language language = switch (languageStr) {
+            case "English" -> language = Language.EN;
+            case "Dutch" -> language = Language.NL;
+            case "Spanish" -> language = Language.ES;
+            default -> throw new IllegalStateException("Unexpected value: " + languageStr);
+        };
+        try {
+            Main.switchLanguage(language);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
