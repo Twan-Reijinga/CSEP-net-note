@@ -75,7 +75,7 @@ public class Main extends Application {
 		if (mainCtrl == null) {
 			mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 		}
-		mainCtrl.initialize(primaryStage, markdownEditor, noteEditor, sidebarEditor);
+		mainCtrl.initialize(primaryStage, markdownEditor, noteEditor, sidebarEditor, resourceBundle);
 		primaryStage.setWidth(width);
 		primaryStage.setHeight(height);
 	}

@@ -46,7 +46,7 @@
                   <HBox fx:id="advSearchHBox" minHeight="-Infinity" prefHeight="0.0" prefWidth="600.0" style="-fx-background-color: black;">
                      <children>
                         <ChoiceBox fx:id="searchInOptionsList" disable="true" prefHeight="19.0" prefWidth="150.0" visible="false" />
-                        <CheckBox fx:id="matchAllCheckBox" disable="true" mnemonicParsing="false" prefHeight="22.0" prefWidth="74.0" text="Match all" textFill="WHITE" visible="false" />
+                        <CheckBox fx:id="matchAllCheckBox" disable="true" mnemonicParsing="false" prefHeight="22.0" prefWidth="74.0" text="%matchAll" textFill="WHITE" visible="false" />
                         <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
                      </children>
                      <padding>

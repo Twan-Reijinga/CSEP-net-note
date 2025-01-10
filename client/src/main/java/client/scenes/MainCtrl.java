@@ -30,6 +30,7 @@ import javafx.util.Pair;
 import commons.Collection;
 
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.UUID;
 
 public class MainCtrl {
@@ -65,7 +66,8 @@ public class MainCtrl {
             Stage primaryStage,
             Pair<MarkdownEditorCtrl, Parent> markdownEditor,
             Pair<NoteEditorCtrl, Parent> noteEditor,
-            Pair<SidebarCtrl, Parent> sidebarEditor
+            Pair<SidebarCtrl, Parent> sidebarEditor,
+            ResourceBundle bundle
     )
     {
         this.primaryStage = primaryStage;
@@ -76,7 +78,7 @@ public class MainCtrl {
         this.markdownEditorCtrl = markdownEditor.getKey();
         this.sidebarCtrl = sidebarEditor.getKey();
 
-        noteEditorCtrl.initialize(sidebarEditor, markdownEditor);
+        noteEditorCtrl.initialize(sidebarEditor, markdownEditor, bundle);
         markdownEditorCtrl.initialize(sidebarCtrl);
         sidebarCtrl.initialize(this);
 

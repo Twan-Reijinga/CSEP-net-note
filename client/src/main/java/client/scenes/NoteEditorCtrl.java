@@ -21,11 +21,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.util.List;
-import java.util.UUID;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 
 public class NoteEditorCtrl {
@@ -70,11 +66,12 @@ public class NoteEditorCtrl {
 
     private SidebarCtrl sidebarCtrl;
     private MarkdownEditorCtrl markdownEditorCtrl;
+    private ResourceBundle bundle;
 
-    private final Pair<UUID, String> SHOW_ALL = new Pair<>(null, "Show all");
-    private final Pair<UUID, String> EDIT_COLLECTIONS = new Pair<>(null, "Edit collections...");
+    private Pair<UUID, String> showAll;
+    private Pair<UUID, String> editCollections;
 
-    private Pair<UUID, String> chosenCollectionFilter = SHOW_ALL;
+    private Pair<UUID, String> chosenCollectionFilter = showAll;
 
     @Inject
     public NoteEditorCtrl(LoaderFXML FXML, ServerUtils serverUtils, MainCtrl mainCtrl) {
@@ -87,9 +84,13 @@ public class NoteEditorCtrl {
      * JavaFX method that automatically runs when this controller is initialized.
      * @param sidebar root element of the Sidebar fxml
      * @param markdownEditor root element of the Markdown fxml
+     * @param bundle resource bundle for current language
      */
     @FXML
-    public void initialize(Pair<SidebarCtrl, Parent> sidebar, Pair<MarkdownEditorCtrl, Parent> markdownEditor) {
+    public void initialize(Pair<SidebarCtrl,
+                           Parent> sidebar,
+                           Pair<MarkdownEditorCtrl, Parent> markdownEditor,
+                           ResourceBundle bundle) {
         sidebarCtrl = sidebar.getKey();
         Node sidebarNode = sidebar.getValue();
 
@@ -107,6 +108,11 @@ public class NoteEditorCtrl {
         this.searchInOptionsList.getItems().clear();
         this.searchInOptionsList.getItems().addAll("Title", "Content", "Both");
         this.matchAllCheckBox.setSelected(true);
+
+        this.bundle = bundle;
+
+        editCollections = new Pair<>(null, bundle.getString("editCollections"));
+        showAll = new Pair<>(null, bundle.getString("showAll"));
 
         loadLanguageDropdown();
         loadCollectionDropdown();
@@ -152,16 +158,16 @@ public class NoteEditorCtrl {
 
         collectionDropdown.getItems().clear();
 
-        collectionDropdown.getItems().add(SHOW_ALL);
+        collectionDropdown.getItems().add(showAll);
         collectionDropdown.getItems().addAll(titles);
-        collectionDropdown.getItems().add(EDIT_COLLECTIONS);
+        collectionDropdown.getItems().add(editCollections);
 
         // If chosen collection is removed, SHOW_ALL is shown
         if (collectionDropdown.getItems().contains(chosenCollectionFilter)) {
             collectionDropdown.setValue(chosenCollectionFilter);
         } else {
-            collectionDropdown.setValue(SHOW_ALL);
-            chosenCollectionFilter = SHOW_ALL;
+            collectionDropdown.setValue(showAll);
+            chosenCollectionFilter = showAll;
         }
     }
 
@@ -177,7 +183,7 @@ public class NoteEditorCtrl {
 
         if (selectedItem == null) return;
 
-        if (selectedItem.equals(EDIT_COLLECTIONS)) {
+        if (selectedItem.equals(editCollections)) {
             openCollectionSettings();
         } else {
             chosenCollectionFilter = selectedItem;
@@ -188,9 +194,9 @@ public class NoteEditorCtrl {
     private void openCollectionSettings() {
         var popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Edit collections...");
+        popupStage.setTitle(bundle.getString("editCollections"));
 
-        var popup = FXML.load(CollectionSettingsCtrl.class, null,"client", "scenes", "CollectionSettings.fxml");
+        var popup = FXML.load(CollectionSettingsCtrl.class, bundle,"client", "scenes", "CollectionSettings.fxml");
 
         var popupNode = popup.getValue();
         var popupScene = new Scene(popupNode);
