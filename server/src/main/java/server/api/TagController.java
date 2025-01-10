@@ -11,6 +11,7 @@ import server.services.TagService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/tags")
@@ -29,7 +30,7 @@ public class TagController {
     }
 
     @GetMapping(path = {"", "/{collectionId}"})
-    public ResponseEntity<List<NoteTags>> getAllTags(@PathVariable Long collectionId) {
+    public ResponseEntity<List<NoteTags>> getAllTags(@RequestBody UUID collectionId) {
         if (!collectionRepository.existsById(collectionId)) {
             return ResponseEntity.badRequest().build();
         }

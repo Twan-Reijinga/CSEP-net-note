@@ -257,11 +257,11 @@ public class ServerUtils {
 	 * @param collectionId the id of the collection whose notes are used
 	 * @return a list of NoteTags
 	 */
-	public List<NoteTags> getAllNoteTags(Long collectionId) {
+	public List<NoteTags> getAllNoteTags(UUID collectionId) {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(server).path("api/tags/" + collectionId)
+				.target(server).path("api/tags/")
 				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {});
+				.post(Entity.entity(collectionId, APPLICATION_JSON), new GenericType<>(){});
 	}
 
 	/**
