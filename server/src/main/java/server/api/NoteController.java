@@ -53,8 +53,8 @@ public class NoteController {
      * Note can not have empty values, and has to have a collection.
      * The method needs to be addressed through making a client.Post.
      * <p>
-     * {@code @Param} note  the entity that needs to be stored in database
-     * {@code @Return} a http Response, either bad-build or good
+     * @param note  the entity that needs to be stored in database
+     * @return a http Response, either bad-build or good
      */
     @PostMapping("")
     public ResponseEntity<Note> add(@RequestBody Note note) {
@@ -95,8 +95,9 @@ public class NoteController {
         }
     }
 
+    // TODO: do something with this mock function which is still being used for some reason
     @GetMapping(path="/mock")
-    public ResponseEntity<Note> MOCK_getDefaultNote() {
+    public ResponseEntity<Note> mockGetDefaultNote() {
         List<Note> notes = noteRepository.findAll();
         if (notes.isEmpty()) {
             return ResponseEntity.notFound().build();

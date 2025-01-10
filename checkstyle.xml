@@ -1,13 +1,95 @@
 <?xml version="1.0"?>
-<!DOCTYPE module PUBLIC
-        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+<!DOCTYPE module PUBLIC "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
-
-<module name = "Checker">
+<module name="Checker">
     <module name="TreeWalker">
-        <module name="UnusedImports" />
+        <!-- Indentation: Enforce consistent 4-space indentation -->
+        <!-- Rationale: Promotes readability and consistent code style across the project. -->
+        <module name="Indentation">
+            <property name="basicOffset" value="4"/>
+            <property name="tabWidth" value="4"/>
+            <property name="lineWrappingIndentation" value="4"/>
+        </module>
+
+        <!-- Method Length: Limit methods to 30 lines -->
+        <!-- Rationale: Encourages breaking down large methods for better readability and maintainability. -->
+        <module name="MethodLength">
+            <property name="max" value="30"/>
+        </module>
+
+        <!-- Cyclomatic Complexity: Restrict complexity to a maximum of 10 -->
+        <!-- Rationale: Promotes simpler, more maintainable code by limiting branching logic. -->
+        <module name="CyclomaticComplexity">
+            <property name="max" value="10"/>
+        </module>
+
+        <!-- Class and Method Naming: Enforce standard naming conventions -->
+        <!-- Rationale: Ensures consistency and improves readability across the codebase. -->
+        <module name="TypeNameCheck">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+        </module>
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Javadoc Comments: Validate Javadoc -->
+        <!-- Rationale: Encourages well-documented code but does not require comments. -->
+        <module name="JavadocMethod" />
+        <module name="JavadocType" />
+
+        <!-- Variable Declaration: Ensure one variable per line -->
+        <!-- Rationale: Enhances clarity by keeping declarations separate. -->
+        <module name="MultipleVariableDeclarations"/>
+
+        <!-- Unused Imports: Disallow unused import statements -->
+        <!-- Rationale: Keeps code clean and prevents potential conflicts. -->
+        <module name="UnusedImports">
+            <property name="severity" value="warning"/>
+        </module>
+
+        <!-- Simplify Boolean Expressions: Suggest simpler boolean expressions -->
+        <!-- Rationale: Encourages clear and concise conditional logic. -->
+        <module name="SimplifyBooleanExpression"/>
+
+        <!-- Unused Local Variables: Disallow variables that are declared but not used -->
+        <!-- Rationale: Prevents clutter and potential confusion in the code. -->
+        <module name="UnusedLocalVariable" />
+
+        <!-- Abbreviation As Word In Name: Validate abbreviations in names -->
+        <!-- Rationale: Encourages meaningful and consistent naming conventions. -->
+        <module name="AbbreviationAsWordInName"/>
+
+        <!-- Constant Name: Enforce naming conventions for constants -->
+        <!-- Rationale: Ensures readability and standardization of constant values. -->
+        <module name="ConstantName"/>
+
+        <!-- Missing Override: Ensure @Override annotations are present when required -->
+        <!-- Rationale: Prevents unintended behavior by explicitly marking overridden methods. -->
+        <module name="MissingOverride">
+            <property name="severity" value="warning"/>
+        </module>
+
+        <!-- Empty Statement: Disallow empty statements -->
+        <!-- Rationale: Prevents unintentional empty blocks that can lead to errors. -->
+        <module name="EmptyStatement"/>
+
+        <!-- Trailing Whitespace: Disallow trailing whitespace -->
+        <!-- Rationale: Keeps code clean and prevents unnecessary diffs in version control. -->
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="\s+$"/>
+            <property name="message" value="Line has trailing whitespace."/>
+            <property name="ignoreComments" value="true" />
+            <property name="severity" value="warning"/>
+        </module>
     </module>
 
-    <!-- TODO: decide in your team with other checkers to add! -->
+    <!-- Line Length: Limit lines to 120 characters -->
+    <!-- Rationale: Prevents horizontal scrolling and ensures code readability. -->
+    <module name="LineLength">
+        <property name="max" value="120"/>
+    </module>
 
+    <!-- Newline At End Of File: Ensure files end with a newline -->
+    <!-- Rationale: Improves compatibility with text-processing tools and version control. -->
+    <module name="NewlineAtEndOfFile"/>
 </module>

@@ -4,6 +4,7 @@ import java.util.*;
 import commons.Collection;
 import commons.Note;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.CollectionRepository;
@@ -43,12 +44,12 @@ public class CollectionController {
      * @return List of Notes, the notes that correspond to the current selected collection
      */
     @GetMapping("/getNotes/{id}")
-    public List<Note> getNotesInCollection(@PathVariable("id") Long id ) {
-        if (id < 0 || collectionRepository.findById(id).isEmpty()) {
+    public List<Note> getNotesInCollection(@PathVariable("id") UUID id ) {
+        if (collectionRepository.findById(id).isEmpty()) {
             return null;
         }
         List<Note> tempNoteList = new ArrayList<>(List.copyOf(noteRepository.findAll()));
-        tempNoteList.removeIf(currentNote -> !(currentNote.collection.id == id));
+        tempNoteList.removeIf(currentNote -> !(currentNote.collection.id.equals(id)));
         return tempNoteList;
     }
 
@@ -57,12 +58,12 @@ public class CollectionController {
      * Collection can not have empty values.
      * The method needs to be addressed through making a client.Post.
      * <p>
-     * {@code @Param} collection  the entity that needs to be stored in database
-     * {@code @Return} a http Response, either bad-build or good
+     * @param collection  the entity that needs to be stored in database
+     * @return a response entity containing a collection if successfully created
      */
     @PostMapping(path = {"", "/"})
     public ResponseEntity<Collection> add(@RequestBody Collection collection) {
-        if (collection == null || collection.name == null || collection.title == null || collectionRepository.findById(collection.id).isPresent()){
+        if (collectionRepository.findById(collection.id).isPresent()){
             return ResponseEntity.badRequest().build();
         }
         Collection added = collectionRepository.save(collection);
@@ -77,14 +78,8 @@ public class CollectionController {
      * @return a http Response, either a bad build or a valid one
      */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> remove(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> remove(@PathVariable("id") UUID id) {
         try {
-            // TODO: also I need to start using services for this...
-
-            // FIXME: once Petar's (search_bar) MR will be merge, it will include
-            //  one-to-many decorator in collection with orphan removal constraint
-            //  this will allow for cleaner approach
-
             // Delete notes inside the collection
             List<Note> notes = noteRepository.findByCollectionId(id);
             if (!notes.isEmpty()) {
@@ -121,4 +116,37 @@ public class CollectionController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping(path="/default")
+    public ResponseEntity<Collection> getDefaultCollection() {
+        try {
+            Optional<Collection> collection = collectionRepository.getCollectionByName("default");
+            if (collection.isPresent()) {
+                return ResponseEntity.ok(collection.get());
+            } else {
+                Collection defaultCollection = new Collection("default", "Default Collection");
+                defaultCollection = collectionRepository.save(defaultCollection);
+                return ResponseEntity.ok(defaultCollection);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping(path="/{collectionId}")
+    public ResponseEntity<Collection> getCollectionById(@PathVariable UUID collectionId) {
+        try {
+            Optional<Collection> collection = collectionRepository.findById(collectionId);
+            if (collection.isPresent()) {
+                return ResponseEntity.ok(collection.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }

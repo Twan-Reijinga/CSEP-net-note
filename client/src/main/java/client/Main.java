@@ -40,10 +40,12 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		ResourceBundle englishBundle = ResourceBundle.getBundle("english");
-		ResourceBundle dutchBundle = ResourceBundle.getBundle("dutch");
-		ResourceBundle spanishBundle = ResourceBundle.getBundle("spanish");
+//		ResourceBundle dutchBundle = ResourceBundle.getBundle("dutch");
+//		ResourceBundle spanishBundle = ResourceBundle.getBundle("spanish");
 
-		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, englishBundle,"client", "scenes", "MarkdownEditor.fxml");
+		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, englishBundle,
+				"client", "scenes", "MarkdownEditor.fxml");
+
 		var sidebarEditor = FXML.load(SidebarCtrl.class, englishBundle, "client", "scenes", "Sidebar.fxml");
 		var noteEditor = FXML.load(NoteEditorCtrl.class, englishBundle,"client", "scenes", "MainUI.fxml");
 

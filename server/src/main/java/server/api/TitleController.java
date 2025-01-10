@@ -10,6 +10,7 @@ import server.database.NoteRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/titles")
@@ -43,7 +44,7 @@ public class TitleController {
      * @return A list with all the requested NoteTitle objects.
      */
     @GetMapping(path = {"", "/"})
-    public ResponseEntity<List<NoteTitle>> getAllTitles(@RequestParam(required = false) Long collectionId) {
+    public ResponseEntity<List<NoteTitle>> getAllTitles(@RequestParam(required = false) UUID collectionId) {
         List<Note> notes;
         if (collectionId == null) {
             notes = noteRepository.findAll();

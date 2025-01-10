@@ -8,14 +8,12 @@ import commons.Collection;
 
 public class Config {
 
-    private static final String configLocation = "user-config.json";
+    private static final String CONFIG_LOCATION = "user-config.json";
 
     private int syncThresholdMs;
-
+    private String localServer;
+    private UUID defaultCollectionId;
     private List<Collection> remoteCollections;
-
-    // FIXME: not sustainable; collections are weak entities of server (IDs are only server-unique), yikes...
-    public long defaultCollectionId;
 
     public Config() {
         // for object mapper
@@ -23,25 +21,27 @@ public class Config {
 
     public Config(int syncThresholdMs) {
         this.syncThresholdMs = syncThresholdMs;
+        this.localServer = "http://localhost:8080";
+        this.defaultCollectionId = null;
         this.remoteCollections = new ArrayList<>();
-        this.defaultCollectionId = -1;
     }
 
     public static Config load() {
         ObjectMapper objectMapper = new ObjectMapper();
-        File configFile = new File(configLocation);
+        File configFile = new File(CONFIG_LOCATION);
         try {
             return objectMapper.readValue(configFile, Config.class);
         } catch (IOException e) {
-            System.out.println("Creating default config...");
+            System.out.println("Config not found. Creating a default config...");
             System.out.println(e.getMessage());
+
             return new Config(5000);
         }
     }
 
     public void save() {
         ObjectMapper objectMapper = new ObjectMapper();
-        File configFile = new File(configLocation);
+        File configFile = new File(CONFIG_LOCATION);
         try {
             objectMapper.writeValue(configFile, this);
         } catch (IOException e) {
@@ -49,13 +49,21 @@ public class Config {
             System.err.println("ERROR: Failed to save config: " + e.getMessage());
         }
     }
+
     public int getSyncThresholdMs() {
         return syncThresholdMs;
     }
 
-    public void setSyncThresholdMs(int syncThresholdMs) {
-        this.syncThresholdMs = syncThresholdMs;
-        save();
+    public String getLocalServer() {
+        return localServer;
+    }
+
+    public UUID getDefaultCollectionId() {
+        return defaultCollectionId;
+    }
+
+    public void setDefaultCollectionId(UUID defaultCollectionId) {
+        this.defaultCollectionId = defaultCollectionId;
     }
 
     public List<Collection> getRemoteCollections() {

@@ -17,7 +17,7 @@ public class CollectionService {
 
     public String getUniqueCollectionName() {
         while (true) {
-            String random = randomService.getRandomString(20);
+            String random = "collection-" + randomService.getRandomString(6);
             if (!collectionRepository.existsByName(random)) {
                 return random;
             }

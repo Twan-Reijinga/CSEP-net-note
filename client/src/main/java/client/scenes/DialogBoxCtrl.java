@@ -177,6 +177,8 @@ public class DialogBoxCtrl {
      *
      * @param label        the label of the button
      * @param action       the action to perform when the button is clicked
+     * @param closesDialog indicates whether to close the dialog if button is pressed
+     * @return DialogBoxCtrl an updated instance of this object with added button
      */
     public DialogBoxCtrl appendButton(String label, EventHandler<ActionEvent> action, boolean closesDialog) {
         var button = new Button(label);

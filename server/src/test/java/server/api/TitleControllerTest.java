@@ -57,7 +57,7 @@ class TitleControllerTest {
 
     @Test
     void getAllTitlesForCollection() {
-        List<NoteTitle> titles = controller.getAllTitles(1L).getBody();
+        List<NoteTitle> titles = controller.getAllTitles(collection.id).getBody();
         List<NoteTitle> expected = List.of(
                 NoteTitle.fromNote(note1));
         assert titles != null;
