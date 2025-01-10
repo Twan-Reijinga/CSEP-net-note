@@ -18,6 +18,7 @@ package client;
 import static com.google.inject.Guice.createInjector;
 
 import client.scenes.SidebarCtrl;
+import client.utils.LanguagePreference;
 import com.google.inject.Injector;
 import client.scenes.NoteEditorCtrl;
 import client.scenes.MainCtrl;
@@ -35,7 +36,6 @@ public class Main extends Application {
 		NL,
 		ES;
 	}
-	private static Language currentLanguage = Language.EN;
 
 	private static MainCtrl mainCtrl;
 	private static Stage primaryStage;
@@ -48,9 +48,10 @@ public class Main extends Application {
 	}
 
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
 		primaryStage = stage;
-		loadApplication(currentLanguage);
+		Language language = LanguagePreference.getLanguage();
+		loadApplication(language);
 	}
 
 	public static void loadApplication(Language language) {
@@ -80,9 +81,9 @@ public class Main extends Application {
 		primaryStage.setHeight(height);
 	}
 
-	public static void switchLanguage(Language language) throws Exception {
-		if (language == currentLanguage) return;
-		currentLanguage = language;
+	public static void switchLanguage(Language language) {
+		if (language == LanguagePreference.getLanguage()) return;
+		LanguagePreference.saveLanguage(language);
 		loadApplication(language);
 	}
 }
