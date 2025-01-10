@@ -70,7 +70,7 @@ public class MainCtrl {
     {
         this.primaryStage = primaryStage;
 
-        this.tagFilteringHandler = new TagFilteringHandler(new ServerUtils());
+        this.tagFilteringHandler = new TagFilteringHandler(this.serverUtils);
 
         this.noteEditorCtrl = noteEditor.getKey();
         this.noteEditorEnglish = new Scene(noteEditor.getValue());
@@ -174,8 +174,9 @@ public class MainCtrl {
      * @param note The note that was changed.
      */
     public void updateTags(Note note){
-        if(this.tagFilteringHandler.onNoteUpdated(note)){
-            this.noteEditorCtrl.clearSelectedTagsFromHBox();
+        List<String> removedTags = this.tagFilteringHandler.onNoteUpdated(note);
+        if(!removedTags.isEmpty()){
+            this.noteEditorCtrl.removeTagsFromHBox(removedTags);
         }
         this.applyFilters();
     }

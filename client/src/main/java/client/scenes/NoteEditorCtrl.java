@@ -303,6 +303,18 @@ public class NoteEditorCtrl {
         }
     }
 
+    public void removeTagsFromHBox(List<String> tags){
+        List<Node> toRemove = new ArrayList<>();
+        for(Node child: this.tagContainerHBox.getChildren()){
+            if(child.getClass() == Label.class){
+                if(tags.contains(((Label)child).getText())){
+                    toRemove.add(child);
+                }
+            }
+        }
+        this.tagContainerHBox.getChildren().removeAll(toRemove);
+    }
+
     public void clearSelectedTagsFromHBox(){
         while(this.tagContainerHBox.getChildren().size() > 4){
             this.tagContainerHBox.getChildren().remove(1);

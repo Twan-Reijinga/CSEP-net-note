@@ -42,7 +42,7 @@ public class TagFilteringHandler {
         this.loadedNoteTags.add(extractNoteTags(note));
     }
 
-    public boolean onNoteUpdated(Note note){
+    public List<String> onNoteUpdated(Note note){
         NoteTags currentTags = this.loadedNoteTags.stream()
                 .filter(x -> x.getId().equals(note.id))
                 .findFirst().get();
@@ -104,20 +104,20 @@ public class TagFilteringHandler {
         return noteTags;
     }
 
-    public boolean removedReferenceToTag(HashSet<String> removedTags) {
+    public List<String> removedReferenceToTag(HashSet<String> removedTags) {
         List<String> allTags = this.loadedNoteTags.stream().map(x -> x.getTags())
                 .flatMap(hashSet -> hashSet.stream())
                 .collect(Collectors.toList());
         HashSet<String> tags = new HashSet<>(allTags);
 
-        boolean anyRemoved = false;
+        List<String> removed = new ArrayList<>();
         for (String tag : removedTags) {
             if (!tags.contains(tag)) {
                 this.removeTag(tag);
-                anyRemoved = true;
+                removed.add(tag);
             }
         }
 
-        return anyRemoved;
+        return removed;
     }
 }
