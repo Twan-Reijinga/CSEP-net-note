@@ -19,7 +19,7 @@ import static com.google.inject.Guice.createInjector;
 
 import client.scenes.SidebarCtrl;
 import client.utils.Language;
-import client.utils.LanguagePreference;
+import client.config.LanguagePreference;
 import com.google.inject.Injector;
 import client.scenes.NoteEditorCtrl;
 import client.scenes.MainCtrl;

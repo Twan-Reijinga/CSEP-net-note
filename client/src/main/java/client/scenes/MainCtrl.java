@@ -18,7 +18,6 @@ package client.scenes;
 import client.Main;
 import client.config.Config;
 import client.utils.Language;
-import client.utils.LanguagePreference;
 import client.utils.ServerUtils;
 import commons.NoteTitle;
 import client.utils.ShortcutHandler;

@@ -1,7 +1,7 @@
-package client.utils;
+package client.config;
 
 
-import client.Main;
+import client.utils.Language;
 
 import java.util.prefs.Preferences;
 
