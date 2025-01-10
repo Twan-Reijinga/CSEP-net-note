@@ -18,6 +18,7 @@ package client;
 import static com.google.inject.Guice.createInjector;
 
 import client.scenes.SidebarCtrl;
+import client.utils.Language;
 import client.utils.LanguagePreference;
 import com.google.inject.Injector;
 import client.scenes.NoteEditorCtrl;
@@ -31,12 +32,6 @@ import java.util.ResourceBundle;
 
 
 public class Main extends Application {
-	public enum Language {
-		EN,
-		NL,
-		ES;
-	}
-
 	private static MainCtrl mainCtrl;
 	private static Stage primaryStage;
 

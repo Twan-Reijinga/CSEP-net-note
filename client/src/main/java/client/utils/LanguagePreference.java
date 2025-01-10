@@ -13,7 +13,7 @@ public class LanguagePreference {
      * Save language locally to restore preference when app is opened again.
      * @param language The language to save.
      */
-    public static void saveLanguage(Main.Language language) {
+    public static void saveLanguage(Language language) {
         String lang = switch (language) {
             case EN -> "English";
             case NL -> "Dutch";
@@ -26,12 +26,12 @@ public class LanguagePreference {
      * Restore language from storage to use in app when re-opened.
      * @return The stored language or the default english.
      */
-    public static Main.Language getLanguage() {
+    public static Language getLanguage() {
         String lang = PREFERENCES.get(LANGUAGE_KEY, "English");
         return switch (lang) {
-            case "Dutch" -> Main.Language.NL;
-            case "Spanish" -> Main.Language.ES;
-            default -> Main.Language.EN;
+            case "Dutch" -> Language.NL;
+            case "Spanish" -> Language.ES;
+            default -> Language.EN;
         };
     }
 
