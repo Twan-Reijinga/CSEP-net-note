@@ -54,7 +54,6 @@ public class Main extends Application {
 	}
 
 	public static void loadApplication(Language language) {
-		// Load the ResourceBundle based on the current language
 		ResourceBundle resourceBundle = ResourceBundle.getBundle(
 			switch (language) {
 				case NL -> "dutch";
@@ -63,23 +62,22 @@ public class Main extends Application {
 			}
 		);
 
+		double width = primaryStage.getWidth();
+		double height = primaryStage.getHeight();
+
 		Main mainInstance = new Main();
 		FXMLLoader loader = new FXMLLoader(mainInstance.getClass().getResource("/fxml/main.fxml"));
 		loader.setResources(resourceBundle);
-
-		// Reload individual components
 		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, resourceBundle,
 				"client", "scenes", "MarkdownEditor.fxml");
-
 		var sidebarEditor = FXML.load(SidebarCtrl.class, resourceBundle, "client", "scenes", "Sidebar.fxml");
 		var noteEditor = FXML.load(NoteEditorCtrl.class, resourceBundle,"client", "scenes", "MainUI.fxml");
-
-		// Initialize or refresh the MainCtrl with the new components
 		if (mainCtrl == null) {
 			mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 		}
-
 		mainCtrl.initialize(primaryStage, markdownEditor, noteEditor, sidebarEditor);
+		primaryStage.setWidth(width);
+		primaryStage.setHeight(height);
 	}
 
 	public static void switchLanguage(Language language) throws Exception {

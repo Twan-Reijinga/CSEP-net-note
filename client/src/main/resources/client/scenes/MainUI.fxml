@@ -28,12 +28,12 @@
                <children>
                   <HBox prefHeight="26.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: black;">
                      <children>
-                        <TextField fx:id="searchBox" layoutX="12.999999999999986" layoutY="18.0" onKeyTyped="#onSearchBarInput" prefHeight="26.0" prefWidth="154.0" promptText="Search...">
+                        <TextField fx:id="searchBox" layoutX="12.999999999999986" layoutY="18.0" onKeyTyped="#onSearchBarInput" prefHeight="26.0" prefWidth="154.0" promptText="%searchBar">
                            <font>
                               <Font name="Candara" size="12.0" />
                            </font>
                         </TextField>
-                        <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onSearchButtonPressed" text="Search" />
+                        <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onSearchButtonPressed" text="%searchButton" />
                         <ToggleButton fx:id="advSearchButton" mnemonicParsing="false" onAction="#onAdvSearchButtonPressed" prefHeight="26.0" prefWidth="26.0" text="Search options" />
                         <Region HBox.hgrow="ALWAYS" />
                         <ComboBox fx:id="collectionDropdown" onAction="#onCollectionDropdownAction" prefHeight="26.0" prefWidth="80.0" />
