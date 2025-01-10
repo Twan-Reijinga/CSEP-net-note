@@ -114,7 +114,7 @@ public class NoteEditorCtrl {
         editCollections = new Pair<>(null, bundle.getString("editCollections"));
         showAll = new Pair<>(null, bundle.getString("showAll"));
 
-        loadLanguageDropdown();
+        loadLanguageDropdown(bundle.getBaseBundleName());
         loadCollectionDropdown();
     }
 
@@ -146,9 +146,10 @@ public class NoteEditorCtrl {
         };
     }
 
-    private void loadLanguageDropdown() {
+    private void loadLanguageDropdown(String language) {
         String[] availableLanguages = new String[] {"English", "Dutch", "Spanish"};
         languageDropdown.getItems().addAll(availableLanguages);
+        languageDropdown.setValue(language);
     }
 
     private void loadCollectionDropdown() {
