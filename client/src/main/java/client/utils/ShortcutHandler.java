@@ -1,6 +1,5 @@
 package client.utils;
 
-import client.scenes.MainCtrl;
 import client.scenes.SidebarCtrl;
 import commons.Note;
 import javafx.scene.Scene;
@@ -18,6 +17,11 @@ public class ShortcutHandler {
     private final SidebarCtrl sidebarCtrl;
     private final Stack<NoteAction> actionStack = new Stack<>();
     private final HashMap<Long, Long> idMapping = new HashMap<>();
+
+    private enum ChangeType {
+        DOWN,
+        UP
+    }
 
     /**
      * Initialization for the ShortcutHandler.
@@ -44,6 +48,10 @@ public class ShortcutHandler {
             this.undo();
         } else if (event.isControlDown() && event.getCode() == KeyCode.R) {
             sidebarCtrl.refresh();
+        } else if (event.isControlDown() && event.getCode() == KeyCode.DOWN) {
+            this.noteSelectionChange(ChangeType.DOWN);
+        } else if (event.isControlDown() && event.getCode() == KeyCode.UP) {
+            this.noteSelectionChange(ChangeType.UP);
         }
     }
 
@@ -89,6 +97,25 @@ public class ShortcutHandler {
         long newNoteId = sidebarCtrl.addNote(note);
         if (newNoteId != -1) {
             idMapping.put(action.getNote().id, newNoteId);
+        }
+    }
+
+    private void noteSelectionChange(ChangeType changeType) {
+        long currentNoteId = sidebarCtrl.getSelectedNoteId();
+
+        switch (changeType) {
+            case DOWN:
+                long nextNoteId = sidebarCtrl.getNextNoteId(currentNoteId);
+                if (nextNoteId != -1) {
+                    sidebarCtrl.noteClick(nextNoteId);
+                }
+                break;
+            case UP:
+                long previousNoteId = sidebarCtrl.getPreviousNoteId(currentNoteId);
+                if (previousNoteId != -1) {
+                    sidebarCtrl.noteClick(previousNoteId);
+                }
+                break;
         }
     }
 

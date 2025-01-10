@@ -1,38 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.NoteEditorCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.NoteEditorCtrl">
    <children>
       <BorderPane layoutX="-1.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <top>
-            <AnchorPane fx:id="topMostAnchor" prefHeight="59.0" prefWidth="600.0" style="-fx-background-color: black;" BorderPane.alignment="CENTER">
-               <children>
-                  <TextField fx:id="searchBox" layoutX="12.999999999999986" layoutY="18.0" prefHeight="25.0" prefWidth="127.0" promptText="%searchBar" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="12.999999999999986" AnchorPane.topAnchor="18.0">
-                     <font>
-                        <Font name="Candara" size="12.0" />
-                     </font>
-                  </TextField>
-                  <Button fx:id="searchButton" layoutX="145.33333333333334" layoutY="18.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="59.0" text="%searchButton" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="145.0" AnchorPane.topAnchor="18.0" />
-                  <Label fx:id="appTitle" alignment="CENTER" layoutX="231.0" layoutY="18.0" text="NetNote" textFill="WHITE">
-                     <font>
-                        <Font name="Candara" size="22.0" />
-                     </font>
-                  </Label>
-                  <ComboBox fx:id="languageDropDown" layoutX="494.0" layoutY="17.0" prefHeight="25.0" prefWidth="84.0" AnchorPane.bottomAnchor="19.0" AnchorPane.rightAnchor="22.0" AnchorPane.topAnchor="17.0" />
-                  <Label layoutX="324.0" layoutY="21.0" text="Collections:" textFill="WHITE" />
-                  <ComboBox fx:id="collectionDropdown" layoutX="392.0" layoutY="17.0" onAction="#onCollectionDropdownAction" prefHeight="26.0" prefWidth="90.0" />
-               </children>
-            </AnchorPane>
-         </top>
          <center>
-            <AnchorPane fx:id="markdownPaneContainer" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+            <AnchorPane fx:id="markdownEditorContainer" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
          </center>
          <left>
-            <AnchorPane fx:id="sideBarContainer" prefHeight="339.0" prefWidth="115.0" BorderPane.alignment="CENTER" />
+            <AnchorPane fx:id="sidebarContainer" prefHeight="339.0" prefWidth="115.0" BorderPane.alignment="CENTER" />
          </left>
+         <top>
+            <VBox prefHeight="66.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox prefHeight="26.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: black;">
+                     <children>
+                        <TextField fx:id="searchBox" layoutX="12.999999999999986" layoutY="18.0" onKeyTyped="#onSearchBarInput" prefHeight="26.0" prefWidth="154.0" promptText="Search...">
+                           <font>
+                              <Font name="Candara" size="12.0" />
+                           </font>
+                        </TextField>
+                        <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onSearchButtonPressed" text="Search" />
+                        <ToggleButton fx:id="advSearchButton" mnemonicParsing="false" onAction="#onAdvSearchButtonPressed" prefHeight="26.0" prefWidth="26.0" text="Search options" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <ComboBox fx:id="collectionDropdown" onAction="#onCollectionDropdownAction" prefHeight="26.0" prefWidth="80.0" />
+                        <ComboBox fx:id="languageDropdown" onAction="#onLanguageDropdownAction" prefHeight="26.0" prefWidth="80.0" />
+                     </children>
+                     <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </padding>
+                  </HBox>
+                  <HBox fx:id="advSearchHBox" minHeight="-Infinity" prefHeight="0.0" prefWidth="600.0" style="-fx-background-color: black;">
+                     <children>
+                        <ChoiceBox fx:id="searchInOptionsList" disable="true" prefHeight="19.0" prefWidth="150.0" visible="false" />
+                        <CheckBox fx:id="matchAllCheckBox" disable="true" mnemonicParsing="false" prefHeight="22.0" prefWidth="74.0" text="Match all" textFill="WHITE" visible="false" />
+                        <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                     </children>
+                     <padding>
+                        <Insets left="20.0" right="20.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </VBox>
+         </top>
       </BorderPane>
    </children>
 </AnchorPane>

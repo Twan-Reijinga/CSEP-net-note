@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.config.Config;
 import commons.Collection;
 import commons.Note;
 import commons.NoteTitle;
@@ -12,31 +13,31 @@ import javafx.scene.layout.VBox;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 
 public class SidebarCtrl {
-
-    private final ServerUtils server;
     private long selectedNoteId;
-    private Collection defaultCollection;
+    private UUID selectedCollectionId;
 
     @FXML
     public VBox noteContainer;
     private MainCtrl mainCtrl;
 
+    // Injectable
+    private final ServerUtils server;
+    private final Config config;
+
     /**
      * Sidebar control constructor for functionality behind the sidebar UI element.
      * @param server Server utilities for requests and functionality dependent on the server.
+     * @param config a client config
      */
     @Inject
-    public SidebarCtrl(ServerUtils server, Collection defaultCollection) {
+    public SidebarCtrl(ServerUtils server, Config config) {
         this.server = server;
-        this.defaultCollection = defaultCollection;
+        this.config = config;
         selectedNoteId = -1;
-
-        this.defaultCollection = new Collection("default", "Default Collection");
-        this.defaultCollection.id = 1;
-        this.defaultCollection.isDefault = true;
     }
 
     /**
@@ -54,7 +55,25 @@ public class SidebarCtrl {
     public void refresh() {
         noteContainer.getChildren().clear();
 
-        List<NoteTitle> titles = server.getNoteTitles();
+        List<NoteTitle> titles;
+        if (selectedCollectionId == null) {
+            titles = server.getNoteTitles();
+        } else {
+            titles = server.getNoteTitlesInCollection(selectedCollectionId);
+        }
+
+        loadSideBar(titles);
+    }
+
+    /**
+     * Load function to load all desired objects in the sidebar.
+     * The function will be called everytime the sidebar is refreshed and also
+     * on every search performed in order to load the search results.
+     * @param titles the notes that are supposed to be loaded into the sidebar.
+     */
+    public void loadSideBar(List<NoteTitle> titles) {
+        noteContainer.getChildren().clear();
+
         for (NoteTitle title : titles) {
             Label label = new Label(title.getTitle());
             VBox wrapper = new VBox(label);
@@ -66,6 +85,11 @@ public class SidebarCtrl {
             });
             noteContainer.getChildren().add(wrapper);
         }
+    }
+
+    public void setSelectedCollectionId(UUID collectionId) {
+        selectedCollectionId = collectionId;
+        refresh();
     }
 
     /**
@@ -86,7 +110,7 @@ public class SidebarCtrl {
 
     /**
      * Creates a new title that is unique to the other title in the format "New note: #"
-     * 
+     * <p>
      * @param input an integer that indicates what the first default title should be (usually 1)
      * 				every other title will have a higher number.
      * @return an integer which increments the current highest "New note: #", so that every note is unique in title.
@@ -102,10 +126,10 @@ public class SidebarCtrl {
         			correctTitle = false;
         		}
         		for (char currentChar : chars) {
-        			if (!Character.isDigit(currentChar))	
+        			if (!Character.isDigit(currentChar))
         				correctTitle = false;
         		}
-        		if (correctTitle == true && currentNote.getTitle().startsWith("New note: ")) {
+        		if (correctTitle && currentNote.getTitle().startsWith("New note: ")) {
         			int tempInt = Integer.parseInt(currentNote.getTitle().split(" ")[2]);
         			if (tempInt >= input) {
         				input = tempInt + 1;
@@ -117,12 +141,16 @@ public class SidebarCtrl {
     }
 
     /**
-     * Adds a default note to the database with a unique title, unique id, content and a default collection, 
-     * or the collection of the selected note. 
+     * Adds a default note to the database with a unique title, unique id, content and a default collection,
+     * or the collection of the selected note.
      * Afterward selects the newly created note (last note).
      */
     public void createNote() {
-        Collection collection = defaultCollection;
+        // If no collection is selected, create notes in default one
+        UUID destinationCollectionId = selectedCollectionId == null ?
+                config.getDefaultCollectionId() : selectedCollectionId;
+
+        Collection collection = server.getCollectionById(destinationCollectionId);
         if (getSelectedNoteId() > 0) {
             collection = server.getNoteById(getSelectedNoteId()).collection;
         }
@@ -152,9 +180,9 @@ public class SidebarCtrl {
         noteClick(selectedNoteId);
         return selectedNoteId;
     }
-    
+
     /**
-     * Deletes the selected note, and if there is no note -> 
+     * Deletes the selected note, and if there is no note ->
      * creates a new default note.signaturized
      * Afterward selects the first note.
      */
@@ -200,7 +228,7 @@ public class SidebarCtrl {
      * intended behaviour is that the note contents opens.
      * @param id identifier that is linked to a specific note that corresponds to the servers note ID.
      */
-    private void noteClick(long id) {
+    public void noteClick(long id) {
         for (var titleBoxes : noteContainer.getChildren()) {
             if (titleBoxes.getId().equals(id + "")) {
                 titleBoxes.setStyle("-fx-background-color: #98c1d9");
@@ -210,6 +238,13 @@ public class SidebarCtrl {
         }
         selectedNoteId = id;
         mainCtrl.updateNote(id);
+    }
+
+    private void selectFirstNote() {
+        if (noteContainer.getChildren().isEmpty()) return;
+
+        long id = Long.parseLong(noteContainer.getChildren().getFirst().getId());
+        noteClick(id);
     }
 
     /**
@@ -224,4 +259,30 @@ public class SidebarCtrl {
     public long getSelectedNoteId() {
         return selectedNoteId;
     }
+
+    public long getNextNoteId(long id) {
+        boolean isNext = false;
+        for (var titleBoxes : noteContainer.getChildren()) {
+            if (isNext) {
+                return Long.parseLong(titleBoxes.getId());
+            }
+            if (titleBoxes.getId().equals(id + "")) {
+                isNext = true;
+            }
+        }
+        return -1;
+    }
+
+    public long getPreviousNoteId(long id) {
+        long previousNoteId = -1;
+        for (var titleBoxes : noteContainer.getChildren()) {
+            if (titleBoxes.getId().equals(id + "")) {
+                return previousNoteId;
+            }
+            previousNoteId = Long.parseLong(titleBoxes.getId());
+        }
+        // never reached
+        return previousNoteId;
+    }
+
 }

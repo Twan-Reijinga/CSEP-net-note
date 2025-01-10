@@ -19,7 +19,10 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.net.ConnectException;
 import java.util.List;
+import java.util.UUID;
 
+import client.config.Config;
+import com.google.inject.Inject;
 import commons.Note;
 import commons.NoteTitle;
 import jakarta.ws.rs.client.Entity;
@@ -32,39 +35,63 @@ import jakarta.ws.rs.core.GenericType;
 import commons.Collection;
 
 public class ServerUtils {
+	private final Config config;
+	private final String server;
 
-	private static final String SERVER = "http://localhost:8080/";
+	@Inject
+	public ServerUtils(Config config) {
+		this.config = config;
+		this.server = config.getLocalServer();
+	}
+
+	private ServerUtils(Config config, String server) {
+		this.config = config;
+		this.server = server;
+	}
+
+	public ServerUtils withServer(String server) {
+		return new ServerUtils(config, server);
+	}
+
+	// TODO: implement withTimeout
 
 	public List<Collection> getAllCollections() {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/collections")
+				.target(server).path("api/collections")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<>() {});
+	}
+
+	public Collection getDefaultCollection() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/collections/default")
 				.request(APPLICATION_JSON)
 				.get(new GenericType<>() {});
 	}
 
 	public Collection addCollection(Collection collection) {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/collections")
+				.target(server).path("api/collections")
 				.request(APPLICATION_JSON)
 				.post(Entity.entity(collection, APPLICATION_JSON), Collection.class);
 	}
 
 	public Collection updateCollection(Collection collection) {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/collections")
+				.target(server).path("api/collections")
 				.request(APPLICATION_JSON)
 				.put(Entity.entity(collection, APPLICATION_JSON), Collection.class);
 	}
 
 	public String getUniqueCollectionName() {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/collections/unique-name")
+				.target(server).path("api/collections/unique-name")
 				.request().get(String.class);
 	}
 
 	public void deleteCollection(Collection collection) {
 		ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/collections/delete/" + collection.id)
+				.target(server).path("api/collections/delete/" + collection.id)
 				.request(APPLICATION_JSON)
 				.delete();
 	}
@@ -76,21 +103,30 @@ public class ServerUtils {
 	 */
 	public List<NoteTitle> getNoteTitles() {
 		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/titles") //
+				.target(server).path("api/titles") //
 				.request(APPLICATION_JSON) //
 				.get(new GenericType<>() {});
 	}
 
-	public Note MOCK_getDefaultNote() {
+
+	public List<NoteTitle> getNoteTitlesInCollection(UUID collectionId) {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes/mock")
+				.target(server).path("api/titles")
+				.queryParam("collectionId", collectionId)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<>() {});
+	}
+
+	public Note mockGetDefaultNote() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/mock")
 				.request(APPLICATION_JSON)
 				.get(new GenericType<>() {});
 	}
 
 	public Note updateNote(Note note) {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes")
+				.target(server).path("api/notes")
 				.request(APPLICATION_JSON)
 				.put(Entity.entity(note, APPLICATION_JSON), Note.class);
 	}
@@ -103,7 +139,7 @@ public class ServerUtils {
 	 */
 	public Note getNoteById(long id) {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes/" + id)
+				.target(server).path("api/notes/" + id)
 				.request(APPLICATION_JSON)
 				.get(new GenericType<>() {});
 	}
@@ -111,7 +147,7 @@ public class ServerUtils {
 	public boolean isServerAvailable() {
 		try {
 			ClientBuilder.newClient(new ClientConfig()) //
-					.target(SERVER) //
+					.target(server) //
 					.request(APPLICATION_JSON) //
 					.get();
 		} catch (ProcessingException e) {
@@ -122,10 +158,16 @@ public class ServerUtils {
 		return true;
 	}
 
+	public Collection getCollectionInfo(String name) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("/" +  name)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<>() {});
+	}
 
 	public List<Note> getAllNotes() {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes")
+				.target(server).path("api/notes")
 				.request(APPLICATION_JSON)
 				.get(new GenericType<>() {});
 	}
@@ -137,7 +179,7 @@ public class ServerUtils {
 	 */
 	public Note getNoteById(Long id) {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes/" + id)
+				.target(server).path("api/notes/" + id)
 				.request(APPLICATION_JSON)
 				.get(new GenericType<>() {});
 	}
@@ -149,7 +191,7 @@ public class ServerUtils {
 	 */
 	public boolean existsNoteById(long id) {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes/exists/" + id)
+				.target(server).path("api/notes/exists/" + id)
 				.request(APPLICATION_JSON)
 				.get(new GenericType<Boolean>() {});
 	}
@@ -160,7 +202,7 @@ public class ServerUtils {
 	 */
 	public void addNote(Note note) {
 		ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes")
+				.target(server).path("api/notes")
 				.request(APPLICATION_JSON)
 				.post(Entity.entity(note, APPLICATION_JSON), Note.class);
 	}
@@ -171,8 +213,42 @@ public class ServerUtils {
 	 */
 	public void deleteNote(Note note) {
 		ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes/delete/" + note.id)
+				.target(server).path("api/notes/delete/" + note.id)
 				.request(APPLICATION_JSON)
 				.delete();
 	}
+
+	public Collection getCollectionById(UUID collectionId) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/collections/" + collectionId)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<>() {});
+	}
+
+	/** Sends a GET request to the server with the provided parameters.
+	 * @param collectionId id of the collection where to search
+	 * @param text search query
+	 * @param matchAll if search should match all
+	 * @param whereToSearch search in titles/contents/both
+	 * @return List of NoteTitle objects that is used to fill in the sidebar.
+	 */
+	public List<NoteTitle> searchNotesInCollection(
+			UUID collectionId,
+			String text,
+			boolean matchAll,
+			String whereToSearch
+	){
+		String requestPath = "api/search";
+
+		// TODO: SEARCH FILTERED ON COLLECTION NOT IMPLEMENTED
+
+		return  ClientBuilder.newClient(new ClientConfig())
+				.target(server).path(requestPath  +
+										"/" + text +
+										"/" + matchAll +
+										"/" + whereToSearch)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<>() {});
+	}
+
 }

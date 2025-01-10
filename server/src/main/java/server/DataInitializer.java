@@ -1,6 +1,5 @@
 package server;
 
-import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -26,25 +25,16 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initializeData() {
         return args -> {
-
-            // FIXME: potential over-complication (right now). We are using memdb so why bother checking
-            //  if default collection exists, furthermore, if we were to use filedb data initializer would
-            //  create to many same titles, collections, etc. Maybe data initializer should have different
-            //  modes: one for dev one for prod
-
-            Optional<Collection> collectionResult = collectionRepository.findFirstByIsDefaultTrue();
-
-            if (collectionResult.isPresent()) return;
+            // TODO: consider creating dev/prod versions of this data-initializer
 
             // Create the default collection if it doesn't exist
-            Collection defaultCollection = new commons.Collection("default", "Default Collection");
-            defaultCollection.isDefault = true;
+            Collection defaultCollection = new Collection("default", "Default Collection");
 
             // Add another collection to show off multi-collection support
-            Collection arbitraryCollection = new commons.Collection("arbitrary", "Arbitrary Collection");
+            Collection arbitraryCollection = new Collection("arbitrary", "Arbitrary Collection");
 
-            collectionRepository.save(defaultCollection);
-            collectionRepository.save(arbitraryCollection);
+            defaultCollection = collectionRepository.save(defaultCollection);
+            arbitraryCollection = collectionRepository.save(arbitraryCollection);
 
             System.out.println("Boilerplate collections created.");
 

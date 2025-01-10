@@ -15,12 +15,20 @@
  */
 package client.scenes;
 
+import client.config.Config;
+import client.utils.ServerUtils;
+import commons.NoteTitle;
 import client.utils.ShortcutHandler;
 import commons.Note;
+import jakarta.inject.Inject;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import commons.Collection;
+
+import java.util.List;
+import java.util.UUID;
 
 public class MainCtrl {
 
@@ -30,7 +38,25 @@ public class MainCtrl {
 
     private MarkdownEditorCtrl markdownEditorCtrl;
     private SidebarCtrl sidebarCtrl;
+    private Scene sidebar;
     private ShortcutHandler shortcutHandler;
+
+    private final Config config;
+    private final ServerUtils serverUtils;
+
+    @Inject
+    public MainCtrl(Config config, ServerUtils serverUtils) {
+        this.config = config;
+        this.serverUtils = serverUtils;
+
+        // TODO: consider a better place for default collection initialization
+        if (config.getDefaultCollectionId() == null) {
+            System.out.println("Requesting default collection...");
+
+            Collection defaultCollection = serverUtils.getDefaultCollection();
+            config.setDefaultCollectionId(defaultCollection.id);
+        }
+    }
 
 
     public void initialize(
@@ -45,12 +71,10 @@ public class MainCtrl {
         this.noteEditorCtrl = noteEditor.getKey();
         this.noteEditorEnglish = new Scene(noteEditor.getValue());
 
-
         this.markdownEditorCtrl = markdownEditor.getKey();
-
         this.sidebarCtrl = sidebarEditor.getKey();
 
-        noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue());
+        noteEditorCtrl.initialize(sidebarEditor, markdownEditor);
         markdownEditorCtrl.initialize(sidebarCtrl);
         sidebarCtrl.initialize(this);
 
@@ -121,4 +145,23 @@ public class MainCtrl {
     public void recordDelete(Note note) {
         shortcutHandler.recordDelete(note);
     }
+
+    /** This method sends data for the creation of a get request to the server and passes the returned data
+     *  to the sidebar, forcing it to update itself.
+     *
+     * @param text  text for the search request
+     * @param collectionId id of collection to search
+     * @param matchAll option to match all keywords or not
+     * @param whereToSearch option to search specific parts of a note
+     */
+    public void sendSearchRequest(String text, UUID collectionId, boolean matchAll, String whereToSearch) {
+        List<NoteTitle> results = serverUtils.searchNotesInCollection(collectionId, text, matchAll, whereToSearch);
+        updateSideBar(results);
+    }
+
+    public void updateSideBar(List<NoteTitle> titles){
+        sidebarCtrl.loadSideBar(titles);
+    }
+
+    public void refreshSideBar(){ sidebarCtrl.refresh(); }
 }
