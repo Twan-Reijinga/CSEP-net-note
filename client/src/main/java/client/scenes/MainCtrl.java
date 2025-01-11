@@ -209,23 +209,46 @@ public class MainCtrl {
         this.noteEditorCtrl.loadTagOptions();
     }
 
+    /**
+     * Called when the sidebar gets loaded with new content.
+     * Gives tagFilteringHandler the id's of the new NoteTitles and the handler uses
+     * them to request the tags of the corresponding notes from the server.
+     * @param noteTagIds a list containing the id's of the new NoteTitles loaded in the sidebar.
+     */
     public void loadNewNoteTags(List<Long> noteTagIds){
         this.tagFilteringHandler.loadNewNoteTags(noteTagIds);
         this.clearTagFilters();
     }
 
+    /**
+     * This method calls methods from the TagFilteringHandler
+     * and noteEditorCtrl, in order to clear all tags selected for filtering
+     * and remove them from the display bar. Then it calls applyFiltersToSideBar()
+     * which makes the sidebar show all NoteTitles without any filters applied.
+     */
     public void clearTagFilters(){
         this.tagFilteringHandler.clearTags();
         this.noteEditorCtrl.clearSelectedTagsFromHBox();
         this.applyFiltersToSideBar();
     }
 
+    /**
+     * This method is called when a tag was clicked on in the WebView or
+     * selected from the options in the MenuButton. It adds the tag as a filter
+     * updates the sideBar to show the newly filtered results and adds it to the
+     * tag display bar.
+     * @param tag the tag that will be set as a filter.
+     */
     public void addTagFilter(String tag){
         this.tagFilteringHandler.addTag(tag);
         this.applyFiltersToSideBar();
         this.noteEditorCtrl.addSelectedTagToHBox(tag);
     }
 
+    /**
+     * This method is used to get the text for the items in the MenuButton.
+     * @return a list of the tags available (except those already selected).
+     */
     public List<String> listAvailableTags(){
         return this.tagFilteringHandler.getAvailableTags();
     }

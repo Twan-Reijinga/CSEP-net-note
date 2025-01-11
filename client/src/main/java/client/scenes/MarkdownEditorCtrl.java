@@ -238,6 +238,7 @@ public class MarkdownEditorCtrl {
         this.mainCtrl.addTagFilter("#" + tag);
     }
 
+    //FIXME this should probably be moved to a separate CSS file and then loaded from there.
     private String getLinkCSS(){
         return "style='display: inline-block; " +
                 "padding: 2px 4px; " +
