@@ -297,6 +297,7 @@ public class NoteEditorCtrl {
         if(!tagAlreadyDisplayed(tag)){
             Label selectedTagLabel = new Label(tag);
             selectedTagLabel.setStyle(getSelectedTagStyle());
+            selectedTagLabel.setMinWidth(25L);
 
             int index = this.tagContainerHBox.getChildren().size() - 3;
             this.tagContainerHBox.getChildren().add(index, selectedTagLabel);
