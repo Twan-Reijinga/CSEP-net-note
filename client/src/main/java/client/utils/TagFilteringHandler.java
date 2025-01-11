@@ -24,29 +24,23 @@ public class TagFilteringHandler {
         availableTags = new HashSet<>();
     }
 
-    public List<String> getAvailableTags() {
-        List<String> availableTagsList = new ArrayList<>(availableTags.stream().toList());
-        Collections.sort(availableTagsList);
-        return availableTagsList;
-    }
-
     public void loadNewNoteTags(List<Long> noteIds){
         this.loadedNoteTags = this.serverUtils.getNoteTags(noteIds);
     }
 
-    public void onNoteDeleted(Long noteId){
+    public void deleteNoteTags(Long noteId){
         this.loadedNoteTags.removeIf(x -> x.getId().equals(noteId));
     }
 
-    public void onNoteAdded(Note note){
-        this.loadedNoteTags.add(extractNoteTags(note));
+    public void addNoteTags(Note note){
+        this.loadedNoteTags.add(convertToNoteTags(note));
     }
 
-    public List<String> onNoteUpdated(Note note){
+    public List<String> updateNoteTags(Note note){
         NoteTags currentTags = this.loadedNoteTags.stream()
                 .filter(x -> x.getId().equals(note.id))
                 .findFirst().get();
-        HashSet<String> newTags = extractNoteTags(note).getTags();
+        HashSet<String> newTags = convertToNoteTags(note).getTags();
 
         HashSet<String> removedTags = new HashSet<>();
         for(String tag: currentTags.getTags()){
@@ -55,7 +49,7 @@ public class TagFilteringHandler {
             }
         }
         currentTags.setTags(newTags);
-        return this.removedReferenceToTag(removedTags);
+        return this.checkIfTagsOrphaned(removedTags);
     }
 
     public void clearTags(){
@@ -70,7 +64,13 @@ public class TagFilteringHandler {
         tagsSelected.remove(tag);
     }
 
-    public List<Long> getDisplayNotes(){
+    public List<String> getAvailableTags() {
+        List<String> availableTagsList = new ArrayList<>(availableTags.stream().toList());
+        Collections.sort(availableTagsList);
+        return availableTagsList;
+    }
+
+    public List<Long> getNotesToDisplay(){
         List<Long> matching = new ArrayList<>();
         HashSet<String> availableTags = new HashSet<>();
 
@@ -93,7 +93,7 @@ public class TagFilteringHandler {
         return matching;
     }
 
-    public NoteTags extractNoteTags(Note note){
+    public NoteTags convertToNoteTags(Note note){
         HashSet<String> tags = new HashSet<>();
         Matcher matcher = Pattern.compile("#\\w+").matcher(note.content);
         while(matcher.find()){
@@ -104,7 +104,7 @@ public class TagFilteringHandler {
         return noteTags;
     }
 
-    public List<String> removedReferenceToTag(HashSet<String> removedTags) {
+    public List<String> checkIfTagsOrphaned(HashSet<String> removedTags) {
         List<String> allTags = this.loadedNoteTags.stream().map(x -> x.getTags())
                 .flatMap(hashSet -> hashSet.stream())
                 .collect(Collectors.toList());

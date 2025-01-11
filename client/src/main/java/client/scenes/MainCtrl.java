@@ -174,11 +174,11 @@ public class MainCtrl {
      * @param note The note that was changed.
      */
     public void updateTags(Note note){
-        List<String> removedTags = this.tagFilteringHandler.onNoteUpdated(note);
+        List<String> removedTags = this.tagFilteringHandler.updateNoteTags(note);
         if(!removedTags.isEmpty()){
             this.noteEditorCtrl.removeTagsFromHBox(removedTags);
         }
-        this.applyFilters();
+        this.applyFiltersToSideBar();
     }
 
     /**
@@ -187,46 +187,46 @@ public class MainCtrl {
      * @param id The id of the note that was deleted.
      */
     public void deleteTags(Long id){
-        this.tagFilteringHandler.onNoteDeleted(id);
-        this.clearTags();
+        this.tagFilteringHandler.deleteNoteTags(id);
+        this.clearTagFilters();
     }
 
     /**
      * Called when a note is added, checks for any tags in the new note.
      * @param note The note that was added.
      */
-    public void recordNewTags(Note note){
-        this.tagFilteringHandler.onNoteAdded(note);
-        this.clearTags();
+    public void addNewTags(Note note){
+        this.tagFilteringHandler.addNoteTags(note);
+        this.clearTagFilters();
     }
 
     /**
      * Used to get the ids of the notes that should be displayed after
      * applying filters and then display them.
      */
-    public void applyFilters(){
-        this.sidebarCtrl.displayNoteTitles(this.tagFilteringHandler.getDisplayNotes());
-        this.noteEditorCtrl.setTagOptions();
+    public void applyFiltersToSideBar(){
+        this.sidebarCtrl.displayNoteTitles(this.tagFilteringHandler.getNotesToDisplay());
+        this.noteEditorCtrl.loadTagOptions();
     }
 
     public void loadNewNoteTags(List<Long> noteTagIds){
         this.tagFilteringHandler.loadNewNoteTags(noteTagIds);
-        this.clearTags();
+        this.clearTagFilters();
     }
 
-    public void clearTags(){
+    public void clearTagFilters(){
         this.tagFilteringHandler.clearTags();
         this.noteEditorCtrl.clearSelectedTagsFromHBox();
-        this.applyFilters();
+        this.applyFiltersToSideBar();
     }
 
-    public void addTag(String tag){
+    public void addTagFilter(String tag){
         this.tagFilteringHandler.addTag(tag);
-        this.applyFilters();
+        this.applyFiltersToSideBar();
         this.noteEditorCtrl.addSelectedTagToHBox(tag);
     }
 
-    public List<String> getTagOptions(){
+    public List<String> listAvailableTags(){
         return this.tagFilteringHandler.getAvailableTags();
     }
 }

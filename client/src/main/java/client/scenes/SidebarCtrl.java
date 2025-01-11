@@ -74,7 +74,7 @@ public class SidebarCtrl {
     public void loadNoteTitles(List<NoteTitle> titles){
         noteTitles = titles;
         mainCtrl.loadNewNoteTags(titles.stream().map(x -> x.getId()).toList());
-        mainCtrl.applyFilters();
+        mainCtrl.applyFiltersToSideBar();
     }
 
     /**
@@ -186,7 +186,7 @@ public class SidebarCtrl {
 
         note.createdAt = new Date();
         server.addNote(note);
-        mainCtrl.recordNewTags(note);
+        mainCtrl.addNewTags(note);
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getLast().getId());
         noteClick(selectedNoteId);

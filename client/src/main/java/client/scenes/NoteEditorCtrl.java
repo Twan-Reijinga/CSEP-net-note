@@ -117,7 +117,7 @@ public class NoteEditorCtrl {
 
         loadLanguageDropdown();
         loadCollectionDropdown();
-        this.setTagOptions();
+        this.loadTagOptions();
     }
 
     private void appendSidebar(Node sidebarNode) {
@@ -264,15 +264,16 @@ public class NoteEditorCtrl {
         searchInOptionsList.setVisible(selected);
     }
 
+    @FXML
     public void onClearAllTagsPressed(){
-        mainCtrl.clearTags();
+        mainCtrl.clearTagFilters();
         this.clearSelectedTagsFromHBox();
     }
 
-    public void setTagOptions(){
+    public void loadTagOptions(){
         this.tagOptionsButton.getItems().clear();
         List<MenuItem> items = new ArrayList<>();
-        List<String> availableTagOptions = mainCtrl.getTagOptions();
+        List<String> availableTagOptions = mainCtrl.listAvailableTags();
         if(availableTagOptions.isEmpty()){
             items.add(new MenuItem("No tags."));
         }
@@ -281,7 +282,7 @@ public class NoteEditorCtrl {
                 MenuItem newItem = new MenuItem(tag);
 
                 newItem.setOnAction(e -> {
-                    this.tagOptionSelected(newItem.getText());
+                    this.onTagOptionClicked(newItem.getText());
                 });
                 items.add(newItem);
             }
@@ -289,12 +290,12 @@ public class NoteEditorCtrl {
         this.tagOptionsButton.getItems().addAll(items);
     }
 
-    public void tagOptionSelected(String tag){
-        mainCtrl.addTag(tag);
+    public void onTagOptionClicked(String tag){
+        mainCtrl.addTagFilter(tag);
     }
 
     public void addSelectedTagToHBox(String tag){
-        if(!tagAlreadyDisplayed(tag)){
+        if(!isTagAlreadyInHBox(tag)){
             Label selectedTagLabel = new Label(tag);
             selectedTagLabel.setStyle(getSelectedTagStyle());
             selectedTagLabel.setMinWidth(25L);
@@ -322,7 +323,7 @@ public class NoteEditorCtrl {
         }
     }
 
-    private boolean tagAlreadyDisplayed(String tag){
+    private boolean isTagAlreadyInHBox(String tag){
         boolean alreadyIn = false;
         for(Node node: this.tagContainerHBox.getChildren()){
             if(node.getClass() == Label.class){

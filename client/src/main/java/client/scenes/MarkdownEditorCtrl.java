@@ -224,7 +224,7 @@ public class MarkdownEditorCtrl {
         StringBuffer textBuffer = new StringBuffer();
         while (matcher.find()) {
             String tag = matcher.group().substring(1);
-            String link = "<a href='#' onclick='app.tagClick(\""
+            String link = "<a href='#' onclick='app.onTagClicked(\""
                     + tag + "\")' " + getLinkCSS() + ">"
                     + tag + "</a>";
             matcher.appendReplacement(textBuffer, link);
@@ -234,8 +234,8 @@ public class MarkdownEditorCtrl {
         return textBuffer.toString();
     }
 
-    public void tagClick(String tag){
-        this.mainCtrl.addTag("#" + tag);
+    public void onTagClicked(String tag){
+        this.mainCtrl.addTagFilter("#" + tag);
     }
 
     private String getLinkCSS(){
