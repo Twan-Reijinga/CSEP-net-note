@@ -94,6 +94,9 @@ public class SidebarCtrl {
                 long id = Long.parseLong(wrapper.getId()); // Get the VBox's ID
                 noteClick(id);             // Call a function, passing the ID
             });
+            if(title.getId() == selectedNoteId){
+                wrapper.setStyle("-fx-background-color: #98c1d9");
+            }
             noteContainer.getChildren().add(wrapper);
         }
     }
