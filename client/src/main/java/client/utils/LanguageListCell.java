@@ -20,8 +20,8 @@ public class LanguageListCell implements Callback<ListView<LanguageOption>, List
                     setGraphic(null);
                 } else {
                     imageView.setImage(item.getImage());
-                    imageView.setFitHeight(20);
-                    imageView.setFitWidth(20);
+                    imageView.setFitHeight(24);
+                    imageView.setFitWidth(32);
                     setText(item.getName());
                     setGraphic(imageView);
                 }
