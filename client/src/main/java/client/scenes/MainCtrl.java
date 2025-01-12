@@ -17,6 +17,7 @@ package client.scenes;
 
 import client.config.Config;
 import client.utils.ServerUtils;
+import client.utils.TagFilteringHandler;
 import commons.NoteTitle;
 import client.utils.ShortcutHandler;
 import commons.Note;
@@ -40,6 +41,7 @@ public class MainCtrl {
     private SidebarCtrl sidebarCtrl;
     private Scene sidebar;
     private ShortcutHandler shortcutHandler;
+    private TagFilteringHandler tagFilteringHandler;
 
     private final Config config;
     private final ServerUtils serverUtils;
@@ -67,6 +69,8 @@ public class MainCtrl {
     )
     {
         this.primaryStage = primaryStage;
+
+        this.tagFilteringHandler = new TagFilteringHandler(this.serverUtils);
 
         this.noteEditorCtrl = noteEditor.getKey();
         this.noteEditorEnglish = new Scene(noteEditor.getValue());
@@ -160,8 +164,92 @@ public class MainCtrl {
     }
 
     public void updateSideBar(List<NoteTitle> titles){
-        sidebarCtrl.loadSideBar(titles);
+        sidebarCtrl.loadNoteTitles(titles);
     }
 
     public void refreshSideBar(){ sidebarCtrl.refresh(); }
+
+    /**
+     * Called when a note is updated, checks the new content for tags and updates it if there are any.
+     * @param note The note that was changed.
+     */
+    public void updateTags(Note note){
+        List<String> removedTags = this.tagFilteringHandler.updateNoteTags(note);
+        if(!removedTags.isEmpty()){
+            this.noteEditorCtrl.removeTagsFromHBox(removedTags);
+        }
+        this.applyFiltersToSideBar();
+    }
+
+    /**
+     * Called when a note is deleted, deletes it's tags from the list of available tags
+     * (unless another note has them too).
+     * @param id The id of the note that was deleted.
+     */
+    public void deleteTags(Long id){
+        this.tagFilteringHandler.deleteNoteTags(id);
+        this.clearTagFilters();
+    }
+
+    /**
+     * Called when a note is added, checks for any tags in the new note.
+     * @param note The note that was added.
+     */
+    public void addNewTags(Note note){
+        this.tagFilteringHandler.addNoteTags(note);
+        this.clearTagFilters();
+    }
+
+    /**
+     * Used to get the ids of the notes that should be displayed after
+     * applying filters and then display them.
+     */
+    public void applyFiltersToSideBar(){
+        this.sidebarCtrl.displayNoteTitles(this.tagFilteringHandler.getNotesToDisplay());
+        this.noteEditorCtrl.loadTagOptions();
+    }
+
+    /**
+     * Called when the sidebar gets loaded with new content.
+     * Gives tagFilteringHandler the id's of the new NoteTitles and the handler uses
+     * them to request the tags of the corresponding notes from the server.
+     * @param noteTagIds a list containing the id's of the new NoteTitles loaded in the sidebar.
+     */
+    public void loadNewNoteTags(List<Long> noteTagIds){
+        this.tagFilteringHandler.loadNewNoteTags(noteTagIds);
+        this.clearTagFilters();
+    }
+
+    /**
+     * This method calls methods from the TagFilteringHandler
+     * and noteEditorCtrl, in order to clear all tags selected for filtering
+     * and remove them from the display bar. Then it calls applyFiltersToSideBar()
+     * which makes the sidebar show all NoteTitles without any filters applied.
+     */
+    public void clearTagFilters(){
+        this.tagFilteringHandler.clearTags();
+        this.noteEditorCtrl.clearSelectedTagsFromHBox();
+        this.applyFiltersToSideBar();
+    }
+
+    /**
+     * This method is called when a tag was clicked on in the WebView or
+     * selected from the options in the MenuButton. It adds the tag as a filter
+     * updates the sideBar to show the newly filtered results and adds it to the
+     * tag display bar.
+     * @param tag the tag that will be set as a filter.
+     */
+    public void addTagFilter(String tag){
+        this.tagFilteringHandler.addTag(tag);
+        this.applyFiltersToSideBar();
+        this.noteEditorCtrl.addSelectedTagToHBox(tag);
+    }
+
+    /**
+     * This method is used to get the text for the items in the MenuButton.
+     * @return a list of the tags available (except those already selected).
+     */
+    public List<String> listAvailableTags(){
+        return this.tagFilteringHandler.getAvailableTags();
+    }
 }
