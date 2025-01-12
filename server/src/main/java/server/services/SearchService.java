@@ -33,12 +33,9 @@ public class SearchService {
      * @return a list of Notes that match the search query.
      */
     public List<NoteTitle> getSearchResults(UUID id, String keywords, boolean matchAll, String searchIn) {
-        Collection coll = collectionController.getCollectionById(id).getBody();
-        List<Note> notesInCollection = collectionController.getNotesInCollection(coll.id);
+        List<Note> notesInCollection = loadNotesForSearch(id);
         List<NoteTitle> resultNotes = new ArrayList<>();
-
         int searchInValue = getSearchInValue(searchIn);
-
         String validated = validateUserInput(keywords);
         String[] words = new String[]{};
         boolean useRegularSearch = false;
@@ -47,9 +44,6 @@ public class SearchService {
             words = keywords.split("\\s+");
         }
         else words = validated.split("\\s+");
-
-
-        // TODO: IMPLEMENT PROPER FILTERING BY CHOSEN COLLECTION
 
         for (Note note : notesInCollection) {
             if(noteContainsKeywords(note, words, matchAll, searchInValue, useRegularSearch)) {
@@ -67,9 +61,16 @@ public class SearchService {
      * @param keywords The keywords we are searching for
      * @param matchAll boolean indicator whether a note should contain all keywords or not
      * @param searchIn int number used to set different options for searching different parts of a note
+     * @param useRegularSearch if false a fuzzy search is performed, otherwise it's regular
      * @return true or false, depending on whether the note mathces the search or not.
      */
-    public boolean noteContainsKeywords(Note note, String[] keywords, boolean matchAll, int searchIn, boolean useRegularSearch) {
+    public boolean noteContainsKeywords(
+            Note note,
+            String[] keywords,
+            boolean matchAll,
+            int searchIn,
+            boolean useRegularSearch
+    ) {
         boolean isInTitle = false;
         boolean isInContent = false;
 
@@ -149,12 +150,12 @@ public class SearchService {
 
         if(all){
             for(String keyword : keywords){
-                if(!sequence.contains(keyword)) return false;
+                if(!seqToLowerCase.contains(keyword.toLowerCase())) return false;
             }
         }
         else{
             for(String keyword : keywords){
-                if(sequence.contains(keyword)) return true;
+                if(seqToLowerCase.contains(keyword.toLowerCase())) return true;
             }
         }
         return all;
@@ -184,5 +185,21 @@ public class SearchService {
         String specialChars = "[^\\w\\s]";
         String validated = input.replaceAll(specialChars, "");
         return validated;
+    }
+
+    private List<Note> loadNotesForSearch(UUID id){
+        Collection collection;
+        List<Note> notesInCollection = new ArrayList<>();
+        if(id != null){
+            collection = collectionController.getCollectionById(id).getBody();
+            notesInCollection = collectionController.getNotesInCollection(collection.id);
+        }
+        else{
+            for(Collection coll: collectionController.getAllCollections()){
+                notesInCollection.addAll(collectionController.getNotesInCollection(coll.id));
+            }
+        }
+
+        return notesInCollection;
     }
 }

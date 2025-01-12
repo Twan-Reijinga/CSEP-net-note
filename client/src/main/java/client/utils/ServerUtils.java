@@ -27,6 +27,7 @@ import commons.Note;
 import commons.NoteTags;
 import commons.NoteTitle;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.ProcessingException;
@@ -239,16 +240,20 @@ public class ServerUtils {
 			boolean matchAll,
 			String whereToSearch
 	){
-		String requestPath = "api/search";
-
-		// TODO: SEARCH FILTERED ON COLLECTION NOT IMPLEMENTED
+		String requestPath = "api/search/";
+		UriBuilder builder = UriBuilder.fromUri(server)
+				.path(requestPath)
+				.queryParam("matchAll", matchAll)
+				.queryParam("searchIn", whereToSearch)
+				.queryParam("keywords", text);
+		if(collectionId != null) {
+			builder.queryParam("collectionId", collectionId);
+		}
 
 		return  ClientBuilder.newClient(new ClientConfig())
-				.target(server).path(requestPath  +
-										"/" + matchAll +
-										"/" + whereToSearch)
+				.target(builder.build())
 				.request(APPLICATION_JSON)
-				.put(Entity.entity(text, APPLICATION_JSON), new GenericType<>() {});
+				.get(new GenericType<>() {});
 	}
 
 	/**

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import server.services.SearchService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/search")
@@ -24,14 +25,17 @@ public class SearchController {
      * @param keywords the words by which the search is performed
      * @param matchAll indicator whether the search should match all keywords or not
      * @param searchIn a setting to specify whether to search only in the title, only in the content or both of them.
+     * @param collectionId the id of the collection within which the search is performed
      * @return list of all notes that match the search options
      */
-    @PutMapping(path = "/{matchAll}/{searchIn}")
-    public ResponseEntity<List<NoteTitle>> searchNotes(@RequestBody String keywords,
-                                                       @PathVariable String matchAll, @PathVariable String searchIn) {
+    @GetMapping(path = "/")
+    public ResponseEntity<List<NoteTitle>> searchNotes(@RequestParam("keywords") String keywords,
+                                                       @RequestParam("matchAll") String matchAll,
+                                                       @RequestParam("searchIn") String searchIn,
+                                                       @RequestParam(required=false, name="collectionId")
+                                                           UUID collectionId) {
 
-        // TODO: null for collection id (instead of UUID)
-        List<NoteTitle> result = searchService.getSearchResults(null, keywords,
+        List<NoteTitle> result = searchService.getSearchResults(collectionId, keywords,
                                                                 Boolean.valueOf(matchAll), searchIn);
 
         return ResponseEntity.ok(result);
