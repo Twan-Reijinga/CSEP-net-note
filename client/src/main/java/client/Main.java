@@ -23,12 +23,22 @@ import client.scenes.NoteEditorCtrl;
 import client.scenes.MainCtrl;
 import client.scenes.MarkdownEditorCtrl;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
 import java.util.ResourceBundle;
 
 
 public class Main extends Application {
+	public enum Language {
+		EN,
+		NL,
+		ES;
+	}
+	private static Language currentLanguage = Language.EN;
+
+	private static MainCtrl mainCtrl;
+	private static Stage primaryStage;
 
 	private static final Injector INJECTOR = createInjector(new GuiceModule());
 	private static final LoaderFXML FXML = INJECTOR.getInstance(LoaderFXML.class);
@@ -37,20 +47,59 @@ public class Main extends Application {
 		launch(args);
 	}
 
+	/**
+	 * Initializes and starts the client application.
+	 * This method is automatically invoked during the application startup process.
+	 *
+	 * @param stage the primary stage for this JavaFX application, used to set the main application window
+	 */
 	@Override
-	public void start(Stage primaryStage) throws Exception {
-		ResourceBundle englishBundle = ResourceBundle.getBundle("english");
-//		ResourceBundle dutchBundle = ResourceBundle.getBundle("dutch");
-//		ResourceBundle spanishBundle = ResourceBundle.getBundle("spanish");
+	public void start(Stage stage) {
+		primaryStage = stage;
+		loadApplication(currentLanguage);
+	}
 
-		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, englishBundle,
+	/**
+	 * Loads the application with the specified language settings.
+	 * This method configures the application to use the provided language
+	 * for localization and other language-specific settings.
+	 *
+	 * @param language the language configuration to be applied to the application
+	 */
+	public static void loadApplication(Language language) {
+		ResourceBundle resourceBundle = ResourceBundle.getBundle(
+			switch (language) {
+				case NL -> "Dutch";
+				case ES -> "Spanish";
+				default -> "English";
+			}
+		);
+
+		double width = primaryStage.getWidth();
+		double height = primaryStage.getHeight();
+
+		Main mainInstance = new Main();
+		FXMLLoader loader = new FXMLLoader(mainInstance.getClass().getResource("/fxml/main.fxml"));
+		loader.setResources(resourceBundle);
+		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, resourceBundle,
 				"client", "scenes", "MarkdownEditor.fxml");
+		var sidebarEditor = FXML.load(SidebarCtrl.class, resourceBundle, "client", "scenes", "Sidebar.fxml");
+		var noteEditor = FXML.load(NoteEditorCtrl.class, resourceBundle,"client", "scenes", "MainUI.fxml");
+		if (mainCtrl == null) {
+			mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+		}
+		mainCtrl.initialize(primaryStage, markdownEditor, noteEditor, sidebarEditor, resourceBundle);
+		primaryStage.setWidth(width);
+		primaryStage.setHeight(height);
+	}
 
-		var sidebarEditor = FXML.load(SidebarCtrl.class, englishBundle, "client", "scenes", "Sidebar.fxml");
-		var noteEditor = FXML.load(NoteEditorCtrl.class, englishBundle,"client", "scenes", "MainUI.fxml");
-
-		var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-
-		mainCtrl.initialize(primaryStage, markdownEditor, noteEditor, sidebarEditor);
+	/**
+	 * method for switching the current language and refreshing the application
+	 * @param language the language configuration to be applied to the application
+	 */
+	public static void switchLanguage(Language language) {
+		if (language == currentLanguage) return;
+		currentLanguage = language;
+		loadApplication(language);
 	}
 }
