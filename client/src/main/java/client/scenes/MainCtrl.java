@@ -41,7 +41,6 @@ public class MainCtrl {
 
     private MarkdownEditorCtrl markdownEditorCtrl;
     private SidebarCtrl sidebarCtrl;
-    private Scene sidebar;
     private ShortcutHandler shortcutHandler;
 
     private final Config config;
@@ -108,9 +107,9 @@ public class MainCtrl {
      */
     public void switchLanguage(String languageStr) {
         Language language = switch (languageStr) {
-            case "English" -> language = Language.EN;
-            case "Dutch" -> language = Language.NL;
-            case "Spanish" -> language = Language.ES;
+            case "English" -> Language.EN;
+            case "Dutch" -> Language.NL;
+            case "Spanish" -> Language.ES;
             default -> throw new IllegalStateException("Unexpected value: " + languageStr);
         };
         try {

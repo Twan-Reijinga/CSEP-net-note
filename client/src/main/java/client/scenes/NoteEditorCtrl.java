@@ -1,9 +1,12 @@
 package client.scenes;
 
 import client.LoaderFXML;
+import client.utils.LanguageListCel;
+import client.utils.LanguageOption;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -14,6 +17,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ListCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import commons.Collection;
 import javafx.scene.layout.HBox;
@@ -53,7 +58,7 @@ public class NoteEditorCtrl {
     private ComboBox<Pair<UUID, String>> collectionDropdown;
 
     @FXML
-    private ComboBox<String> languageDropdown;
+    private ComboBox<LanguageOption> languageDropdown;
 
     // Injectable
     private final LoaderFXML FXML;
@@ -147,9 +152,14 @@ public class NoteEditorCtrl {
     }
 
     private void loadLanguageDropdown(String language) {
-        String[] availableLanguages = new String[] {"English", "Dutch", "Spanish"};
-        languageDropdown.getItems().addAll(availableLanguages);
-        languageDropdown.setValue(language);
+//        var languages = FXCollections.observableArrayList("English", "Dutch", "Spanish");
+//        languageDropdown.setItems(languages);
+        languageDropdown.setCellFactory(param -> new LanguageListCel());
+
+        LanguageOption item1 = new LanguageOption("English", "/resources/flags/english.png");
+        LanguageOption item2 = new LanguageOption("Dutch", "/resources/flags/dutch.png");
+
+        languageDropdown.getItems().addAll(item1, item2);
     }
 
     private void loadCollectionDropdown() {
@@ -174,7 +184,7 @@ public class NoteEditorCtrl {
 
     @FXML
     private void onLanguageDropdownAction() {
-        String chosenLanguage = languageDropdown.getSelectionModel().getSelectedItem();
+        String chosenLanguage = languageDropdown.getSelectionModel().getSelectedItem().getName();
         mainCtrl.switchLanguage(chosenLanguage);
     }
 
