@@ -33,8 +33,7 @@ public class SearchService {
      * @return a list of Notes that match the search query.
      */
     public List<NoteTitle> getSearchResults(UUID id, String keywords, boolean matchAll, String searchIn) {
-        Collection coll = collectionController.getAllCollections().get(0);
-        //List<Note> notesInCollection = collectionRepository.findById(id).get().notes;
+        Collection coll = collectionController.getCollectionById(id).getBody();
         List<Note> notesInCollection = collectionController.getNotesInCollection(coll.id);
         List<NoteTitle> resultNotes = new ArrayList<>();
 
