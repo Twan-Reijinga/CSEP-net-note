@@ -1,12 +1,11 @@
 package client.scenes;
 
 import client.LoaderFXML;
-import client.utils.LanguageListCel;
+import client.utils.LanguageListCell;
 import client.utils.LanguageOption;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -17,8 +16,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ListCell;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import commons.Collection;
 import javafx.scene.layout.HBox;
@@ -159,14 +156,14 @@ public class NoteEditorCtrl {
     }
 
     private void loadLanguageDropdown(String language) {
-//        var languages = FXCollections.observableArrayList("English", "Dutch", "Spanish");
-//        languageDropdown.setItems(languages);
-        languageDropdown.setCellFactory(param -> new LanguageListCel());
+        languageDropdown.setCellFactory(new LanguageListCell());
+        languageDropdown.setButtonCell(new LanguageListCell().call(null));
 
-        LanguageOption item1 = new LanguageOption("English", "/resources/flags/english.png");
-        LanguageOption item2 = new LanguageOption("Dutch", "/resources/flags/dutch.png");
-
-        languageDropdown.getItems().addAll(item1, item2);
+        languageDropdown.getItems().addAll(
+                new LanguageOption("English", "/images/english.png"),
+                new LanguageOption("Dutch", "/images/dutch.png"),
+                new LanguageOption("Spanish", "/images/spanish.png")
+        );
     }
 
     private void loadCollectionDropdown() {
