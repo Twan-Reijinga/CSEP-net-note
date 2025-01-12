@@ -11,6 +11,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 public class SidebarCtrl {
     private long selectedNoteId;
+    private List<NoteTitle> noteTitles = new ArrayList<>();
     private UUID selectedCollectionId;
 
     @FXML
@@ -53,8 +55,6 @@ public class SidebarCtrl {
      * Functionality will be used when pressed on the refresh button in the GUI.
      */
     public void refresh() {
-        noteContainer.getChildren().clear();
-
         List<NoteTitle> titles;
         if (selectedCollectionId == null) {
             titles = server.getNoteTitles();
@@ -62,19 +62,30 @@ public class SidebarCtrl {
             titles = server.getNoteTitlesInCollection(selectedCollectionId);
         }
 
-        loadSideBar(titles);
+        loadNoteTitles(titles);
     }
 
     /**
-     * Load function to load all desired objects in the sidebar.
-     * The function will be called everytime the sidebar is refreshed and also
-     * on every search performed in order to load the search results.
-     * @param titles the notes that are supposed to be loaded into the sidebar.
+     * This method updates the noteTitles field and calls the loadNewNoteTags method from mainCtrl.
+     * Then it calls the applyFilters method from main, which displays the NoteTitles of
+     * the Notes that have the selected tags.
+     * @param titles The new list of titles that is stored (before filtering)
      */
-    public void loadSideBar(List<NoteTitle> titles) {
-        noteContainer.getChildren().clear();
+    public void loadNoteTitles(List<NoteTitle> titles){
+        noteTitles = titles;
+        mainCtrl.loadNewNoteTags(titles.stream().map(x -> x.getId()).toList());
+        mainCtrl.applyFiltersToSideBar();
+    }
 
-        for (NoteTitle title : titles) {
+    /**
+     * This method is used to display the items in the sidebar.
+     * @param ids the ids of the noteTitles which should be displayed.
+     */
+    public void displayNoteTitles(List<Long> ids){
+        noteContainer.getChildren().clear();
+        List<NoteTitle> toDisplay = noteTitles.stream().filter(x -> ids.contains(x.getId())).toList();
+
+        for (NoteTitle title : toDisplay) {
             Label label = new Label(title.getTitle());
             VBox wrapper = new VBox(label);
             wrapper.setId(title.getId() + "");
@@ -83,6 +94,9 @@ public class SidebarCtrl {
                 long id = Long.parseLong(wrapper.getId()); // Get the VBox's ID
                 noteClick(id);             // Call a function, passing the ID
             });
+            if(title.getId() == selectedNoteId){
+                wrapper.setStyle("-fx-background-color: #98c1d9");
+            }
             noteContainer.getChildren().add(wrapper);
         }
     }
@@ -175,6 +189,7 @@ public class SidebarCtrl {
 
         note.createdAt = new Date();
         server.addNote(note);
+        mainCtrl.addNewTags(note);
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getLast().getId());
         noteClick(selectedNoteId);
@@ -213,6 +228,7 @@ public class SidebarCtrl {
         Note note = server.getNoteById(id);
 
         server.deleteNote(note);
+        mainCtrl.deleteTags(note.id);
         if (isReversible) {
             mainCtrl.recordDelete(note);
         }

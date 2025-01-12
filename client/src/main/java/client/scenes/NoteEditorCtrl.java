@@ -78,6 +78,12 @@ public class NoteEditorCtrl {
 
     private Pair<UUID, String> chosenCollectionFilter = showAll;
 
+    @FXML
+    private MenuButton tagOptionsButton;
+
+    @FXML
+    private HBox tagContainerHBox;
+
     @Inject
     public NoteEditorCtrl(LoaderFXML FXML, ServerUtils serverUtils, MainCtrl mainCtrl) {
         this.FXML = FXML;
@@ -121,6 +127,7 @@ public class NoteEditorCtrl {
 
         loadLanguageDropdown(bundle.getBaseBundleName());
         loadCollectionDropdown();
+        this.loadTagOptions();
     }
 
     private void appendSidebar(Node sidebarNode) {
@@ -256,7 +263,8 @@ public class NoteEditorCtrl {
 
     }
 
-    /** This method expands the topMostAnchor Pane and reveals a checkbox and a choice box whose
+    /**
+     * This method expands an HBox and reveals a checkbox and a choice box whose
      * values are used in the search to make it broader or more specific depending on the choice.
      */
     public void onAdvSearchButtonPressed(){
@@ -271,5 +279,114 @@ public class NoteEditorCtrl {
         searchInOptionsList.setDisable(!selected);
         matchAllCheckBox.setVisible(selected);
         searchInOptionsList.setVisible(selected);
+    }
+
+    /**
+     * This method is called when the "clear tags" hyperlink is pressed.
+     * Calls the mainCtrl to handle the necessary logic for clearing all tags.
+     */
+    @FXML
+    public void onClearAllTagsPressed(){
+        mainCtrl.clearTagFilters();
+    }
+
+    /**
+     * This method is used to load the items for the MenuButton that displays
+     * the possible tags to add as filters.
+     */
+    public void loadTagOptions(){
+        this.tagOptionsButton.getItems().clear();
+        List<MenuItem> items = new ArrayList<>();
+        List<String> availableTagOptions = mainCtrl.listAvailableTags();
+        if(availableTagOptions.isEmpty()){
+            items.add(new MenuItem("No tags."));
+        }
+        else{
+            for(String tag: availableTagOptions){
+                MenuItem newItem = new MenuItem(tag);
+
+                newItem.setOnAction(e -> {
+                    this.onTagOptionClicked(newItem.getText());
+                });
+                items.add(newItem);
+            }
+        }
+        this.tagOptionsButton.getItems().addAll(items);
+    }
+
+    /**
+     * Called when an item representing a tag from the MenuButton is clicked.
+     * Calls the mainCtrl to handle adding the new tag that was selected as a filter.
+     * @param tag the tag selected from the MenuButton
+     */
+    public void onTagOptionClicked(String tag){
+        mainCtrl.addTagFilter(tag);
+    }
+
+    /**
+     * This method is used to add a label to the HBox for each new tag selected as a filter.
+     * @param tag the tag that will be used as a text for the new label added to the HBox.
+     */
+    public void addSelectedTagToHBox(String tag){
+        if(!isTagAlreadyInHBox(tag)){
+            Label selectedTagLabel = new Label(tag);
+            selectedTagLabel.setStyle(getSelectedTagStyle());
+            selectedTagLabel.setMinWidth(25L);
+
+            int index = this.tagContainerHBox.getChildren().size() - 3;
+            this.tagContainerHBox.getChildren().add(index, selectedTagLabel);
+        }
+    }
+
+    /**
+     * This method is used to remove certain tags from the HBox, which happens
+     * when a note is updated and one of its tags gets deleted.
+     * @param tags a list of tags, each corresponding to the text in the
+     *             labels that will be removed from the HBox.
+     */
+    public void removeTagsFromHBox(List<String> tags){
+        List<Node> toRemove = new ArrayList<>();
+        for(Node child: this.tagContainerHBox.getChildren()){
+            if(child.getClass() == Label.class){
+                if(tags.contains(((Label)child).getText())){
+                    toRemove.add(child);
+                }
+            }
+        }
+        this.tagContainerHBox.getChildren().removeAll(toRemove);
+    }
+
+    /**
+     * This method removes all Labels for tags that were added to the HBox upon selection.
+     */
+    public void clearSelectedTagsFromHBox(){
+        while(this.tagContainerHBox.getChildren().size() > 4){
+            this.tagContainerHBox.getChildren().remove(1);
+        }
+    }
+
+    /**
+     * This method is used to check whether a given tag is already added as an item to the HBox.
+     * It's used to prevent the addition of a tag multiple times, when it's clicked on many times in the WebView.
+     * @param tag the tag to check for.
+     * @return true if the tag is already displayed, false otherwise.
+     */
+    private boolean isTagAlreadyInHBox(String tag){
+        boolean alreadyIn = false;
+        for(Node node: this.tagContainerHBox.getChildren()){
+            if(node.getClass() == Label.class){
+                if((((Label) node).getText().equals(tag))){
+                    alreadyIn = true;
+                }
+            }
+        }
+        return alreadyIn;
+    }
+
+    private String getSelectedTagStyle(){
+        return "-fx-border-color: black;"
+                + "-fx-border-width: 1px;"
+                + "-fx-border-radius: 10px;"
+                + "-fx-padding: 1px 5px 1px 5px;";
     }
 }
