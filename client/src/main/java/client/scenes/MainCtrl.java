@@ -16,8 +16,8 @@
 package client.scenes;
 
 import client.Main;
-import client.Main.Language;
 import client.config.Config;
+import client.utils.Language;
 import client.utils.ServerUtils;
 import client.utils.TagFilteringHandler;
 import commons.NoteTitle;

@@ -18,6 +18,8 @@ package client;
 import static com.google.inject.Guice.createInjector;
 
 import client.scenes.SidebarCtrl;
+import client.utils.Language;
+import client.config.LanguagePreference;
 import com.google.inject.Injector;
 import client.scenes.NoteEditorCtrl;
 import client.scenes.MainCtrl;
@@ -30,13 +32,6 @@ import java.util.ResourceBundle;
 
 
 public class Main extends Application {
-	public enum Language {
-		EN,
-		NL,
-		ES;
-	}
-	private static Language currentLanguage = Language.EN;
-
 	private static MainCtrl mainCtrl;
 	private static Stage primaryStage;
 
@@ -56,7 +51,8 @@ public class Main extends Application {
 	@Override
 	public void start(Stage stage) {
 		primaryStage = stage;
-		loadApplication(currentLanguage);
+		Language language = LanguagePreference.getLanguage();
+		loadApplication(language);
 	}
 
 	/**
@@ -84,7 +80,7 @@ public class Main extends Application {
 		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, resourceBundle,
 				"client", "scenes", "MarkdownEditor.fxml");
 		var sidebarEditor = FXML.load(SidebarCtrl.class, resourceBundle, "client", "scenes", "Sidebar.fxml");
-		var noteEditor = FXML.load(NoteEditorCtrl.class, resourceBundle,"client", "scenes", "MainUI.fxml");
+		var noteEditor = FXML.load(NoteEditorCtrl.class, resourceBundle, "client", "scenes", "MainUI.fxml");
 		if (mainCtrl == null) {
 			mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 		}
@@ -95,11 +91,12 @@ public class Main extends Application {
 
 	/**
 	 * method for switching the current language and refreshing the application
+	 *
 	 * @param language the language configuration to be applied to the application
 	 */
 	public static void switchLanguage(Language language) {
-		if (language == currentLanguage) return;
-		currentLanguage = language;
+		if (language == LanguagePreference.getLanguage()) return;
+		LanguagePreference.saveLanguage(language);
 		loadApplication(language);
 	}
 }
