@@ -245,11 +245,10 @@ public class ServerUtils {
 
 		return  ClientBuilder.newClient(new ClientConfig())
 				.target(server).path(requestPath  +
-										"/" + text +
 										"/" + matchAll +
 										"/" + whereToSearch)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {});
+				.put(Entity.entity(text, APPLICATION_JSON), new GenericType<>() {});
 	}
 
 	/**

@@ -3,11 +3,8 @@ package server.api;
 import commons.NoteTitle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import server.service.SearchService;
+import org.springframework.web.bind.annotation.*;
+import server.services.SearchService;
 
 import java.util.List;
 
@@ -29,8 +26,8 @@ public class SearchController {
      * @param searchIn a setting to specify whether to search only in the title, only in the content or both of them.
      * @return list of all notes that match the search options
      */
-    @GetMapping(path = "/{keywords}/{matchAll}/{searchIn}")
-    public ResponseEntity<List<NoteTitle>> searchNotes(@PathVariable String keywords,
+    @PutMapping(path = "/{matchAll}/{searchIn}")
+    public ResponseEntity<List<NoteTitle>> searchNotes(@RequestBody String keywords,
                                                        @PathVariable String matchAll, @PathVariable String searchIn) {
 
         // TODO: null for collection id (instead of UUID)
