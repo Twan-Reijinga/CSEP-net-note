@@ -24,6 +24,7 @@ import java.util.UUID;
 import client.config.Config;
 import com.google.inject.Inject;
 import commons.Note;
+import commons.NoteTags;
 import commons.NoteTitle;
 import jakarta.ws.rs.client.Entity;
 import org.glassfish.jersey.client.ClientConfig;
@@ -251,4 +252,27 @@ public class ServerUtils {
 				.get(new GenericType<>() {});
 	}
 
+	/**
+	 * Returns a list of NoteTags each containing an id of the note it represents and all tags in that note.
+	 * @param collectionId the id of the collection whose notes are used
+	 * @return a list of NoteTags
+	 */
+	public List<NoteTags> getAllNoteTags(UUID collectionId) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/tags/")
+				.request(APPLICATION_JSON)
+				.post(Entity.entity(collectionId, APPLICATION_JSON), new GenericType<>(){});
+	}
+
+	/**
+	 * Used to load the tags of notes that are rendered into the sidebar, when they come from multiple collections.
+	 * @param noteIds the id's of all notes whose tags are requested
+	 * @return a list of NoteTags for each id of a note in the list.
+	 */
+	public List<NoteTags> getNoteTags(List<Long> noteIds) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/tags/list")
+				.request(APPLICATION_JSON)
+				.post(Entity.entity(noteIds, APPLICATION_JSON), new GenericType<>(){});
+	}
 }
