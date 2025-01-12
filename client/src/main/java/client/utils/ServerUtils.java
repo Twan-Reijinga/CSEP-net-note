@@ -244,8 +244,7 @@ public class ServerUtils {
 		UriBuilder builder = UriBuilder.fromUri(server)
 				.path(requestPath)
 				.queryParam("matchAll", matchAll)
-				.queryParam("searchIn", whereToSearch)
-				.queryParam("keywords", text);
+				.queryParam("searchIn", whereToSearch);
 		if(collectionId != null) {
 			builder.queryParam("collectionId", collectionId);
 		}
@@ -253,7 +252,7 @@ public class ServerUtils {
 		return  ClientBuilder.newClient(new ClientConfig())
 				.target(builder.build())
 				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {});
+				.post(Entity.entity(text, APPLICATION_JSON),new GenericType<>() {});
 	}
 
 	/**

@@ -28,8 +28,8 @@ public class SearchController {
      * @param collectionId the id of the collection within which the search is performed
      * @return list of all notes that match the search options
      */
-    @GetMapping(path = "/")
-    public ResponseEntity<List<NoteTitle>> searchNotes(@RequestParam("keywords") String keywords,
+    @PostMapping(path = "/")
+    public ResponseEntity<List<NoteTitle>> searchNotes(@RequestBody String keywords,
                                                        @RequestParam("matchAll") String matchAll,
                                                        @RequestParam("searchIn") String searchIn,
                                                        @RequestParam(required=false, name="collectionId")
