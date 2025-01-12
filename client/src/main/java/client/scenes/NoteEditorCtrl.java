@@ -156,14 +156,25 @@ public class NoteEditorCtrl {
     }
 
     private void loadLanguageDropdown(String language) {
+        List<LanguageOption> languageOptions = List.of(
+            new LanguageOption("English", "/images/english.png"),
+            new LanguageOption("Dutch", "/images/dutch.png"),
+            new LanguageOption("Spanish", "/images/spanish.png")
+        );
+
         languageDropdown.setCellFactory(new LanguageListCell());
         languageDropdown.setButtonCell(new LanguageListCell().call(null));
 
         languageDropdown.getItems().addAll(
-                new LanguageOption("English", "/images/english.png"),
-                new LanguageOption("Dutch", "/images/dutch.png"),
-                new LanguageOption("Spanish", "/images/spanish.png")
+                languageOptions
         );
+
+        for (LanguageOption option : languageDropdown.getItems()) {
+            if (language.equalsIgnoreCase(option.getName())) {
+                languageDropdown.setValue(option);
+                return;
+            }
+        }
     }
 
     private void loadCollectionDropdown() {

@@ -111,16 +111,11 @@ public class MainCtrl {
      */
     public void switchLanguage(String languageStr) {
         Language language = switch (languageStr) {
-            case "English" -> Language.EN;
             case "Dutch" -> Language.NL;
             case "Spanish" -> Language.ES;
-            default -> throw new IllegalStateException("Unexpected value: " + languageStr);
+            default -> Language.EN;
         };
-        try {
-            Main.switchLanguage(language);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Main.switchLanguage(language);
     }
 
     public void updateNote(long id) {
