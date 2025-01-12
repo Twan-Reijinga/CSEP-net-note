@@ -11,7 +11,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-import java.io.*;
+import java.io.File;
 import java.util.*;
 
 
@@ -24,6 +24,7 @@ public class SidebarCtrl {
     @FXML
     public VBox noteContainer;
     private MarkdownEditorCtrl markdownEditorCtrl;
+    private FilesCtrl filesCtrl;
 
     /**
      * Sidebar control constructor for functionality behind the sidebar UI element.
@@ -40,8 +41,9 @@ public class SidebarCtrl {
         this.defaultCollection.isDefault = true;
     }
 
-    public void initialize(MarkdownEditorCtrl markdownEditorCtrl) {
+    public void initialize(MarkdownEditorCtrl markdownEditorCtrl, FilesCtrl filesCtrl) {
         this.markdownEditorCtrl = markdownEditorCtrl;
+        this.filesCtrl = filesCtrl;
     }
 
     /**
@@ -137,39 +139,6 @@ public class SidebarCtrl {
     }
 
     /**
-     * Adds (now a default) file to be stored in the database
-     *  File is saved in base64, this can store all filetypes and large files (also works with JSON)
-     * @throws FileNotFoundException when the file isn't available
-     */
-    public void addFile() throws FileNotFoundException {
-        Note note = server.getNoteById(selectedNoteId);
-        File thisFile = new File("test.txt/");
-        String fileString;
-        try (FileInputStream input = new FileInputStream(thisFile)) {
-            byte[] fileBytes = new byte[(int) thisFile.length()];
-            input.read(fileBytes);
-            fileString = Base64.getEncoder().encodeToString(fileBytes);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        EmbeddedFile file = new EmbeddedFile("Title", note, fileString);
-        server.addFileToNote(file);
-    }
-
-    /**
-     * Deletes a file (for now the first file in the selected note)
-     */
-    public void deleteFile() {
-        Note note = server.getNoteById(getSelectedNoteId());
-        List<EmbeddedFile> files = server.getAllFilesFromNote(note);
-        if (!files.isEmpty()) {
-            EmbeddedFile file = files.getFirst();
-            server.deleteFileToNote(note, file);
-        }
-
-    }
-
-    /**
      * Note click function for action when a specific note in the sidebar is clicked
      * intended behaviour is that the note contents opens.
      * @param id identifier that is linked to a specific note that corresponds to the servers note ID.
@@ -184,6 +153,7 @@ public class SidebarCtrl {
         }
         selectedNoteId = id;
         markdownEditorCtrl.updateNote(id);
+        filesCtrl.refresh();
     }
 
     /**

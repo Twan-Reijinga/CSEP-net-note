@@ -154,12 +154,12 @@ public class ServerUtils {
 
 	/**
 	 * Deletes the specified file
-	 * @param note the note the file is located in
-	 * @param file the file that needs to be removed
+	 * @param noteId the id of the note the file is located in
+	 * @param fileId the id of the file that needs to be removed
 	 */
-	public void deleteFileToNote(Note note, EmbeddedFile file) {
+	public void deleteFileToNote(long noteId, long fileId) {
 		ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes/" + note.id + "/embedded/" + file.id)
+				.target(SERVER).path("api/notes/" + noteId + "/embedded/" + fileId)
 				.request(APPLICATION_JSON)
 				.delete();
 	}
@@ -182,10 +182,17 @@ public class ServerUtils {
 				.get(new GenericType<List<EmbeddedFile>>() {});
 	}
 
-	public EmbeddedFile getFileFromNote(Note note, long fileId) {
+	public EmbeddedFile getFileFromNote(long noteId, long fileId) {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/notes/" + note.id + "/embedded/" + fileId)
+				.target(SERVER).path("api/notes/" + noteId + "/embedded/" + fileId)
 				.request(APPLICATION_JSON)
 				.get(new GenericType<EmbeddedFile>() {});
+	}
+
+	public void editFileTitle(EmbeddedFile file) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/notes/" + file.note.id + "/embedded/" + file.id)
+				.request(APPLICATION_JSON)
+				.put(Entity.entity(file, APPLICATION_JSON), EmbeddedFile.class);
 	}
 }

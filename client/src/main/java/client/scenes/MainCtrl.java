@@ -20,6 +20,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.io.File;
+
 public class MainCtrl {
 
     private Stage primaryStage;
@@ -28,13 +30,15 @@ public class MainCtrl {
 
     private MarkdownEditorCtrl markdownEditorCtrl;
     private SidebarCtrl sidebarCtrl;
+    private FilesCtrl filesCtrl;
 
 
     public void initialize(
             Stage primaryStage,
             Pair<MarkdownEditorCtrl, Parent> markdownEditor,
             Pair<NoteEditorCtrl, Parent> noteEditor,
-            Pair<SidebarCtrl, Parent> sidebarEditor
+            Pair<SidebarCtrl, Parent> sidebarEditor,
+            Pair<FilesCtrl, Parent> filesEditor
     )
     {
         this.primaryStage = primaryStage;
@@ -45,10 +49,11 @@ public class MainCtrl {
         this.markdownEditorCtrl = markdownEditor.getKey();
 
         this.sidebarCtrl = sidebarEditor.getKey();
+        this.filesCtrl = filesEditor.getKey();
 
-        noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue());
+        noteEditorCtrl.initialize(sidebarEditor.getValue(), markdownEditor.getValue(), filesEditor.getValue());
         markdownEditorCtrl.initialize();
-        sidebarCtrl.initialize(markdownEditorCtrl);
+        sidebarCtrl.initialize(markdownEditorCtrl, filesCtrl);
 
         showNoteEditor();
         primaryStage.show();

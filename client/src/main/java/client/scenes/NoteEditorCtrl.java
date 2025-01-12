@@ -16,6 +16,9 @@ public class NoteEditorCtrl {
     private AnchorPane sideBarContainer;
 
     @FXML
+    private AnchorPane filesContainer;
+
+    @FXML
     private AnchorPane markdownPaneContainer;
 
     @FXML
@@ -35,7 +38,7 @@ public class NoteEditorCtrl {
      * @param markdownParent root element of the Markdown fxml
      */
     @FXML
-    public void initialize(Parent sideBarParent, Parent markdownParent) {
+    public void initialize(Parent sideBarParent, Parent markdownParent, Parent filesParent) {
         centerTextField();
         topMostAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             centerTextField();
@@ -43,6 +46,9 @@ public class NoteEditorCtrl {
         sideBarContainer.getChildren().add(sideBarParent);
         AnchorPane.setTopAnchor(sideBarParent, 0.0);
         AnchorPane.setBottomAnchor(sideBarParent, 0.0);
+        filesContainer.getChildren().add(filesParent);
+        AnchorPane.setTopAnchor(filesParent, 0.0);
+        AnchorPane.setBottomAnchor(filesParent, 0.0);
         markdownPaneContainer.getChildren().add(markdownParent);
         AnchorPane.setTopAnchor(markdownParent, 0.0);
         AnchorPane.setBottomAnchor(markdownParent, 0.0);
