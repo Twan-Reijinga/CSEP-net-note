@@ -10,9 +10,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -35,6 +34,7 @@ public class FilesCtrl {
         List<EmbeddedFile> files = server.getAllFilesFromNote(note);
         for (EmbeddedFile currentFile : files) {
             Label label = new Label(currentFile.title);
+            label.setOnMouseClicked(event -> downloadFile(currentFile.note.id, currentFile.id));
             Button remove = new Button("⮾");
             remove.setOnAction(event -> deleteFile(currentFile.note.id, currentFile.id));
             Button edit = new Button("&");
@@ -55,7 +55,7 @@ public class FilesCtrl {
             return;
         }
         Note note = server.getNoteById(main.getSelectedNoteId());
-        File thisFile = new File("test.txt/");
+        File thisFile = new File("warhammer dnd.png/");
         String fileString;
         try (FileInputStream input = new FileInputStream(thisFile)) {
             byte[] fileBytes = new byte[(int) thisFile.length()];
@@ -84,6 +84,18 @@ public class FilesCtrl {
         server.editFileTitle(file);
 
         refresh();
+    }
+
+    public void downloadFile(long noteId, long id){
+        EmbeddedFile file = server.getFileFromNote(noteId, id);
+        byte[] thisFile = Base64.getDecoder().decode(file.file);
+        try {
+            FileOutputStream output = new FileOutputStream(file.title);
+            output.write(thisFile);
+            System.out.println("File downloaded");
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
