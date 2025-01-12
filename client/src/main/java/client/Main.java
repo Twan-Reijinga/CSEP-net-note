@@ -47,12 +47,25 @@ public class Main extends Application {
 		launch(args);
 	}
 
+	/**
+	 * Initializes and starts the client application.
+	 * This method is automatically invoked during the application startup process.
+	 *
+	 * @param stage the primary stage for this JavaFX application, used to set the main application window
+	 */
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
 		primaryStage = stage;
 		loadApplication(currentLanguage);
 	}
 
+	/**
+	 * Loads the application with the specified language settings.
+	 * This method configures the application to use the provided language
+	 * for localization and other language-specific settings.
+	 *
+	 * @param language the language configuration to be applied to the application
+	 */
 	public static void loadApplication(Language language) {
 		ResourceBundle resourceBundle = ResourceBundle.getBundle(
 			switch (language) {
@@ -80,7 +93,11 @@ public class Main extends Application {
 		primaryStage.setHeight(height);
 	}
 
-	public static void switchLanguage(Language language) throws Exception {
+	/**
+	 * method for switching the current language and refreshing the application
+	 * @param language the language configuration to be applied to the application
+	 */
+	public static void switchLanguage(Language language) {
 		if (language == currentLanguage) return;
 		currentLanguage = language;
 		loadApplication(language);
