@@ -1,4 +1,4 @@
-package server.service;
+package server.services;
 
 import commons.Collection;
 import commons.Note;
@@ -21,24 +21,43 @@ public class SearchService {
         this.collectionController = collectionController;
     }
 
+    /**
+     * This method loads the necessary data for the search,
+     * then it processes the given parameters, and after that it calls
+     * the method noteContainsKeywords() for each loaded.
+     *
+     * @param id the ID of the collection to search within.
+     * @param keywords the keywords to search for.
+     * @param matchAll if true, all keywords must match; otherwise, any keyword can match.
+     * @param searchIn specifies where to search (e.g., title, content).
+     * @return a list of Notes that match the search query.
+     */
     public List<NoteTitle> getSearchResults(UUID id, String keywords, boolean matchAll, String searchIn) {
-        String[] words = keywords.split(" ");
         Collection coll = collectionController.getAllCollections().get(0);
         //List<Note> notesInCollection = collectionRepository.findById(id).get().notes;
-        int searchInValue = getSearchInValue(searchIn);
-
-        // TODO: IMPLEMENT PROPER FILTERING BY CHOSEN COLLECTION
-
         List<Note> notesInCollection = collectionController.getNotesInCollection(coll.id);
         List<NoteTitle> resultNotes = new ArrayList<>();
 
+        int searchInValue = getSearchInValue(searchIn);
+
+        String validated = validateUserInput(keywords);
+        String[] words = new String[]{};
+        boolean useRegularSearch = false;
+        if (validated.isBlank()) {
+            useRegularSearch = true;
+            words = keywords.split("\\s+");
+        }
+        else words = validated.split("\\s+");
+
+
+        // TODO: IMPLEMENT PROPER FILTERING BY CHOSEN COLLECTION
+
         for (Note note : notesInCollection) {
-            if(noteContainsKeywords(note, words, matchAll, searchInValue)) {
+            if(noteContainsKeywords(note, words, matchAll, searchInValue, useRegularSearch)) {
                 NoteTitle nt = new NoteTitle(note.title, note.id);
                 resultNotes.add(nt);
             }
         }
-
         return resultNotes;
     }
 
@@ -51,20 +70,28 @@ public class SearchService {
      * @param searchIn int number used to set different options for searching different parts of a note
      * @return true or false, depending on whether the note mathces the search or not.
      */
-    public boolean noteContainsKeywords(Note note, String[] keywords, boolean matchAll, int searchIn) {
+    public boolean noteContainsKeywords(Note note, String[] keywords, boolean matchAll, int searchIn, boolean useRegularSearch) {
         boolean isInTitle = false;
         boolean isInContent = false;
 
         switch (searchIn) {
             case 1:
-                isInTitle = matchesKeywords(keywords, note.title, matchAll);
+                if(useRegularSearch) isInTitle = matchesKeywordsRegular(keywords, note.title, matchAll);
+                else isInTitle = matchesKeywordsFuzzy(keywords, note.title, matchAll);
                 break;
             case 2:
-                isInContent = matchesKeywords(keywords, note.content, matchAll);
+                if(useRegularSearch) isInContent = matchesKeywordsRegular(keywords, note.content, matchAll);
+                else isInContent = matchesKeywordsFuzzy(keywords, note.content, matchAll);
                 break;
             default:
-                isInTitle = matchesKeywords(keywords, note.title, matchAll);
-                isInContent = matchesKeywords(keywords, note.content, matchAll);
+                if(useRegularSearch) {
+                    isInTitle = matchesKeywordsRegular(keywords, note.title, matchAll);
+                    isInContent = matchesKeywordsRegular(keywords, note.content, matchAll);
+                }
+                else{
+                    isInTitle = matchesKeywordsFuzzy(keywords, note.title, matchAll);
+                    isInContent = matchesKeywordsFuzzy(keywords, note.content, matchAll);
+                }
                 break;
         }
 
@@ -81,7 +108,7 @@ public class SearchService {
      * @param all a boolean param to determine whether the sequence should match all keywords or not
      * @return true or false, whether the sequence passes the search or not
      */
-    public boolean matchesKeywords(String[] keywords, String sequence, boolean all){
+    public boolean matchesKeywordsFuzzy(String[] keywords, String sequence, boolean all){
         String seqToLowerCase = sequence.toLowerCase();
         Regex pattern;
         double threshold = 0.4;
@@ -110,11 +137,53 @@ public class SearchService {
         return all;
     }
 
-    private int getSearchInValue(String text){
-        return switch (text) {
+    /** This method takes the array of keywords given and performs a normal search
+     * on a String sequence for every keyword.
+     *
+     * @param keywords the words that the sequence is searched for
+     * @param sequence the string sequence on which the search is performed
+     * @param all a boolean param to determine whether the sequence should match all keywords or not
+     * @return true or false, whether the sequence contains the keywords or not
+     */
+    public boolean matchesKeywordsRegular(String[] keywords, String sequence, boolean all){
+        String seqToLowerCase = sequence.toLowerCase();
+
+        if(all){
+            for(String keyword : keywords){
+                if(!sequence.contains(keyword)) return false;
+            }
+        }
+        else{
+            for(String keyword : keywords){
+                if(sequence.contains(keyword)) return true;
+            }
+        }
+        return all;
+    }
+
+    /**
+     * This method is used to get the numerical value for the searchIn variable.
+     * @param searchIn the string value read from the http request
+     * @return the numerical value corresponding to the string given
+     */
+    private int getSearchInValue(String searchIn){
+        return switch (searchIn) {
             case "Title" -> 1;
             case "Content" -> 2;
             default -> 0;
         };
+    }
+
+    /**
+     * This method is used to validate the input the user has given for the search request.
+     * It removes all special characters that may cause issues for the fuzzy search library.
+     * @param input The user's input
+     * @return a new String where all characters that were not word characters,
+     * whitespaces or "_" have been removed.
+     */
+    private String validateUserInput(String input){
+        String specialChars = "[^\\w\\s]";
+        String validated = input.replaceAll(specialChars, "");
+        return validated;
     }
 }

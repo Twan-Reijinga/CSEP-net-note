@@ -5,7 +5,7 @@ import commons.Note;
 import commons.NoteTitle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import server.service.SearchService;
+import server.services.SearchService;
 import server.services.CollectionService;
 import server.services.RandomService;
 
@@ -41,6 +41,7 @@ public class SearchControllerTest {
 
         note2 = new Note("NoteTitle 2", "Content 2", collection2);
         noteRepo.save(note2);
+
         note3 = new Note("NoteTitle 3", "Content 3", collection2);
         noteRepo.save(note3);
 
@@ -54,7 +55,7 @@ public class SearchControllerTest {
         List<NoteTitle> expected = new ArrayList<NoteTitle>();
         expected.add(nt1);
 
-        List<NoteTitle> result = searchController.searchNotes("Notettl", "true", "0").getBody();
+        List<NoteTitle> result = searchController.searchNotes("Notettl", "true", "Both").getBody();
         assertEquals(expected, result);
     }
 
@@ -64,7 +65,7 @@ public class SearchControllerTest {
         List<NoteTitle> expected = new ArrayList<NoteTitle>();
         expected.add(nt1);
 
-        List<NoteTitle> result = searchController.searchNotes("Notetitle and random", "false", "0").getBody();
+        List<NoteTitle> result = searchController.searchNotes("Notetitle and random", "false", "Both").getBody();
         assertEquals(expected, result);
     }
 }
