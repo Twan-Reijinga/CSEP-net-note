@@ -25,7 +25,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import netscape.javascript.JSObject;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.commonmark.ext.gfm.tables.TablesExtension;
@@ -42,6 +44,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MarkdownEditorCtrl {
     @FXML
@@ -66,15 +70,17 @@ public class MarkdownEditorCtrl {
 
     private final ServerUtils serverUtils;
     private final Config config;
+    private final MainCtrl mainCtrl;
 
     private Note activeNote;
     private SidebarCtrl sidebarCtrl;
 
     @Inject
-    public MarkdownEditorCtrl(ServerUtils serverUtils, Config config) {
+    public MarkdownEditorCtrl(ServerUtils serverUtils, Config config, MainCtrl mainCtrl) {
         this.serverUtils = serverUtils;
         this.config = config;
         this.refreshTimer = new Timer();
+        this.mainCtrl = mainCtrl;
 
         var ext = List.of(
                 TablesExtension.create(),
@@ -121,6 +127,7 @@ public class MarkdownEditorCtrl {
         activeNote.content = noteText.getText();
         if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
             serverUtils.updateNote(activeNote);
+            mainCtrl.updateTags(activeNote);
         }
         activeNote = serverUtils.getNoteById(newId);
         noteText.setText(activeNote.content);
@@ -152,13 +159,25 @@ public class MarkdownEditorCtrl {
 
     private synchronized void refreshView() {
         setTimeState(false);
+        String convertedTags = convertTagsToLinks(noteText.getText());
         String titleMarkdown = "# " + titleField.getText() + "\n\n";
-        String html = convertMarkdownToHtml(titleMarkdown + noteText.getText());
+        String html = convertMarkdownToHtml(titleMarkdown + convertedTags);
 
 
         // FIXME (edited): intuition: hangs the application when UI is closed; maybe that's not the problem
         // Use the jfx thread to update the text
-        Platform.runLater(() -> markdownPreview.getEngine().loadContent(html));
+        Platform.runLater(() -> setUpEngine(markdownPreview).loadContent(html));
+    }
+
+    private WebEngine setUpEngine(WebView webView) {
+        WebEngine engine = webView.getEngine();
+        engine.documentProperty().addListener((obs, oldDoc, newDoc) -> {
+            if (newDoc != null) {
+                JSObject window = (JSObject) engine.executeScript("window");
+                window.setMember("app", this);
+            }
+        });
+        return engine;
     }
 
     private synchronized void syncNoteContents() {
@@ -172,6 +191,7 @@ public class MarkdownEditorCtrl {
         Platform.runLater(() -> {
             activeNote.content = noteText.getText();
             serverUtils.updateNote(activeNote);
+            mainCtrl.updateTags(activeNote);
             isContentsSynced = true;
         });
     }
@@ -195,5 +215,37 @@ public class MarkdownEditorCtrl {
 
     private synchronized void setTimeState(boolean timeState) {
         this.timeState = timeState;
+    }
+
+    private String convertTagsToLinks(String text){
+        Pattern pattern = Pattern.compile("#\\w+");
+        Matcher matcher = pattern.matcher(text);
+
+        StringBuffer textBuffer = new StringBuffer();
+        while (matcher.find()) {
+            String tag = matcher.group().substring(1);
+            String link = "<a href='#' onclick='app.onTagClicked(\""
+                    + tag + "\")' " + getLinkCSS() + ">"
+                    + tag + "</a>";
+            matcher.appendReplacement(textBuffer, link);
+        }
+        matcher.appendTail(textBuffer);
+
+        return textBuffer.toString();
+    }
+
+    public void onTagClicked(String tag){
+        this.mainCtrl.addTagFilter("#" + tag);
+    }
+
+    //FIXME this should probably be moved to a separate CSS file and then loaded from there.
+    private String getLinkCSS(){
+        return "style='display: inline-block; " +
+                "padding: 2px 4px; " +
+                "border: 1px solid #333; " +
+                "background-color: #ccc; " +
+                "border-radius: 8px; " +
+                "color: #000; " +
+                "text-decoration: none;'";
     }
 }
