@@ -84,4 +84,14 @@ public class EmbeddedFileController {
         embeddedFileRepository.deleteAll(removed);
         return ResponseEntity.ok(removed);
     }
+
+    @PutMapping("{id}")
+    public ResponseEntity<EmbeddedFile> updateFile(@RequestBody EmbeddedFile file) {
+        try {
+            EmbeddedFile saved = embeddedFileRepository.save(file);
+            return ResponseEntity.ok(saved);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

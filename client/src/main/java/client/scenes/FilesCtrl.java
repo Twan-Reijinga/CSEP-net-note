@@ -38,6 +38,7 @@ public class FilesCtrl {
             Button remove = new Button("⮾");
             remove.setOnAction(event -> deleteFile(currentFile.note.id, currentFile.id));
             Button edit = new Button("&");
+            edit.setOnAction(event -> editTitle(currentFile.note.id, currentFile.id));
             HBox wrapper = new HBox(label, edit, remove);
             wrapper.setPadding(new Insets(10, 5, 10, 5));
             wrapper.setOnMouseClicked(event -> {
@@ -75,4 +76,14 @@ public class FilesCtrl {
             server.deleteFileToNote(noteId, id);
             refresh();
     }
+
+    public void editTitle(long noteId, long id) {
+        EmbeddedFile file = server.getFileFromNote(noteId, id);
+        String MockTitle = "MockTitle1";
+        file.title = MockTitle;
+        server.editFileTitle(file);
+
+        refresh();
+    }
+
 }
