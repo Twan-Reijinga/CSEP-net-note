@@ -81,6 +81,9 @@ public class NoteEditorCtrl {
     @FXML
     private HBox tagContainerHBox;
 
+    @FXML
+    private AnchorPane filesContainer;
+
     @Inject
     public NoteEditorCtrl(LoaderFXML FXML, ServerUtils serverUtils, MainCtrl mainCtrl) {
         this.FXML = FXML;
@@ -98,9 +101,14 @@ public class NoteEditorCtrl {
     public void initialize(Pair<SidebarCtrl,
                            Parent> sidebar,
                            Pair<MarkdownEditorCtrl, Parent> markdownEditor,
+                           Pair<FilesCtrl, Parent> files,
                            ResourceBundle bundle) {
         sidebarCtrl = sidebar.getKey();
         Node sidebarNode = sidebar.getValue();
+
+        filesContainer.getChildren().add(files.getValue());
+        AnchorPane.setTopAnchor(files.getValue(), 0.0);
+        AnchorPane.setBottomAnchor(files.getValue(), 0.0);
 
         markdownEditorCtrl = markdownEditor.getKey();
         Node markdownEditorNode = markdownEditor.getValue();
@@ -269,7 +277,6 @@ public class NoteEditorCtrl {
                 Platform.runLater(() -> onSearchButtonPressed());
             }
         }, delayBetweenKeyPresses);
-
     }
 
     /**

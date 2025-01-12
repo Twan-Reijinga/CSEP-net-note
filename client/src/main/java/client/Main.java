@@ -17,13 +17,11 @@ package client;
 
 import static com.google.inject.Guice.createInjector;
 
-import client.scenes.SidebarCtrl;
+import client.scenes.*;
 import client.utils.Language;
 import client.config.LanguagePreference;
+
 import com.google.inject.Injector;
-import client.scenes.NoteEditorCtrl;
-import client.scenes.MainCtrl;
-import client.scenes.MarkdownEditorCtrl;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -80,11 +78,12 @@ public class Main extends Application {
 		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, resourceBundle,
 				"client", "scenes", "MarkdownEditor.fxml");
 		var sidebarEditor = FXML.load(SidebarCtrl.class, resourceBundle, "client", "scenes", "Sidebar.fxml");
+		var filesEditor = FXML.load(FilesCtrl.class, resourceBundle,"client", "scenes", "Files.fxml");
 		var noteEditor = FXML.load(NoteEditorCtrl.class, resourceBundle, "client", "scenes", "MainUI.fxml");
 		if (mainCtrl == null) {
 			mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 		}
-		mainCtrl.initialize(primaryStage, markdownEditor, noteEditor, sidebarEditor, resourceBundle);
+		mainCtrl.initialize(primaryStage, markdownEditor, noteEditor, sidebarEditor, filesEditor, resourceBundle);
 		primaryStage.setWidth(width);
 		primaryStage.setHeight(height);
 	}

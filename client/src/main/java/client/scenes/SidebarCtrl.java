@@ -2,7 +2,6 @@ package client.scenes;
 
 import client.config.Config;
 import commons.Collection;
-import commons.EmbeddedFile;
 import commons.Note;
 import commons.NoteTitle;
 import client.utils.ServerUtils;
@@ -12,10 +11,6 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 
 
@@ -26,7 +21,10 @@ public class SidebarCtrl {
 
     @FXML
     public VBox noteContainer;
+
     private MainCtrl mainCtrl;
+    private MarkdownEditorCtrl markdownEditorCtrl;
+    private FilesCtrl filesCtrl;
 
     // Injectable
     private final ServerUtils server;
@@ -48,8 +46,9 @@ public class SidebarCtrl {
      * initializer for the SidebarCtrl object.
      * @param mainCtrl The mainCtrl to execute actions outside the sidebar.
      */
-    public void initialize(MainCtrl mainCtrl) {
+    public void initialize(MainCtrl mainCtrl, FilesCtrl filesCtrl) {
         this.mainCtrl = mainCtrl;
+        this.filesCtrl = filesCtrl;
     }
 
     /**
@@ -242,36 +241,6 @@ public class SidebarCtrl {
         noteClick(selectedNoteId);
     }
 
-    /** Adds (now a default) file to be stored in the database
-     * File is saved in base64, this can store all filetypes and large files (also works with JSON)
-     * @throws FileNotFoundException when the file isn't available
-     */
-    public void addFile() throws FileNotFoundException {
-        Note note = server.getNoteById(selectedNoteId);
-        File thisFile = new File("test.txt/");
-        String fileString;
-        try (FileInputStream input = new FileInputStream(thisFile)) {
-            byte[] fileBytes = new byte[(int) thisFile.length()];
-            input.read(fileBytes);
-            fileString = Base64.getEncoder().encodeToString(fileBytes);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Deletes a file (for now the first file in the selected note)
-     */
-    public void deleteFile() {
-        Note note = server.getNoteById(getSelectedNoteId());
-        List<EmbeddedFile> files = server.getAllFilesFromNote(note);
-        if (!files.isEmpty()) {
-            EmbeddedFile file = files.getFirst();
-            server.deleteFileToNote(note, file);
-        }
-
-    }
-
     /**
      * Note click function for action when a specific note in the sidebar is clicked
      * intended behaviour is that the note contents opens.
@@ -287,6 +256,7 @@ public class SidebarCtrl {
         }
         selectedNoteId = id;
         mainCtrl.updateNote(id);
+        filesCtrl.refresh();
     }
 
     private void selectFirstNote() {

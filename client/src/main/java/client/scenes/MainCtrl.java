@@ -42,6 +42,8 @@ public class MainCtrl {
 
     private MarkdownEditorCtrl markdownEditorCtrl;
     private SidebarCtrl sidebarCtrl;
+    private FilesCtrl filesCtrl;
+
     private ShortcutHandler shortcutHandler;
     private TagFilteringHandler tagFilteringHandler;
 
@@ -68,6 +70,7 @@ public class MainCtrl {
             Pair<MarkdownEditorCtrl, Parent> markdownEditor,
             Pair<NoteEditorCtrl, Parent> noteEditor,
             Pair<SidebarCtrl, Parent> sidebarEditor,
+            Pair<FilesCtrl, Parent> filesEditor,
             ResourceBundle bundle
     )
     {
@@ -80,10 +83,12 @@ public class MainCtrl {
 
         this.markdownEditorCtrl = markdownEditor.getKey();
         this.sidebarCtrl = sidebarEditor.getKey();
+        this.filesCtrl = filesEditor.getKey();
 
-        noteEditorCtrl.initialize(sidebarEditor, markdownEditor, bundle);
+
+        noteEditorCtrl.initialize(sidebarEditor, markdownEditor, filesEditor, bundle);
         markdownEditorCtrl.initialize(sidebarCtrl);
-        sidebarCtrl.initialize(this);
+        sidebarCtrl.initialize(this, filesCtrl);
 
         this.shortcutHandler = new ShortcutHandler(sidebarCtrl);
         shortcutHandler.attach(this.noteEditor);

@@ -80,5 +80,6 @@
             </VBox>
          </top>
       </BorderPane>
+      <AnchorPane fx:id="filesContainer" layoutX="195.0" layoutY="402.0" prefHeight="79.0" prefWidth="181.0" />
    </children>
 </AnchorPane>
