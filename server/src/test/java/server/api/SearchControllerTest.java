@@ -11,6 +11,7 @@ import server.services.RandomService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,7 +24,6 @@ public class SearchControllerTest {
     private Note note2;
     private Note note3;
 
-    private CollectionController controller;
     private SearchController searchController;
 
     @BeforeEach
@@ -45,8 +45,8 @@ public class SearchControllerTest {
         note3 = new Note("NoteTitle 3", "Content 3", collection2);
         noteRepo.save(note3);
 
-        controller = new CollectionController(repo, noteRepo, new CollectionService(new RandomService(), repo));
-        searchController = new SearchController(new SearchService(controller));
+        CollectionService service = new CollectionService(new RandomService(), repo, noteRepo);
+        searchController = new SearchController(new SearchService(service));
     }
 
     @Test

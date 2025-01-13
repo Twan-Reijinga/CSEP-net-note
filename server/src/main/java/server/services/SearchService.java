@@ -10,15 +10,16 @@ import server.api.CollectionController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class SearchService {
-    private final CollectionController collectionController;
+    private final CollectionService collectionService;
 
     @Autowired
-    public SearchService(CollectionController collectionController) {
-        this.collectionController = collectionController;
+    public SearchService(CollectionService collectionController) {
+        this.collectionService = collectionController;
     }
 
     /**
@@ -188,15 +189,15 @@ public class SearchService {
     }
 
     private List<Note> loadNotesForSearch(UUID id){
-        Collection collection;
+        Optional<Collection> collection = collectionService.getCollectionById(id);
         List<Note> notesInCollection = new ArrayList<>();
-        if(id != null){
-            collection = collectionController.getCollectionById(id).getBody();
-            notesInCollection = collectionController.getNotesInCollection(collection.id);
+
+        if(collection.isPresent()){
+            notesInCollection = collectionService.getNotesInCollection(collection.get().id);
         }
         else{
-            for(Collection coll: collectionController.getAllCollections()){
-                notesInCollection.addAll(collectionController.getNotesInCollection(coll.id));
+            for(Collection coll: collectionService.getAllCollections()){
+                notesInCollection.addAll(collectionService.getNotesInCollection(coll.id));
             }
         }
 
