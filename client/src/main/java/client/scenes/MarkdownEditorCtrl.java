@@ -42,7 +42,7 @@ import org.commonmark.ext.ins.InsExtension;
 import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
 import org.commonmark.ext.task.list.items.TaskListItemsExtension;
 import org.commonmark.ext.footnotes.FootnotesExtension;
-
+import java.util.HashMap;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -353,9 +353,9 @@ public class MarkdownEditorCtrl {
 
     private synchronized void refreshView() {
         setTimeState(false);
-        String convertedTags = convertTagsToLinks(noteText.getText());
+        String convertedTagsAndLinks = convertTagsAndLinks(noteText.getText());
         String titleMarkdown = "# " + titleField.getText() + "\n\n";
-        String html = convertMarkdownToHtml(titleMarkdown + convertedTags);
+        String html = convertMarkdownToHtml(titleMarkdown + convertedTagsAndLinks);
 
 
         // Use the jfx thread to update the text
@@ -413,7 +413,7 @@ public class MarkdownEditorCtrl {
         while (matcher.find()) {
             String tag = matcher.group().substring(1);
             String link = "<a href='#' onclick='app.onTagClicked(\""
-                    + tag + "\")' " + getLinkCSS() + ">"
+                    + tag + "\")' " + getTagCSS() + ">"
                     + tag + "</a>";
             matcher.appendReplacement(textBuffer, link);
         }
@@ -431,7 +431,7 @@ public class MarkdownEditorCtrl {
     }
 
     //FIXME this should probably be moved to a separate CSS file and then loaded from there.
-    private String getLinkCSS(){
+    private String getTagCSS(){
         return "style='display: inline-block; " +
                 "padding: 2px 4px; " +
                 "border: 1px solid #333; " +
@@ -439,5 +439,36 @@ public class MarkdownEditorCtrl {
                 "border-radius: 8px; " +
                 "color: #000; " +
                 "text-decoration: none;'";
+    }
+
+    private String getNoteLinkHtml(String text){
+        HashMap<String, Long> links = this.mainCtrl.getNoteLinks(this.activeNote);
+        String html = "";
+
+        for(String link: links.keySet()){
+            Long linkedId = links.get(link);
+            if(linkedId != null){
+                html = "<a class='links-valid' href='#' onclick='app.onLinkClicked(" + linkedId + ")'>";
+            }
+            else{
+                html = "<a class='links-invalid'>";
+            }
+            html +=  link + "</a>";
+
+            text = text.replace("[[" + link + "]]", html);
+        }
+
+        return text;
+    }
+
+    public void onLinkClicked(String noteId){
+        this.mainCtrl.linkClicked(Long.parseLong(noteId));
+    }
+
+    private String convertTagsAndLinks(String text){
+        String tagsRendered = this.convertTagsToLinks(text);
+        String linksRendered = this.getNoteLinkHtml(tagsRendered);
+
+        return linksRendered;
     }
 }

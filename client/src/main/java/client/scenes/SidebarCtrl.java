@@ -378,4 +378,12 @@ public class SidebarCtrl {
         }
         return previousNoteId;
     }
+
+    public void noteLinkClicked(Long id){
+        if(!this.noteTitles.stream().map(x -> x.getId()).toList().contains(id)){
+            refresh();
+            //FIXME what if note is not loaded but exists in the collection
+        }
+        noteClick(id);
+    }
 }

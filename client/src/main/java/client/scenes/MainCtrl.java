@@ -21,6 +21,7 @@ import client.utils.DialogBoxUtils;
 import client.utils.Language;
 import client.utils.ServerUtils;
 import client.handlers.TagFilteringHandler;
+import client.utils.*;
 import commons.NoteTitle;
 import client.handlers.ShortcutHandler;
 import commons.Note;
@@ -34,6 +35,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import commons.Collection;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
@@ -50,15 +52,17 @@ public class MainCtrl {
 
     private ShortcutHandler shortcutHandler;
     private TagFilteringHandler tagFilteringHandler;
+    private NoteLinkHandler noteLinkHandler;
 
     private final Config config;
     private final ServerUtils serverUtils;
     private boolean isWaiting;
 
     @Inject
-    public MainCtrl(Config config, ServerUtils serverUtils) {
+    public MainCtrl(Config config, ServerUtils serverUtils, NoteLinkHandler noteLinkHandler) {
         this.config = config;
         this.serverUtils = serverUtils;
+        this.noteLinkHandler = noteLinkHandler;
         try {
             ServerUtils.connection.connect(new java.net.URI(this.serverUtils.server).getHost());
         } catch (Exception e) {
@@ -382,5 +386,13 @@ public class MainCtrl {
 
     public boolean isWaiting() {
         return isWaiting;
+    }
+
+    public HashMap<String, Long> getNoteLinks(Note note){
+        return this.noteLinkHandler.getLinks(note.content, note.collection.id);
+    }
+
+    public void linkClicked(Long id){
+        this.sidebarCtrl.noteLinkClicked(id);
     }
 }
