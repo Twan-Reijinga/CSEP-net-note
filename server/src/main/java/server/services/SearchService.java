@@ -6,7 +6,6 @@ import commons.NoteTitle;
 import net.java.frej.Regex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import server.api.CollectionController;
 
 import java.util.ArrayList;
 import java.util.List;
