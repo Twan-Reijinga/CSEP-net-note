@@ -189,15 +189,22 @@ public class SearchService {
     }
 
     private List<Note> loadNotesForSearch(UUID id){
-        Optional<Collection> collection = collectionService.getCollectionById(id);
         List<Note> notesInCollection = new ArrayList<>();
 
-        if(collection.isPresent()){
-            notesInCollection = collectionService.getNotesInCollection(collection.get().id);
-        }
-        else{
+        if(id == null){
             for(Collection coll: collectionService.getAllCollections()){
                 notesInCollection.addAll(collectionService.getNotesInCollection(coll.id));
+            }
+        }
+        else{
+            Optional<Collection> collection = collectionService.getCollectionById(id);
+            if(collection.isPresent()){
+                notesInCollection = collectionService.getNotesInCollection(collection.get().id);
+            }
+            else{
+                for(Collection coll: collectionService.getAllCollections()){
+                    notesInCollection.addAll(collectionService.getNotesInCollection(coll.id));
+                }
             }
         }
 
