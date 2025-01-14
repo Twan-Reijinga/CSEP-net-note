@@ -7,7 +7,6 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -26,7 +25,6 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 
 import java.util.*;
-import java.util.spi.ToolProvider;
 
 
 public class NoteEditorCtrl {
@@ -430,6 +428,12 @@ public class NoteEditorCtrl {
                 + "-fx-padding: 1px 5px 1px 5px;";
     }
 
+    /**
+     * This method is called on initialization of NoteEditorCtrl. It sets the elements and initial
+     * values for the nodes related to the advanced searching and also creates a tooltip for
+     * the advanced search button.
+     * @param bundle used to load the text for the nodes in the correct language.
+     */
     private void setupSearchElements(ResourceBundle bundle){
         Tooltip advSearchButtonTooltip = new Tooltip(bundle.getString("advSearchButtonTooltip"));
         advSearchButtonTooltip.setShowDelay(Duration.seconds(0.1));

@@ -55,7 +55,7 @@ public class SearchControllerTest {
         List<NoteTitle> expected = new ArrayList<NoteTitle>();
         expected.add(nt1);
 
-        List<NoteTitle> result = searchController.searchNotes("Notettl", 0, "Both", collection1.id).getBody();
+        List<NoteTitle> result = searchController.searchNotes("Notettl", "false", 0, collection1.id).getBody();
         assertEquals(expected, result);
     }
 
