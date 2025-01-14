@@ -113,6 +113,7 @@ public class NoteEditorCtrl {
 
         this.searchInOptionsList.getItems().clear();
         this.searchInOptionsList.getItems().addAll("Title", "Content", "Both");
+        this.searchInOptionsList.setValue("Both");
         this.matchAllCheckBox.setSelected(true);
 
         this.bundle = bundle;

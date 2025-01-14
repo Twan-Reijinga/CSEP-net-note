@@ -5,12 +5,13 @@ import commons.Note;
 import commons.NoteTitle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import server.service.SearchService;
+import server.services.SearchService;
 import server.services.CollectionService;
 import server.services.RandomService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,7 +24,6 @@ public class SearchControllerTest {
     private Note note2;
     private Note note3;
 
-    private CollectionController controller;
     private SearchController searchController;
 
     @BeforeEach
@@ -41,11 +41,12 @@ public class SearchControllerTest {
 
         note2 = new Note("NoteTitle 2", "Content 2", collection2);
         noteRepo.save(note2);
+
         note3 = new Note("NoteTitle 3", "Content 3", collection2);
         noteRepo.save(note3);
 
-        controller = new CollectionController(repo, noteRepo, new CollectionService(new RandomService(), repo));
-        searchController = new SearchController(new SearchService(controller));
+        CollectionService service = new CollectionService(new RandomService(), repo, noteRepo);
+        searchController = new SearchController(new SearchService(service));
     }
 
     @Test
@@ -54,7 +55,7 @@ public class SearchControllerTest {
         List<NoteTitle> expected = new ArrayList<NoteTitle>();
         expected.add(nt1);
 
-        List<NoteTitle> result = searchController.searchNotes("Notettl", "true", "0").getBody();
+        List<NoteTitle> result = searchController.searchNotes("Notettl", "true", "Both", collection1.id).getBody();
         assertEquals(expected, result);
     }
 
@@ -64,7 +65,7 @@ public class SearchControllerTest {
         List<NoteTitle> expected = new ArrayList<NoteTitle>();
         expected.add(nt1);
 
-        List<NoteTitle> result = searchController.searchNotes("Notetitle and random", "false", "0").getBody();
+        List<NoteTitle> result = searchController.searchNotes("Notetitle and random", "false", "Both", collection1.id).getBody();
         assertEquals(expected, result);
     }
 }
