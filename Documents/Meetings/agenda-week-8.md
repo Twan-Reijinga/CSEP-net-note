@@ -2,10 +2,10 @@
 | ------------ |-------------------------------|
 | Date :       | 15/01/2024                    |
 | Time :       | 13:45                         |
-| Location :   | Drebbelweg Instr. R1          |
+| Location :   | Drebbelweg Instr. R1 / Online |
 | Chair        | Petar                         |
 | Minute Taker | Liviu                         |
-| Attendees :  |                               |
+| Attendees :  | Everyone                      |
 
 # Agenda Items
 
@@ -106,4 +106,28 @@
 
 
 ## Minutes
---- 
+- Overview of accomplishments from the last sprint
+
+- Review of feedback
+
+- Emphasis on accessibility for Twan
+
+- Dialogue regarding user interface improvements
+
+- Challenges related to undo/redo functionality
+
+- Refactoring of backend components
+
+- Each controller should be associated with its own service
+
+- Implementation of testing protocols has lower priority than synchronization
+
+- Discussion on multi-collection
+
+- AI integration and external libraries documentation
+
+- Appointment of a minute taker for the upcoming week
+
+- Refactoring of frontend components
+
+- Additional inquiries and questions
