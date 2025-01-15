@@ -34,7 +34,8 @@ public class EmbeddedFile {
     /**
      * Constructor for the NoteTitle that initializes all the private fields of the object.
      * @param title The title of the file stored in the database, could be edited later.
-     *
+     * @param note the note where the file should be stored
+     * @param file the file path that is stored
      */
     public EmbeddedFile(String title, Note note, String file) {
         this.title = title;

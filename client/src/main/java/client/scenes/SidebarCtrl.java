@@ -43,6 +43,7 @@ public class SidebarCtrl {
     /**
      * initializer for the SidebarCtrl object.
      * @param mainCtrl The mainCtrl to execute actions outside the sidebar.
+     * @param filesCtrl The fileCtrl to execute actions outside the sidebar.
      */
     public void initialize(MainCtrl mainCtrl, FilesCtrl filesCtrl) {
         this.mainCtrl = mainCtrl;

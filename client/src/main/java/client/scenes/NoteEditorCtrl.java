@@ -95,6 +95,7 @@ public class NoteEditorCtrl {
      * JavaFX method that automatically runs when this controller is initialized.
      * @param sidebar root element of the Sidebar fxml
      * @param markdownEditor root element of the Markdown fxml
+     * @param files root element of the files fxml
      * @param bundle resource bundle for current language
      */
     @FXML

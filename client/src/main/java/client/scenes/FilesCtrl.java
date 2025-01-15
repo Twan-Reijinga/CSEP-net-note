@@ -77,6 +77,8 @@ public class FilesCtrl {
 
     /**
      * Deletes the selected file
+     * @param noteId the id of the selected note
+     * @param id the unique id that defines the file
      */
     public void deleteFile(long noteId, long id) {
         server.deleteFileToNote(noteId, id);
