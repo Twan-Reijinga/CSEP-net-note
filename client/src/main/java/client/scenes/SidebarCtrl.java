@@ -165,12 +165,15 @@ public class SidebarCtrl {
                 config.getDefaultCollectionId() : selectedCollectionId;
 
         Collection collection = server.getCollectionById(destinationCollectionId);
-        if (getSelectedNoteId() > 0) {
-            collection = server.getNoteById(getSelectedNoteId()).collection;
-        }
+
+        System.out.println(selectedCollectionId);
+        System.out.println(collection.title);
 
         int input = createDefaultTitle(1);
         Note newNote = new Note("New note: " + input, "Edit content here.", collection);
+
+        System.out.println(newNote);
+
 
         addNote(newNote);
         mainCtrl.recordAdd(selectedNoteId);
