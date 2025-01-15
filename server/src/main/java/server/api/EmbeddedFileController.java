@@ -27,7 +27,8 @@ public class EmbeddedFileController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EmbeddedFile> getById(@PathVariable("noteId") long noteId, @PathVariable("id") long id) {
-        if (id < 0 || embeddedFileRepository.findById(id).isEmpty() || embeddedFileRepository.findById(id).get().note.id!= noteId) {
+        if (id < 0 || embeddedFileRepository.findById(id).isEmpty()
+                || embeddedFileRepository.findById(id).get().note.id!= noteId) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(embeddedFileRepository.findById(id).get());

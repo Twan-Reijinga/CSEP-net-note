@@ -79,8 +79,8 @@ public class FilesCtrl {
      * Deletes the selected file
      */
     public void deleteFile(long noteId, long id) {
-            server.deleteFileToNote(noteId, id);
-            refresh();
+        server.deleteFileToNote(noteId, id);
+        refresh();
     }
 
     public void editTitle(long noteId, long id) {

@@ -98,22 +98,19 @@ public class NoteEditorCtrl {
      * @param bundle resource bundle for current language
      */
     @FXML
-    public void initialize(Pair<SidebarCtrl,
-                           Parent> sidebar,
-                           Pair<MarkdownEditorCtrl, Parent> markdownEditor,
+    public void initialize(Pair<SidebarCtrl, Parent> sidebar,
+                           Pair<MarkdownEditorCtrl,
+                            Parent> markdownEditor,
                            Pair<FilesCtrl, Parent> files,
                            ResourceBundle bundle) {
         sidebarCtrl = sidebar.getKey();
         Node sidebarNode = sidebar.getValue();
 
-        filesContainer.getChildren().add(files.getValue());
-        AnchorPane.setTopAnchor(files.getValue(), 0.0);
-        AnchorPane.setBottomAnchor(files.getValue(), 0.0);
-
         markdownEditorCtrl = markdownEditor.getKey();
         Node markdownEditorNode = markdownEditor.getValue();
 
         appendSidebar(sidebarNode);
+        appendFiles(files.getValue());
         appendMarkdownEditor(markdownEditorNode);
 
         collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
@@ -140,6 +137,12 @@ public class NoteEditorCtrl {
         sidebarContainer.getChildren().add(sidebarNode);
         AnchorPane.setTopAnchor(sidebarNode, 0.0);
         AnchorPane.setBottomAnchor(sidebarNode, 0.0);
+    }
+
+    private void appendFiles(Node filesNode) {
+        filesContainer.getChildren().add(filesNode);
+        AnchorPane.setTopAnchor(filesNode, 0.0);
+        AnchorPane.setBottomAnchor(filesNode, 0.0);
     }
 
     private void appendMarkdownEditor(Node markdownEditorNode) {

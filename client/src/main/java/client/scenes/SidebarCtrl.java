@@ -21,9 +21,7 @@ public class SidebarCtrl {
 
     @FXML
     public VBox noteContainer;
-
     private MainCtrl mainCtrl;
-    private MarkdownEditorCtrl markdownEditorCtrl;
     private FilesCtrl filesCtrl;
 
     // Injectable
