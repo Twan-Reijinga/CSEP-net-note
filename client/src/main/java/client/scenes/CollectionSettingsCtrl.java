@@ -58,6 +58,9 @@ public class CollectionSettingsCtrl {
     // This is necessary because if a user creates a collection it doesn't guarantee that they'll save it
     private Collection createdCollection;
 
+    // Set in the dialog when user is prompted to save the changes
+    private boolean isSaveCancelled = false;
+
     // Injectable
     private final ServerUtils serverUtils;
     private final Config config;
@@ -80,6 +83,21 @@ public class CollectionSettingsCtrl {
 
         Collection defaultCollection = getSelectedCollection();
         loadCollectionInfo(defaultCollection);
+    }
+
+    public boolean hasUnsavedChanges() {
+        return isCollectionModified || createdCollection != null;
+    }
+
+    public boolean handleUnsavedChanges() {
+        showConfirmSaveDialog(
+                displayedCollection.title,
+                this::saveModifiedChanges,
+                // TODO: remove clearing; clearing == discarding; != cancelling save
+                this::clearModifiedChanges
+        );
+
+        return isSaveCancelled;
     }
 
     private Collection getSelectedCollection() {
@@ -120,12 +138,8 @@ public class CollectionSettingsCtrl {
 
         if (selectedCollection == null) return;
 
-        if (isCollectionModified && selectedCollection != displayedCollection) {
-            showConfirmSaveDialog(
-                    displayedCollection.title,
-                    this::saveModifiedChanges,
-                    this::clearModifiedChanges
-            );
+        if (hasUnsavedChanges() && selectedCollection != displayedCollection) {
+            handleUnsavedChanges();
         }
 
         loadCollectionInfo(selectedCollection);
@@ -310,11 +324,14 @@ public class CollectionSettingsCtrl {
         dialog.showAndWait();
     }
 
+
     private void showConfirmSaveDialog(String collectionName, Runnable yes, Runnable no) {
+
         var dialog = DialogBoxUtils.createYesNoDialog(
                 "Save changes to the collection?",
                 "Collection \"" + collectionName + "\" has been modified. Do you want to save changes?",
                 (confirmed) -> {
+                    isSaveCancelled = !confirmed;
                     if (confirmed) yes.run();
                     else no.run();
                 }
