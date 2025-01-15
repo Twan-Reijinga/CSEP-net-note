@@ -1,7 +1,6 @@
 package client.scenes;
 
 import commons.Collection;
-import commons.EmbeddedFile;
 import commons.Note;
 import commons.NoteTitle;
 import client.utils.ServerUtils;
@@ -11,7 +10,6 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-import java.io.File;
 import java.util.*;
 
 
