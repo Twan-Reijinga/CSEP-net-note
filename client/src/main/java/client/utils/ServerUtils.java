@@ -24,10 +24,7 @@ import java.util.UUID;
 import client.config.Config;
 import com.google.inject.Inject;
 
-import commons.EmbeddedFile;
-import commons.Note;
-import commons.NoteTags;
-import commons.NoteTitle;
+import commons.*;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
@@ -35,8 +32,6 @@ import org.glassfish.jersey.client.ClientConfig;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
-
-import commons.Collection;
 
 public class ServerUtils {
 	private final Config config;
@@ -280,7 +275,6 @@ public class ServerUtils {
 				.request(APPLICATION_JSON)
 				.post(Entity.entity(noteIds, APPLICATION_JSON), new GenericType<>(){});
 	}
-
 
 	/**
 	 * Adds the file to the database
