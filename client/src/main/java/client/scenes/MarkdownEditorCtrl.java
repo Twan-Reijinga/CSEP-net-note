@@ -421,8 +421,8 @@ public class MarkdownEditorCtrl {
         StringBuffer textBuffer = new StringBuffer();
         while (matcher.find()) {
             String tag = matcher.group().substring(1);
-            String link = "<a href='#' onclick='app.onTagClicked(\""
-                    + tag + "\")' " + getTagCSS() + ">"
+            String link = "<a href='#' class='tags' onclick='app.onTagClicked(\""
+                    + tag + "\")'>"
                     + tag + "</a>";
             matcher.appendReplacement(textBuffer, link);
         }
@@ -437,17 +437,6 @@ public class MarkdownEditorCtrl {
      */
     public void onTagClicked(String tag){
         this.mainCtrl.addTagFilter("#" + tag);
-    }
-
-    //FIXME this should probably be moved to a separate CSS file and then loaded from there.
-    private String getTagCSS(){
-        return "style='display: inline-block; " +
-                "padding: 2px 4px; " +
-                "border: 1px solid #333; " +
-                "background-color: #ccc; " +
-                "border-radius: 8px; " +
-                "color: #000; " +
-                "text-decoration: none;'";
     }
 
     private String getNoteLinkHtml(String text){

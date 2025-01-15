@@ -22,3 +22,14 @@
     border-bottom: 2px solid rgba(100, 100, 100, 0.3);
     font-style: normal;
 }
+
+
+.tags {
+    display: inline-block;
+    padding: 2px 4px;
+    border: 1px solid #333;
+    background-color: #ccc;
+    border-radius: 8px;
+    color: #000;
+    text-decoration: none;
+}
