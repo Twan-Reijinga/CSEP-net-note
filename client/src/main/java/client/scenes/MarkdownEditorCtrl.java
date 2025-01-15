@@ -87,6 +87,8 @@ public class MarkdownEditorCtrl {
 
     private Note activeNote;
     private SidebarCtrl sidebarCtrl;
+    private boolean titleChanged = false;
+    private String initialTitle = "";
 
     @Inject
     public MarkdownEditorCtrl(ServerUtils serverUtils, Config config, MainCtrl mainCtrl) {
@@ -167,7 +169,8 @@ public class MarkdownEditorCtrl {
         if (activeNote != null && serverUtils.existsNoteById(activeNote.id)) {
             saveActiveNote();
         }
-
+        this.titleChanged = false;
+        this.initialTitle = activeNote.title;
         activeNote = serverUtils.getNoteById(newId);
         noteText.setText(activeNote.content);
         titleField.setText(activeNote.title);
@@ -204,7 +207,7 @@ public class MarkdownEditorCtrl {
         activeNote.content = noteText.getText();
 
         try {
-            serverUtils.updateNote(activeNote);
+            serverUtils.updateNote(activeNote, titleChanged, initialTitle, activeNote.title);
 
             // Update available tags
             mainCtrl.updateTags(activeNote);
@@ -314,6 +317,11 @@ public class MarkdownEditorCtrl {
             mainCtrl.showMessage("Duplicate title: " + newTitle, true);
             applyInvalidTitleStyle();
             return;
+        }
+
+        if(!titleChanged){
+            this.initialTitle = activeNote.title;
+            titleChanged = true;
         }
 
         activeNote.title = newTitle;

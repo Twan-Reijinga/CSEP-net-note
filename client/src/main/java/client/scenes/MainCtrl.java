@@ -395,4 +395,15 @@ public class MainCtrl {
     public void linkClicked(Long id){
         this.sidebarCtrl.noteLinkClicked(id);
     }
+
+    public void updateNoteLinks(Long id, String oldTitle, String newTitle){
+        this.serverUtils.updateLinksToNote(id, newTitle, oldTitle);
+    }
+
+    public void updateNote(Note note, boolean titleChanged, String oldTitle, String newTitle){
+        serverUtils.updateNote(note);
+        if(titleChanged){
+            this.updateNoteLinks(note.id, oldTitle, newTitle);
+        }
+    }
 }

@@ -407,4 +407,21 @@ public class ServerUtils {
 				.request(APPLICATION_JSON)
 				.get(new GenericType<>() {});
 	}
+
+	/**
+	 * Used to update all the links to a note after its title has been changed.
+     *
+	 * @param noteId   the id of the note whose title was updated
+	 * @param newTitle the new title of the note
+	 * @return true if successfully completed the action, false otherwise
+	 */
+	public boolean updateLinksToNote(Long noteId, String newTitle, String oldTitle) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/links")
+				.queryParam("noteId", noteId)
+				.queryParam("newTitle", newTitle)
+				.queryParam("oldTitle", oldTitle)
+				.request(APPLICATION_JSON)
+				.get(boolean.class);
+	}
 }
