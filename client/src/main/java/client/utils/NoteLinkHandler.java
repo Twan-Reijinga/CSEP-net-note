@@ -18,6 +18,12 @@ public class NoteLinkHandler {
         this.serverUtils = serverUtils;
     }
 
+    /**
+     * This method processes the input string and finds all links inside
+     * using a specific regex pattern.
+     * @param content the string to process
+     * @return the list of all links inside the string.
+     */
     private List<String> findNoteLinks(String content){
         Pattern pattern = Pattern.compile("\\[\\[((?:(?!]]).)*)]]");
         Matcher matcher = pattern.matcher(content);
@@ -29,6 +35,15 @@ public class NoteLinkHandler {
         return noteLinks;
     }
 
+    /**
+     * This method processes the contents of a note. First, it finds the links inside by making a call
+     * to findNoteLinks(). Then, it checks with the server which of those links are valid and
+     * which are invalid, by comparing them to the list of all titles in the note's collection.
+     * @param content the content of the note
+     * @param collectionId the collection in which the note is stored
+     * @return a hashmap, where the keys are the links and
+     * the value is the id of the note they reference or null if they are invalid
+     */
     public HashMap<String, Long> getLinks(String content, UUID collectionId){
         List<String> noteLinks = findNoteLinks(content);
         HashMap<String, Long> noteLinkMap = new HashMap<>();

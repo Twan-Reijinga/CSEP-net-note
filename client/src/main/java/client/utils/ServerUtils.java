@@ -413,6 +413,7 @@ public class ServerUtils {
      *
 	 * @param noteId   the id of the note whose title was updated
 	 * @param newTitle the new title of the note
+	 * @param oldTitle the previous title of the note
 	 * @return true if successfully completed the action, false otherwise
 	 */
 	public boolean updateLinksToNote(Long noteId, String newTitle, String oldTitle) {
