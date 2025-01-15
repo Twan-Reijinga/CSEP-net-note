@@ -29,17 +29,6 @@ public class NoteLinkHandler {
         return noteLinks;
     }
 
-    //FIXME this should be moved to a separate CSS file.
-    public String getCSS(){
-        return "style='display: inline-block; " +
-                "padding: 2px 4px; " +
-                "border: 1px solid #333; " +
-                "background-color: #ccc; " +
-                "border-radius: 8px; " +
-                "color: #000; " +
-                "text-decoration: none;'";
-    }
-
     public HashMap<String, Long> getLinks(String content, UUID collectionId){
         List<String> noteLinks = findNoteLinks(content);
         HashMap<String, Long> noteLinkMap = new HashMap<>();

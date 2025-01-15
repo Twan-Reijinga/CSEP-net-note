@@ -1,0 +1,24 @@
+.links-valid {
+    display: inline-block;
+    color: #0077cc;
+    text-decoration: none;
+    font-style: italic;
+    font-weight: 500;
+    border-bottom: 2px solid rgba(0, 100, 200, 0.3);
+    border-top: 2px solid rgba(0, 100, 200, 0.3);
+}
+
+.links-valid:hover {
+    color: #005999;
+    border-bottom-color: rgba(0, 90, 150, 0.8);
+    border-top-color: rgba(0, 90, 150, 0.8);
+    text-decoration: none;
+}
+
+.links-invalid {
+    display: inline-block;
+    text-decoration: none;
+    color: #808080;
+    border-bottom: 2px solid rgba(100, 100, 100, 0.3);
+    font-style: normal;
+}

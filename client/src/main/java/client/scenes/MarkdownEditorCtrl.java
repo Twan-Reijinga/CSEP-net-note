@@ -378,6 +378,7 @@ public class MarkdownEditorCtrl {
                 window.setMember("app", this);
             }
         });
+        engine.setUserStyleSheetLocation(getClass().getResource("/stylesheets/link_tag_stylesheets.css").toExternalForm());
         return engine;
     }
 
