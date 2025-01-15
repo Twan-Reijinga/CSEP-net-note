@@ -123,35 +123,25 @@ public class SidebarCtrl {
     }
 
     /**
-     * Creates a new title that is unique to the other title in the format "New note: #"
-     * <p>
-     * @param input an integer that indicates what the first default title should be (usually 1)
-     * 				every other title will have a higher number.
-     * @return an integer which increments the current highest "New note: #", so that every note is unique in title.
+     * Creates a new title that is unique to the other title in the format "New note #"
+     * @return a title with incremented number in "New note #", so that every note is unique in title.
      */
-    private int createDefaultTitle(int input) {
-        List<NoteTitle> notes = server.getNoteTitles();
-        if (!notes.isEmpty()) {
-        	boolean correctTitle = true;
-        	for (NoteTitle currentNote : notes) {
-        		correctTitle = true;
-        		char[] chars = currentNote.getTitle().substring(10).toCharArray();
-        		if (chars.length == 0) {
-        			correctTitle = false;
-        		}
-        		for (char currentChar : chars) {
-        			if (!Character.isDigit(currentChar))
-        				correctTitle = false;
-        		}
-        		if (correctTitle && currentNote.getTitle().startsWith("New note: ")) {
-        			int tempInt = Integer.parseInt(currentNote.getTitle().split(" ")[2]);
-        			if (tempInt >= input) {
-        				input = tempInt + 1;
-        			}
-                }
-            }
-        }
-        return input;
+    private String createDefaultTitle(UUID collectionId) {
+        List<NoteTitle> notes = server.getNoteTitlesInCollection(collectionId);
+
+        int maxNoteNumber = notes.stream()
+                .filter(nt -> nt.getTitle().startsWith("New note #"))
+                .mapToInt(nt -> {
+                    try {
+                        return Integer.parseInt(nt.getTitle().replace("New note #", ""));
+                    } catch (Exception e) {
+                        return -1;
+                    }
+                })
+                .max()
+                .orElse(0);
+
+        return "New note #" + (maxNoteNumber + 1);
     }
 
     /**
@@ -166,14 +156,8 @@ public class SidebarCtrl {
 
         Collection collection = server.getCollectionById(destinationCollectionId);
 
-        System.out.println(selectedCollectionId);
-        System.out.println(collection.title);
-
-        int input = createDefaultTitle(1);
-        Note newNote = new Note("New note: " + input, "Edit content here.", collection);
-
-        System.out.println(newNote);
-
+        String title = createDefaultTitle(destinationCollectionId);
+        Note newNote = new Note(title, "Edit content here.", collection);
 
         addNote(newNote);
         mainCtrl.recordAdd(selectedNoteId);
