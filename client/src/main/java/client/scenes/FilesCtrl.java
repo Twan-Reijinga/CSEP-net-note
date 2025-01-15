@@ -8,10 +8,12 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -21,6 +23,9 @@ public class FilesCtrl {
 
     @FXML
     public HBox filesContainer;
+
+    @FXML
+    public TextField filePathContainer;
 
     @Inject
     public FilesCtrl(ServerUtils server, MainCtrl main) {
@@ -47,15 +52,16 @@ public class FilesCtrl {
         }
     }
     /**
-     * Adds (now a default) file to be stored in the database
+     * Adds file to be stored in the database
      *  File is saved in base64, this can store all filetypes and large files (also works with JSON)
      */
     public void addFile() {
-        if (main.getSelectedNoteId() == -1) {
-            return;
-        }
+        System.out.println(filePathContainer.getText());
+        if (main.getSelectedNoteId() == -1) {return;}
+
         Note note = server.getNoteById(main.getSelectedNoteId());
-        File thisFile = new File("warhammer dnd.png/");
+        File thisFile = new File(filePathContainer.getText());
+        filePathContainer.clear();
         String fileString;
         try (FileInputStream input = new FileInputStream(thisFile)) {
             byte[] fileBytes = new byte[(int) thisFile.length()];
@@ -98,4 +104,9 @@ public class FilesCtrl {
         }
     }
 
+    public void checkEnter(KeyEvent event) {
+        if (event.getCode().equals(KeyCode.ENTER)) {
+            addFile();
+        }
+    }
 }

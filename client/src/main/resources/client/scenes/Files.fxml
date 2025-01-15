@@ -1,17 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CustomMenuItem?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
-<AnchorPane maxHeight="47.0" maxWidth="600.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="188.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.FilesCtrl">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="46.0" prefWidth="205.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.FilesCtrl">
    <children>
-      <ScrollPane layoutX="6.0" layoutY="2.0" prefHeight="41.0" prefWidth="159.0" vbarPolicy="NEVER">
-         <content>
-            <HBox fx:id="filesContainer" minHeight="0.0" minWidth="0.0" prefHeight="25.0" />
-         </content>
-      </ScrollPane>
-      <Button layoutX="176.0" layoutY="10.0" mnemonicParsing="false" onAction="#addFile" text="+" />
+      <MenuButton contentDisplay="CENTER" graphicTextGap="1.0" layoutX="-46.0" layoutY="10.0" lineSpacing="1.0" mnemonicParsing="false" popupSide="RIGHT" prefHeight="25.0" prefWidth="53.0" text="Files" wrapText="true">
+        <items>
+            <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Unspecified Action">
+               <content>
+                  <TextField fx:id="filePathContainer" onKeyPressed="#checkEnter" pickOnBounds="false" prefHeight="25.0" promptText="File path">
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor>
+                  </TextField>
+               </content>
+            </CustomMenuItem>
+            <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Unspecified Action">
+               <content>
+                  <Button mnemonicParsing="false" onAction="#addFile" text="Add file" />
+               </content>
+            </CustomMenuItem>
+            <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Unspecified Action">
+               <content>
+                  <AnchorPane prefHeight="45.0" prefWidth="200.0">
+                     <children>
+                        <ScrollPane prefHeight="50.0" prefWidth="195.0" vbarPolicy="NEVER">
+                           <content>
+                              <HBox fx:id="filesContainer" minHeight="0.0" minWidth="0.0" prefHeight="45.0" />
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </CustomMenuItem>
+        </items>
+      </MenuButton>
    </children>
 </AnchorPane>
