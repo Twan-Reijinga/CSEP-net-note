@@ -15,7 +15,9 @@
  */
 package client.scenes;
 
+import client.Main;
 import client.config.Config;
+import client.utils.Language;
 import client.utils.ServerUtils;
 import client.utils.TagFilteringHandler;
 import commons.NoteTitle;
@@ -29,17 +31,17 @@ import javafx.util.Pair;
 import commons.Collection;
 
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.UUID;
 
 public class MainCtrl {
 
     private Stage primaryStage;
     private NoteEditorCtrl noteEditorCtrl;
-    private Scene noteEditorEnglish;
+    private Scene noteEditor;
 
     private MarkdownEditorCtrl markdownEditorCtrl;
     private SidebarCtrl sidebarCtrl;
-    private Scene sidebar;
     private ShortcutHandler shortcutHandler;
     private TagFilteringHandler tagFilteringHandler;
 
@@ -65,7 +67,8 @@ public class MainCtrl {
             Stage primaryStage,
             Pair<MarkdownEditorCtrl, Parent> markdownEditor,
             Pair<NoteEditorCtrl, Parent> noteEditor,
-            Pair<SidebarCtrl, Parent> sidebarEditor
+            Pair<SidebarCtrl, Parent> sidebarEditor,
+            ResourceBundle bundle
     )
     {
         this.primaryStage = primaryStage;
@@ -73,17 +76,17 @@ public class MainCtrl {
         this.tagFilteringHandler = new TagFilteringHandler(this.serverUtils);
 
         this.noteEditorCtrl = noteEditor.getKey();
-        this.noteEditorEnglish = new Scene(noteEditor.getValue());
+        this.noteEditor = new Scene(noteEditor.getValue());
 
         this.markdownEditorCtrl = markdownEditor.getKey();
         this.sidebarCtrl = sidebarEditor.getKey();
 
-        noteEditorCtrl.initialize(sidebarEditor, markdownEditor);
+        noteEditorCtrl.initialize(sidebarEditor, markdownEditor, bundle);
         markdownEditorCtrl.initialize(sidebarCtrl);
         sidebarCtrl.initialize(this);
 
         this.shortcutHandler = new ShortcutHandler(sidebarCtrl);
-        shortcutHandler.attach(noteEditorEnglish);
+        shortcutHandler.attach(this.noteEditor);
 
         showNoteEditor();
         primaryStage.show();
@@ -97,24 +100,22 @@ public class MainCtrl {
         primaryStage.setTitle("NoteEditor");
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(500);
-        primaryStage.setScene(noteEditorEnglish);
+        primaryStage.setScene(noteEditor);
     }
 
     /**
      * Sets a new UI language based on user selection
      * Builds a new scene but with all components translated
      * and parses the main stage the root node of the scene
-     * @param language the chosen language by the user
+     * @param languageStr the chosen language by the user
      */
-    public void changeUILanguage(String language) {
-        switch (language){
-            case "English":
-                break;
-            case "Dutch":
-                break;
-            case "Spanish":
-                break;
-        }
+    public void switchLanguage(String languageStr) {
+        Language language = switch (languageStr) {
+            case "Dutch" -> Language.NL;
+            case "Spanish" -> Language.ES;
+            default -> Language.EN;
+        };
+        Main.switchLanguage(language);
     }
 
     public void updateNote(long id) {

@@ -45,12 +45,7 @@ public class CollectionController {
      */
     @GetMapping("/getNotes/{id}")
     public List<Note> getNotesInCollection(@PathVariable("id") UUID id ) {
-        if (collectionRepository.findById(id).isEmpty()) {
-            return null;
-        }
-        List<Note> tempNoteList = new ArrayList<>(List.copyOf(noteRepository.findAll()));
-        tempNoteList.removeIf(currentNote -> !(currentNote.collection.id.equals(id)));
-        return tempNoteList;
+        return collectionService.getNotesInCollection(id);
     }
 
     /**
@@ -137,7 +132,7 @@ public class CollectionController {
     @GetMapping(path="/{collectionId}")
     public ResponseEntity<Collection> getCollectionById(@PathVariable UUID collectionId) {
         try {
-            Optional<Collection> collection = collectionRepository.findById(collectionId);
+            Optional<Collection> collection = collectionService.getCollectionById(collectionId);
             if (collection.isPresent()) {
                 return ResponseEntity.ok(collection.get());
             } else {

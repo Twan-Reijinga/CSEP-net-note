@@ -60,16 +60,21 @@ public class TagFilteringHandler {
     public List<String> updateNoteTags(Note note){
         NoteTags currentTags = this.loadedNoteTags.stream()
                 .filter(x -> x.getId().equals(note.id))
-                .findFirst().get();
-        HashSet<String> newTags = convertToNoteTags(note).getTags();
-
+                .findFirst().orElse(null);
         HashSet<String> removedTags = new HashSet<>();
-        for(String tag: currentTags.getTags()){
-            if(!newTags.contains(tag)){
-                removedTags.add(tag);
+        HashSet<String> updatedTags = convertToNoteTags(note).getTags();
+
+        if(currentTags != null){
+            for(String tag: currentTags.getTags()){
+                if(!updatedTags.contains(tag)){
+                    removedTags.add(tag);
+                }
             }
+            currentTags.setTags(updatedTags);
         }
-        currentTags.setTags(newTags);
+        else{
+            removedTags.addAll(updatedTags);
+        }
         return this.removeTagsIfOrphaned(removedTags);
     }
 

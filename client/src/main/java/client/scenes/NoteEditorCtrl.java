@@ -1,6 +1,8 @@
 package client.scenes;
 
 import client.LoaderFXML;
+import client.utils.LanguageListCell;
+import client.utils.LanguageOption;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -21,12 +23,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 
 public class NoteEditorCtrl {
@@ -58,7 +55,7 @@ public class NoteEditorCtrl {
     private ComboBox<Pair<UUID, String>> collectionDropdown;
 
     @FXML
-    private ComboBox<String> languageDropdown;
+    private ComboBox<LanguageOption> languageDropdown;
 
     // Injectable
     private final LoaderFXML FXML;
@@ -71,11 +68,12 @@ public class NoteEditorCtrl {
 
     private SidebarCtrl sidebarCtrl;
     private MarkdownEditorCtrl markdownEditorCtrl;
+    private ResourceBundle bundle;
 
-    private final Pair<UUID, String> SHOW_ALL = new Pair<>(null, "Show all");
-    private final Pair<UUID, String> EDIT_COLLECTIONS = new Pair<>(null, "Edit collections...");
+    private Pair<UUID, String> showAll;
+    private Pair<UUID, String> editCollections;
 
-    private Pair<UUID, String> chosenCollectionFilter = SHOW_ALL;
+    private Pair<UUID, String> chosenCollectionFilter = showAll;
 
     @FXML
     private MenuButton tagOptionsButton;
@@ -94,9 +92,13 @@ public class NoteEditorCtrl {
      * JavaFX method that automatically runs when this controller is initialized.
      * @param sidebar root element of the Sidebar fxml
      * @param markdownEditor root element of the Markdown fxml
+     * @param bundle resource bundle for current language
      */
     @FXML
-    public void initialize(Pair<SidebarCtrl, Parent> sidebar, Pair<MarkdownEditorCtrl, Parent> markdownEditor) {
+    public void initialize(Pair<SidebarCtrl,
+                           Parent> sidebar,
+                           Pair<MarkdownEditorCtrl, Parent> markdownEditor,
+                           ResourceBundle bundle) {
         sidebarCtrl = sidebar.getKey();
         Node sidebarNode = sidebar.getValue();
 
@@ -113,9 +115,15 @@ public class NoteEditorCtrl {
 
         this.searchInOptionsList.getItems().clear();
         this.searchInOptionsList.getItems().addAll("Title", "Content", "Both");
+        this.searchInOptionsList.setValue("Both");
         this.matchAllCheckBox.setSelected(true);
 
-        loadLanguageDropdown();
+        this.bundle = bundle;
+
+        editCollections = new Pair<>(null, bundle.getString("editCollections"));
+        showAll = new Pair<>(null, bundle.getString("showAll"));
+
+        loadLanguageDropdown(bundle.getBaseBundleName());
         loadCollectionDropdown();
         this.loadTagOptions();
     }
@@ -148,9 +156,26 @@ public class NoteEditorCtrl {
         };
     }
 
-    private void loadLanguageDropdown() {
-        String[] availableLanguages = new String[] {"English", "Dutch", "Spanish"};
-        languageDropdown.getItems().addAll(availableLanguages);
+    private void loadLanguageDropdown(String language) {
+        List<LanguageOption> languageOptions = List.of(
+            new LanguageOption("English", "/images/english.png"),
+            new LanguageOption("Dutch", "/images/dutch.png"),
+            new LanguageOption("Spanish", "/images/spanish.png")
+        );
+
+        languageDropdown.setCellFactory(new LanguageListCell());
+        languageDropdown.setButtonCell(new LanguageListCell().call(null));
+
+        languageDropdown.getItems().addAll(
+                languageOptions
+        );
+
+        for (LanguageOption option : languageDropdown.getItems()) {
+            if (language.equalsIgnoreCase(option.getName())) {
+                languageDropdown.setValue(option);
+                return;
+            }
+        }
     }
 
     private void loadCollectionDropdown() {
@@ -160,23 +185,23 @@ public class NoteEditorCtrl {
 
         collectionDropdown.getItems().clear();
 
-        collectionDropdown.getItems().add(SHOW_ALL);
+        collectionDropdown.getItems().add(showAll);
         collectionDropdown.getItems().addAll(titles);
-        collectionDropdown.getItems().add(EDIT_COLLECTIONS);
+        collectionDropdown.getItems().add(editCollections);
 
         // If chosen collection is removed, SHOW_ALL is shown
         if (collectionDropdown.getItems().contains(chosenCollectionFilter)) {
             collectionDropdown.setValue(chosenCollectionFilter);
         } else {
-            collectionDropdown.setValue(SHOW_ALL);
-            chosenCollectionFilter = SHOW_ALL;
+            collectionDropdown.setValue(showAll);
+            chosenCollectionFilter = showAll;
         }
     }
 
     @FXML
     private void onLanguageDropdownAction() {
-        String chosenLanguage = languageDropdown.getSelectionModel().getSelectedItem();
-        mainCtrl.changeUILanguage(chosenLanguage);
+        String chosenLanguage = languageDropdown.getSelectionModel().getSelectedItem().getName();
+        mainCtrl.switchLanguage(chosenLanguage);
     }
 
     @FXML
@@ -185,7 +210,7 @@ public class NoteEditorCtrl {
 
         if (selectedItem == null) return;
 
-        if (selectedItem.equals(EDIT_COLLECTIONS)) {
+        if (selectedItem.equals(editCollections)) {
             openCollectionSettings();
         } else {
             chosenCollectionFilter = selectedItem;
@@ -196,9 +221,9 @@ public class NoteEditorCtrl {
     private void openCollectionSettings() {
         var popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Edit collections...");
+        popupStage.setTitle(bundle.getString("editCollections"));
 
-        var popup = FXML.load(CollectionSettingsCtrl.class, null,"client", "scenes", "CollectionSettings.fxml");
+        var popup = FXML.load(CollectionSettingsCtrl.class, bundle,"client", "scenes", "CollectionSettings.fxml");
 
         var popupNode = popup.getValue();
         var popupScene = new Scene(popupNode);
