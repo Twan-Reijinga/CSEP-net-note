@@ -124,6 +124,7 @@ public class SidebarCtrl {
 
     /**
      * Creates a new title that is unique to the other title in the format "New note #"
+     * @param collectionId an id of collection where the note will be created
      * @return a title with incremented number in "New note #", so that every note is unique in title.
      */
     private String createDefaultTitle(UUID collectionId) {

@@ -191,6 +191,10 @@ public class MarkdownEditorCtrl {
         Platform.runLater(() -> {
             activeNote.content = noteText.getText();
             serverUtils.updateNote(activeNote);
+
+            // To ensure that the titles are properly updated
+            sidebarCtrl.refresh();
+
             mainCtrl.updateTags(activeNote);
             isContentsSynced = true;
         });
