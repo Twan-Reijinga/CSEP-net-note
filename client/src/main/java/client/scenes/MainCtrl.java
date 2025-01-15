@@ -42,7 +42,6 @@ public class MainCtrl {
 
     private MarkdownEditorCtrl markdownEditorCtrl;
     private SidebarCtrl sidebarCtrl;
-    private Scene sidebar;
     private ShortcutHandler shortcutHandler;
     private TagFilteringHandler tagFilteringHandler;
 

@@ -65,9 +65,9 @@ public class Main extends Application {
 	public static void loadApplication(Language language) {
 		ResourceBundle resourceBundle = ResourceBundle.getBundle(
 			switch (language) {
-				case NL -> "Dutch";
-				case ES -> "Spanish";
-				default -> "English";
+				case NL -> "dutch";
+				case ES -> "spanish";
+				default -> "english";
 			}
 		);
 

@@ -1,6 +1,8 @@
 package client.scenes;
 
 import client.LoaderFXML;
+import client.utils.LanguageListCell;
+import client.utils.LanguageOption;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import javafx.application.Platform;
@@ -53,7 +55,7 @@ public class NoteEditorCtrl {
     private ComboBox<Pair<UUID, String>> collectionDropdown;
 
     @FXML
-    private ComboBox<String> languageDropdown;
+    private ComboBox<LanguageOption> languageDropdown;
 
     // Injectable
     private final LoaderFXML FXML;
@@ -155,9 +157,25 @@ public class NoteEditorCtrl {
     }
 
     private void loadLanguageDropdown(String language) {
-        String[] availableLanguages = new String[] {"English", "Dutch", "Spanish"};
-        languageDropdown.getItems().addAll(availableLanguages);
-        languageDropdown.setValue(language);
+        List<LanguageOption> languageOptions = List.of(
+            new LanguageOption("English", "/images/english.png"),
+            new LanguageOption("Dutch", "/images/dutch.png"),
+            new LanguageOption("Spanish", "/images/spanish.png")
+        );
+
+        languageDropdown.setCellFactory(new LanguageListCell());
+        languageDropdown.setButtonCell(new LanguageListCell().call(null));
+
+        languageDropdown.getItems().addAll(
+                languageOptions
+        );
+
+        for (LanguageOption option : languageDropdown.getItems()) {
+            if (language.equalsIgnoreCase(option.getName())) {
+                languageDropdown.setValue(option);
+                return;
+            }
+        }
     }
 
     private void loadCollectionDropdown() {
@@ -182,7 +200,7 @@ public class NoteEditorCtrl {
 
     @FXML
     private void onLanguageDropdownAction() {
-        String chosenLanguage = languageDropdown.getSelectionModel().getSelectedItem();
+        String chosenLanguage = languageDropdown.getSelectionModel().getSelectedItem().getName();
         mainCtrl.switchLanguage(chosenLanguage);
     }
 
