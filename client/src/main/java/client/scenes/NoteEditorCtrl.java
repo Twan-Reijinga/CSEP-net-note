@@ -229,6 +229,7 @@ public class NoteEditorCtrl {
         var popupNode = popup.getValue();
         var popupScene = new Scene(popupNode);
 
+        popupStage.setResizable(false);
         popupStage.setOnCloseRequest(event -> {
             if (popupCtrl.hasUnsavedChanges()) {
                 boolean cancel = popupCtrl.handleUnsavedChanges();
