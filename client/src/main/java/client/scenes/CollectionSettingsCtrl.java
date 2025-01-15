@@ -90,12 +90,7 @@ public class CollectionSettingsCtrl {
     }
 
     public boolean handleUnsavedChanges() {
-        showConfirmSaveDialog(
-                displayedCollection.title,
-                this::saveModifiedChanges,
-                // TODO: remove clearing; clearing == discarding; != cancelling save
-                this::clearModifiedChanges
-        );
+        showConfirmSaveDialog(displayedCollection.title, this::saveModifiedChanges);
 
         return isSaveCancelled;
     }
@@ -178,6 +173,11 @@ public class CollectionSettingsCtrl {
 
     @FXML
     private void onCreate() {
+        if (hasUnsavedChanges()) {
+            boolean isCancelled = handleUnsavedChanges();
+            if (isCancelled) return;
+        }
+
         String collectionName = serverUtils.getUniqueCollectionName();
         Collection newCollection = new Collection(
                 collectionName,
@@ -233,45 +233,24 @@ public class CollectionSettingsCtrl {
         statusLabel.setText("[not implemented]");
     }
 
-    private void clearModifiedChanges() {
-        if (createdCollection != null) {
-            collectionsListView.getItems().remove(createdCollection);
-        }
-
-        try {
-            // FIXME: may be not the cleanest solution to fetch it from the server
-            //  rather a hacky fix than a final solution (consider preserving server field)
-            //  maybe drop the idea of restoring collection/discarding changes
-            Collection originalCollection = serverUtils.getCollectionById(displayedCollection.id);
-
-            // It won't work to reassign the object itself because it will be different to the one in list view
-            displayedCollection.name = originalCollection.name;
-            displayedCollection.title = originalCollection.title;
-
-            collectionsListView.refresh();
-        } catch (Exception e) {
-            // ignored; it may fail because collection was deleted
-            // WILL CHANGE in subsequent MRs
-        }
-
-        isCollectionModified = false;
-        createdCollection = null;
-
-        saveButton.setDisable(true);
-    }
-
     private void deleteSelectedCollection() {
         Collection selectedCollection = getSelectedCollection();
 
         // If deleting an existing collection then it must be removed from the server
         if (createdCollection == null) {
             serverUtils.deleteCollection(selectedCollection);
+        } else {
+            collectionsListView.getItems().remove(createdCollection);
+
+            isCollectionModified = false;
+            createdCollection = null;
+
+            saveButton.setDisable(true);
         }
 
         collectionsListView.getItems().remove(selectedCollection);
         collectionsListView.refresh();
 
-        clearModifiedChanges();
         selectDefaultCollection();
     }
 
@@ -325,15 +304,13 @@ public class CollectionSettingsCtrl {
     }
 
 
-    private void showConfirmSaveDialog(String collectionName, Runnable yes, Runnable no) {
-
+    private void showConfirmSaveDialog(String collectionName, Runnable yes) {
         var dialog = DialogBoxUtils.createYesNoDialog(
                 "Save changes to the collection?",
                 "Collection \"" + collectionName + "\" has been modified. Do you want to save changes?",
                 (confirmed) -> {
                     isSaveCancelled = !confirmed;
                     if (confirmed) yes.run();
-                    else no.run();
                 }
         );
 
