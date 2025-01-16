@@ -38,16 +38,11 @@ class TagFilteringHandlerTest {
     @Test
     void testLoadNewNoteTags() {
         List<Long> noteIds = List.of(1L, 2L);
-        List<NoteTags> mockNoteTags = List.of(
-                new NoteTags(1L, new HashSet<>(List.of("#java", "#test"))),
-                new NoteTags(2L, new HashSet<>(List.of("#python", "#test")))
-        );
-
         serverUtils.clearAll();
 
-        for (NoteTags noteTag : mockNoteTags) {
+        for (int i =0; i < 2; i++) {
             Note note = new Note("Test Note", "Some content", collection);
-            note.id = noteTag.getId();
+
             serverUtils.addNote(note);
         }
 
@@ -60,15 +55,12 @@ class TagFilteringHandlerTest {
 
     @Test
     void testDeleteNoteTags() {
-        List<NoteTags> mockNoteTags = List.of(
-                new NoteTags(1L, new HashSet<>(List.of("#java", "#test"))),
-                new NoteTags(2L, new HashSet<>(List.of("#python", "#test")))
-        );
-
+        List<Long> noteIds = List.of(1L, 2L);
         serverUtils.clearAll();
-        for (NoteTags noteTag : mockNoteTags) {
+
+        for (int i =0; i < 2; i++) {
             Note note = new Note("Test Note", "Some content", collection);
-            note.id = noteTag.getId();
+
             serverUtils.addNote(note);
         }
 
@@ -108,19 +100,13 @@ class TagFilteringHandlerTest {
 
     @Test
     void testGetNotesToDisplay() {
+        List<Long> noteIds = List.of(1L, 2L);
         serverUtils.clearAll();
 
-        List<Long> noteIds = List.of(1L, 2L, 3L);
-        List<NoteTags> loadedNoteTags = List.of(
-                new NoteTags(1L, new HashSet<>(List.of("tag1", "tag2"))),
-                new NoteTags(2L, new HashSet<>(List.of("tag2", "tag3")))
-        );
+        for (int i =0; i < 2; i++) {
+            Note note = new Note("Test Note", "Some content", collection);
 
-        for (NoteTags noteTags : loadedNoteTags) {
-            Note note = new Note("Note", "content", collection);
-            note.id = noteTags.getId();
             serverUtils.addNote(note);
-            note.id = getServerNoteId(note);
         }
 
         tagFilteringHandler.loadNewNoteTags(noteIds);
@@ -129,7 +115,7 @@ class TagFilteringHandlerTest {
 
         List<String> expectedAvailableTags = List.of("tag2");
 
-        List<Long> actualMatchingIds = tagFilteringHandler.getNotesToDisplay();
+        tagFilteringHandler.getNotesToDisplay();
         List<String> actualAvailableTags = tagFilteringHandler.getAvailableTags();
 
         assertEquals(expectedAvailableTags, actualAvailableTags);
@@ -138,18 +124,12 @@ class TagFilteringHandlerTest {
 
     @Test
     void testClearTags() {
-        tagFilteringHandler.addTag("#test");
-        tagFilteringHandler.addTag("#java");
-        tagFilteringHandler.clearTags();
-
+        List<Long> noteIds = List.of(1L, 2L);
         serverUtils.clearAll();
-        List<NoteTags> mockNoteTags = List.of(
-                new NoteTags(1L, new HashSet<>(List.of("#java", "#test")))
-        );
 
-        for (NoteTags noteTag : mockNoteTags) {
+        for (int i =0; i < 2; i++) {
             Note note = new Note("Test Note", "Some content", collection);
-            note.id = noteTag.getId();
+
             serverUtils.addNote(note);
         }
 
