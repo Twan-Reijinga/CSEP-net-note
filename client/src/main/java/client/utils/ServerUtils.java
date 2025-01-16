@@ -51,7 +51,7 @@ public class ServerUtils {
 		this.server = server;
 	}
 
-	private ServerUtils withServer(String server) {
+	public ServerUtils withServer(String server) {
 		return new ServerUtils(config, server);
 	}
 
