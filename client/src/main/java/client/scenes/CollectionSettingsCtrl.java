@@ -90,7 +90,7 @@ public class CollectionSettingsCtrl {
         UUID defaultCollectionId = config.getDefaultCollectionId();
 
         for (Collection collection : collectionsListView.getItems()) {
-            if (collection.id == defaultCollectionId) {
+            if (collection.id.equals(defaultCollectionId)) {
                 collectionsListView.getSelectionModel().select(collection);
                 return;
             }
@@ -108,7 +108,8 @@ public class CollectionSettingsCtrl {
                 if (empty || item == null) {
                     setGraphic(null);
                 } else {
-                    setGraphic(new Label(item.title));
+                    boolean isDefault = item.id.equals(config.getDefaultCollectionId());
+                    setGraphic(new Label(item.title + (isDefault ? " (Default)" : "")));
                 }
             }
         };
@@ -199,7 +200,10 @@ public class CollectionSettingsCtrl {
 
     @FXML
     private void onMakeDefault() {
-        // TODO: implement
+        config.setDefaultCollectionId(displayedCollection.id);
+
+        // To ensure that the display collection is labeled as default
+        collectionsListView.refresh();
     }
 
     @FXML
@@ -217,6 +221,9 @@ public class CollectionSettingsCtrl {
         serverTextField.setText("[not implemented]");
         nameTextField.setText(collection.name);
         statusLabel.setText("[not implemented]");
+
+        boolean isDefault = collection.id.equals(config.getDefaultCollectionId());
+        makeDefaultButton.setDisable(isDefault);
     }
 
     private void clearModifiedChanges() {

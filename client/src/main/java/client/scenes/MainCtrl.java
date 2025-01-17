@@ -57,6 +57,7 @@ public class MainCtrl {
         if (config.getDefaultCollectionId() == null) {
             System.out.println("Requesting default collection...");
 
+            // TODO: what if default collection returned from the server is NULL?
             Collection defaultCollection = serverUtils.getDefaultCollection();
             config.setDefaultCollectionId(defaultCollection.id);
         }
