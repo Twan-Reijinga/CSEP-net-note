@@ -19,9 +19,12 @@
                       <VBox fx:id="noteContainer" minHeight="0.0" minWidth="0.0" prefWidth="172.0" />
                   </content>
               </ScrollPane>
-            <Pane fx:id="messageContainer" prefHeight="165.0" prefWidth="200.0" snapToPixel="false" VBox.vgrow="NEVER">
+            <Pane fx:id="messageContainer" minHeight="100.0" snapToPixel="false">
                <children>
-                  <Label fx:id="messageTextLabel" alignment="TOP_LEFT" layoutX="14.0" layoutY="13.0" prefHeight="55.0" prefWidth="171.0" text="[error/success message]" wrapText="true" />
+                  <Label fx:id="messageTextLabel" alignment="TOP_LEFT" prefWidth="200.0" text="[error/success message]" wrapText="true">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding></Label>
                </children>
             </Pane>
             <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="NEVER">
