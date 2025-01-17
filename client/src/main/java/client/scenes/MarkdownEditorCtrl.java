@@ -19,6 +19,7 @@ import client.config.Config;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Note;
+import commons.NoteTitle;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
@@ -124,10 +125,25 @@ public class MarkdownEditorCtrl {
      * @param newId The database ID of the note that need to be displayed.
      */
     public void updateNote(long newId) {
+        // To remove possible error color of having the same title
+        titleField.setStyle("");
+
         activeNote.content = noteText.getText();
         if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
-            serverUtils.updateNote(activeNote);
-            mainCtrl.updateTags(activeNote);
+            try {
+                serverUtils.updateNote(activeNote);
+
+                // FIXME: while the note title is updated on the server and in the sidebar
+                //  it is not updated in the tags logic, causing the change in title to blink for a second
+                //  eventually it is restored to a proper title but it is not very user-friendly
+                mainCtrl.updateTags(activeNote);
+            } catch (Exception e) {
+                System.out.println("Error updating note: " + activeNote.id);
+                // FIXME: implement proper error handling (in case of the same title or whatever)
+                // FOR NOW just reset the title in the sidebar (immediately after selection)
+                NoteTitle note = serverUtils.getNoteTitleById(activeNote.id);
+                sidebarCtrl.updateTitle(note.getId(), note.getTitle());
+            }
         }
         activeNote = serverUtils.getNoteById(newId);
         noteText.setText(activeNote.content);
@@ -141,6 +157,9 @@ public class MarkdownEditorCtrl {
     }
 
     public synchronized void onTitleEdit() {
+        // To remove possible error color of having the same title
+        titleField.setStyle("");
+
         activeNote.title = titleField.getText();
         isContentsSynced = false;
         requestRefresh();
@@ -190,7 +209,14 @@ public class MarkdownEditorCtrl {
         // https://openjfx.io/javadoc/23/javafx.graphics/javafx/application/Platform.html#runLater(java.lang.Runnable)
         Platform.runLater(() -> {
             activeNote.content = noteText.getText();
-            serverUtils.updateNote(activeNote);
+            try {
+                serverUtils.updateNote(activeNote);
+            } catch (Exception e) {
+                // FIXME: right now, I assume that the only error is having same title in two notes
+                NoteTitle note = serverUtils.getNoteTitleById(activeNote.id);
+                sidebarCtrl.updateTitle(note.getId(), note.getTitle());
+                titleField.setStyle("-fx-background-color: #FFA07A;");
+            }
 
             // To ensure that the titles are properly updated
             sidebarCtrl.refresh();

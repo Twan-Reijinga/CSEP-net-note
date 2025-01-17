@@ -111,6 +111,14 @@ public class ServerUtils {
 	}
 
 
+	public NoteTitle getNoteTitleById(long id) {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(server).path("api/titles/" + id) //
+				.request(APPLICATION_JSON) //
+				.get(new GenericType<>() {});
+	}
+
+
 	public List<NoteTitle> getNoteTitlesInCollection(UUID collectionId) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/titles")
