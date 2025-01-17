@@ -1,6 +1,9 @@
-package client.utils;
+package client.handlers;
 
 import client.scenes.SidebarCtrl;
+import client.utils.AddNoteAction;
+import client.utils.DeleteNoteAction;
+import client.utils.NoteAction;
 import commons.Note;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;

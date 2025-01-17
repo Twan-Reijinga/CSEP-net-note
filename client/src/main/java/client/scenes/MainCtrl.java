@@ -19,9 +19,9 @@ import client.Main;
 import client.config.Config;
 import client.utils.Language;
 import client.utils.ServerUtils;
-import client.utils.TagFilteringHandler;
+import client.handlers.TagFilteringHandler;
 import commons.NoteTitle;
-import client.utils.ShortcutHandler;
+import client.handlers.ShortcutHandler;
 import commons.Note;
 import jakarta.inject.Inject;
 import javafx.scene.Parent;
@@ -111,6 +111,10 @@ public class MainCtrl {
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(500);
         primaryStage.setScene(noteEditor);
+    }
+
+    public void showMessage(String message, boolean isError) {
+        sidebarCtrl.showMessage(message, isError);
     }
 
     /**

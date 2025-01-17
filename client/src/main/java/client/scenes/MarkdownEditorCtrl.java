@@ -22,12 +22,16 @@ import commons.Note;
 import commons.NoteTitle;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.util.Pair;
 import netscape.javascript.JSObject;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
@@ -47,13 +51,21 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.UUID;
+import commons.Collection;
 
 public class MarkdownEditorCtrl {
     @FXML
     private TextArea noteText;
 
     @FXML
+    private HBox topControlsContainer;
+
+    @FXML
     private TextField titleField;
+
+    @FXML
+    private ComboBox<Pair<UUID, String>> collectionDropdown;
 
     @FXML
     private WebView markdownPreview;
@@ -102,7 +114,10 @@ public class MarkdownEditorCtrl {
     @FXML
     public void initialize(SidebarCtrl sidebarCtrl) {
         this.sidebarCtrl = sidebarCtrl;
-        activeNote = serverUtils.mockGetDefaultNote();
+
+        // TODO: stupidest fix possible; MUST be resolve - remove mocking
+        Note n = serverUtils.mockGetDefaultNote();
+        updateNote(n.id);
 
         noteText.setText(activeNote.content);
         titleField.setText(activeNote.title);
@@ -116,8 +131,11 @@ public class MarkdownEditorCtrl {
         );
 
         // let title field fill 100% width of left plane //
-        AnchorPane.setLeftAnchor(titleField, 0.0);
-        AnchorPane.setRightAnchor(titleField, 0.0);
+        AnchorPane.setLeftAnchor(topControlsContainer, 0.0);
+        AnchorPane.setRightAnchor(topControlsContainer, 0.0);
+
+        collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
+        collectionDropdown.setButtonCell(createCollectionDropdownOption());
     }
 
     /**
@@ -128,27 +146,94 @@ public class MarkdownEditorCtrl {
         // To remove possible error color of having the same title
         titleField.setStyle("");
 
-        activeNote.content = noteText.getText();
-        if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
-            try {
-                serverUtils.updateNote(activeNote);
+        if (activeNote != null) {
+            activeNote.content = noteText.getText();
+            if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
+                try {
+                    serverUtils.updateNote(activeNote);
 
-                // FIXME: while the note title is updated on the server and in the sidebar
-                //  it is not updated in the tags logic, causing the change in title to blink for a second
-                //  eventually it is restored to a proper title but it is not very user-friendly
-                mainCtrl.updateTags(activeNote);
-            } catch (Exception e) {
-                System.out.println("Error updating note: " + activeNote.id);
-                // FIXME: implement proper error handling (in case of the same title or whatever)
-                // FOR NOW just reset the title in the sidebar (immediately after selection)
-                NoteTitle note = serverUtils.getNoteTitleById(activeNote.id);
-                sidebarCtrl.updateTitle(note.getId(), note.getTitle());
+                    // FIXME: while the note title is updated on the server and in the sidebar
+                    //  it is not updated in the tags logic, causing the change in title to blink for a second
+                    //  eventually it is restored to a proper title but it is not very user-friendly
+                    mainCtrl.updateTags(activeNote);
+                } catch (Exception e) {
+                    System.out.println("Error updating note: " + activeNote.id);
+                    // FIXME: implement proper error handling (in case of the same title or whatever)
+                    // FOR NOW just reset the title in the sidebar (immediately after selection)
+                    NoteTitle note = serverUtils.getNoteTitleById(activeNote.id);
+                    sidebarCtrl.updateTitle(note.getId(), note.getTitle());
+                }
             }
         }
+
         activeNote = serverUtils.getNoteById(newId);
         noteText.setText(activeNote.content);
         titleField.setText(activeNote.title);
         requestRefresh();
+        loadCollectionDropdown();
+    }
+
+    private ListCell<Pair<UUID, String>> createCollectionDropdownOption() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(Pair<UUID, String> item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    setText(item.getValue());
+                }
+            }
+        };
+    }
+
+    private void loadCollectionDropdown() {
+        List<Collection> collections = serverUtils.getAllCollections();
+        List<Pair<UUID, String>> titles = collections.stream()
+                .map(c -> new Pair<>(c.id, c.title)).toList();
+
+        collectionDropdown.getItems().clear();
+        collectionDropdown.getItems().addAll(titles);
+
+        // Select a collection where the note belongs
+        for (var pair : titles) {
+            if (pair.getKey().equals(activeNote.collection.id)) {
+                collectionDropdown.getSelectionModel().select(pair);
+                break;
+            }
+        }
+    }
+
+    @FXML
+    private void onCollectionClick() {
+        Pair<UUID, String> selected = collectionDropdown.getSelectionModel().getSelectedItem();
+
+        if (selected != null && !selected.getKey().equals(activeNote.collection.id)) {
+            Collection savedCollection = activeNote.collection;
+
+            try {
+                activeNote.collection = serverUtils.getCollectionById(selected.getKey());
+                serverUtils.updateNote(activeNote);
+
+                sidebarCtrl.refresh();
+                sidebarCtrl.showMessage("Note moved to collection " + activeNote.collection.title, false);
+            } catch (Exception e) {
+                sidebarCtrl.showMessage(
+                        "Failed to move note to collection: %s".formatted(selected.getValue()) +
+                        "Make sure that the destination collection doesn't have a note with the same title.",
+                        true);
+
+                // Restore to the original collection
+                activeNote.collection = savedCollection;
+
+                // Select a correct collection in the dropdown after failure
+                for (var pair : collectionDropdown.getItems()) {
+                    if (pair.getKey().equals(activeNote.collection.id)) {
+                        collectionDropdown.getSelectionModel().select(pair);
+                    }
+                }
+            }
+        }
     }
 
     public synchronized void onKeyTyped(KeyEvent e) {
