@@ -1,5 +1,6 @@
-package client.utils;
+package client.handlers;
 
+import client.utils.ServerUtils;
 import commons.Note;
 import commons.NoteTags;
 
