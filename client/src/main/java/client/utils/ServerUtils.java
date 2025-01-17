@@ -119,6 +119,15 @@ public class ServerUtils {
 	}
 
 
+	public boolean isLastNoteInCollection(long id) {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(server).path("api/notes/last") //
+				.queryParam("noteId", id)
+				.request(APPLICATION_JSON) //
+				.get(new GenericType<>() {});
+	}
+
+
 	public List<NoteTitle> getNoteTitlesInCollection(UUID collectionId) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/titles")

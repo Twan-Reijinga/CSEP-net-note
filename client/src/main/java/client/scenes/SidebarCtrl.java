@@ -145,19 +145,25 @@ public class SidebarCtrl {
         return "New note #" + (maxNoteNumber + 1);
     }
 
-    /**
-     * Adds a default note to the database with a unique title, unique id, content and a default collection,
-     * or the collection of the selected note.
-     * Afterward selects the newly created note (last note).
-     */
-    public void createNote() {
+    @FXML
+    public void onCreateNote() {
         // If no collection is selected, create notes in default one
         UUID destinationCollectionId = selectedCollectionId == null ?
                 config.getDefaultCollectionId() : selectedCollectionId;
 
-        Collection collection = server.getCollectionById(destinationCollectionId);
+        createNote(destinationCollectionId);
+    }
 
-        String title = createDefaultTitle(destinationCollectionId);
+    /**
+     * Adds a default note to the database with a unique title, unique id, content and a default collection,
+     * or the collection of the selected note.
+     * Afterward selects the newly created note (last note).
+     * @param collectionID a collection id where a note will be created
+     */
+    public void createNote(UUID collectionID) {
+        Collection collection = server.getCollectionById(collectionID);
+
+        String title = createDefaultTitle(collectionID);
         Note newNote = new Note(title, "Edit content here.", collection);
 
         addNote(newNote);
@@ -205,12 +211,11 @@ public class SidebarCtrl {
             return; // note didn't exist anymore //
         }
 
-        if (id <= 0) {
-            return;
-        }
-
-        if (server.getAllNotes().size() < 2){
-            createNote();
+        // New note must be created to ensure no empty collections
+        boolean isLastNote = server.isLastNoteInCollection(id);
+        if (isLastNote) {
+            Note note = server.getNoteById(id);
+            createNote(note.collection.id);
         }
 
         Note note = server.getNoteById(id);
@@ -220,7 +225,6 @@ public class SidebarCtrl {
         if (isReversible) {
             mainCtrl.recordDelete(note);
         }
-
 
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());

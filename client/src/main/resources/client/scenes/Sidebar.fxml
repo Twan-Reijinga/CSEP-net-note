@@ -12,7 +12,7 @@
                 <VBox fx:id="noteContainer" minHeight="0.0" minWidth="0.0" prefWidth="172.0" />
             </content>
         </ScrollPane>
-        <Button layoutX="14.0" layoutY="329.0" mnemonicParsing="false" onAction="#createNote" text="+" AnchorPane.bottomAnchor="12.666666666666668" AnchorPane.leftAnchor="20.0" />
+        <Button layoutX="14.0" layoutY="329.0" mnemonicParsing="false" onAction="#onCreateNote" text="+" AnchorPane.bottomAnchor="12.666666666666668" AnchorPane.leftAnchor="20.0" />
         <Button layoutX="74.0" layoutY="329.0" mnemonicParsing="false" prefWidth="24.666" onAction="#deleteSelectedNote" text="-" AnchorPane.bottomAnchor="12.666666666666668" AnchorPane.leftAnchor="64.666" />
         <Button layoutX="128.0" layoutY="329.0" mnemonicParsing="false" onAction="#refresh" text="%refresh" AnchorPane.bottomAnchor="12.6666" AnchorPane.leftAnchor="109.2" />
     </children>
