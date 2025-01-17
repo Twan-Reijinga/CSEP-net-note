@@ -64,6 +64,7 @@ public class Config {
 
     public void setDefaultCollectionId(UUID defaultCollectionId) {
         this.defaultCollectionId = defaultCollectionId;
+        save();
     }
 
     public List<Collection> getRemoteCollections() {
