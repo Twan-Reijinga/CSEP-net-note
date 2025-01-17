@@ -9,12 +9,10 @@ import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 public class SidebarCtrl {
@@ -24,11 +22,22 @@ public class SidebarCtrl {
 
     @FXML
     public VBox noteContainer;
+
+    @FXML
+    private Pane messageContainer;
+
+    @FXML
+    private Label messageTextLabel;
+
     private MainCtrl mainCtrl;
 
     // Injectable
     private final ServerUtils server;
     private final Config config;
+
+    private Timer messageTimer;
+    private TimerTask messageClearTask;
+
 
     /**
      * Sidebar control constructor for functionality behind the sidebar UI element.
@@ -40,6 +49,8 @@ public class SidebarCtrl {
         this.server = server;
         this.config = config;
         selectedNoteId = -1;
+
+        messageTimer = new Timer();
     }
 
     /**
@@ -48,6 +59,34 @@ public class SidebarCtrl {
      */
     public void initialize(MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
+
+        // Hide and remove message container from layout
+        messageContainer.setVisible(false);
+        messageContainer.setManaged(false);
+    }
+
+    public void showMessage(String message, boolean isError) {
+        if (messageClearTask != null) {
+            messageClearTask.cancel();
+        }
+
+        if (isError) messageContainer.setStyle("-fx-background-color: #FFA07A;");
+        else messageContainer.setStyle("-fx-background-color: #90EE90;");
+
+        messageTextLabel.setText(message);
+
+        messageContainer.setVisible(true);
+        messageContainer.setManaged(true);
+
+        messageClearTask = new TimerTask() {
+            public void run() {
+                messageContainer.setVisible(false);
+                messageContainer.setManaged(false);
+                messageClearTask = null;
+            }
+        };
+
+        messageTimer.schedule(messageClearTask, 3000);
     }
 
     /**
@@ -174,6 +213,8 @@ public class SidebarCtrl {
 
         addNote(newNote);
         mainCtrl.recordAdd(selectedNoteId);
+
+        showMessage("Note successfully created!", false);
     }
 
     /**
@@ -203,6 +244,7 @@ public class SidebarCtrl {
      */
     public void deleteSelectedNote() {
         deleteNoteById(selectedNoteId, true);
+        showMessage("Note successfully deleted!", false);
     }
 
     /**

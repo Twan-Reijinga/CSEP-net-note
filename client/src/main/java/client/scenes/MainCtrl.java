@@ -103,6 +103,10 @@ public class MainCtrl {
         primaryStage.setScene(noteEditor);
     }
 
+    public void showMessage(String message, boolean isError) {
+        sidebarCtrl.showMessage(message, isError);
+    }
+
     /**
      * Sets a new UI language based on user selection
      * Builds a new scene but with all components translated
