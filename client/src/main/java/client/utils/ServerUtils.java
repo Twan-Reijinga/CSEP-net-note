@@ -55,8 +55,10 @@ public class ServerUtils {
 		return new ServerUtils(config, server);
 	}
 
-	// TODO: implement withTimeout
-
+	/**
+	 * getting all collection on the server
+	 * @return list of all collections
+	 */
 	public List<Collection> getAllCollections() {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/collections")
@@ -64,6 +66,10 @@ public class ServerUtils {
 				.get(new GenericType<>() {});
 	}
 
+	/**
+	 * get the default collection from the server
+	 * @return the default collection
+	 */
 	public Collection getDefaultCollection() {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/collections/default")
@@ -71,6 +77,11 @@ public class ServerUtils {
 				.get(new GenericType<>() {});
 	}
 
+	/**
+	 * add a collection to the server
+	 * @param collection the collection to add
+	 * @return the added collection with the id the server gave it
+	 */
 	public Collection addCollection(Collection collection) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/collections")
@@ -78,6 +89,11 @@ public class ServerUtils {
 				.post(Entity.entity(collection, APPLICATION_JSON), Collection.class);
 	}
 
+	/**
+	 * changes the information of a specific collection to the corresponding server collection based on id
+	 * @param collection the modified collection
+	 * @return the added collection with the id the server gave it
+	 */
 	public Collection updateCollection(Collection collection) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/collections")
@@ -85,12 +101,20 @@ public class ServerUtils {
 				.put(Entity.entity(collection, APPLICATION_JSON), Collection.class);
 	}
 
+	/**
+	 * gets a collection name that is not yet in use
+	 * @return the generated name from the server
+	 */
 	public String getUniqueCollectionName() {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/collections/unique-name")
 				.request().get(String.class);
 	}
 
+	/**
+	 * delete the collection on the server side
+	 * @param collection the collection that needs to be deleted
+	 */
 	public void deleteCollection(Collection collection) {
 		ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/collections/delete/" + collection.id)
@@ -110,7 +134,11 @@ public class ServerUtils {
 				.get(new GenericType<>() {});
 	}
 
-
+	/**
+	 * gets the note title object in a specified collection
+	 * @param collectionId the collection id you want to get the note titles from
+	 * @return a list of all note titles of that specified collection
+	 */
 	public List<NoteTitle> getNoteTitlesInCollection(UUID collectionId) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/titles")
@@ -119,6 +147,10 @@ public class ServerUtils {
 				.get(new GenericType<>() {});
 	}
 
+	/**
+	 * getter for mocked default notes from the server
+	 * @return mocked default notes from the server
+	 */
 	public Note mockGetDefaultNote() {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/mock")
@@ -126,6 +158,11 @@ public class ServerUtils {
 				.get(new GenericType<>() {});
 	}
 
+	/**
+	 * update a specified note base on the id
+	 * @param note the note you want to update
+	 * @return the note with the corresponding id that server gave it
+	 */
 	public Note updateNote(Note note) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes")
@@ -146,6 +183,10 @@ public class ServerUtils {
 				.get(new GenericType<>() {});
 	}
 
+	/**
+	 * checks if server is available to use
+	 * @return true if available otherwise false
+	 */
 	public boolean isServerAvailable() {
 		try {
 			ClientBuilder.newClient(new ClientConfig()) //
@@ -160,13 +201,10 @@ public class ServerUtils {
 		return true;
 	}
 
-	public Collection getCollectionInfo(String name) {
-		return ClientBuilder.newClient(new ClientConfig())
-				.target(server).path("/" +  name)
-				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {});
-	}
-
+	/**
+	 * gets all the notes for every collection on the server
+	 * @return a list of all notes on that are stored on the server
+	 */
 	public List<Note> getAllNotes() {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes")
@@ -220,6 +258,11 @@ public class ServerUtils {
 				.delete();
 	}
 
+	/**
+	 * get the collection with contents from the server specified by its UUID
+	 * @param collectionId the UUID of the collection you want to get
+	 * @return the collection with contents from the server
+	 */
 	public Collection getCollectionById(UUID collectionId) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/collections/" + collectionId)

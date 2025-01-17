@@ -21,12 +21,16 @@ import com.google.inject.Inject;
 import commons.Note;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.util.Pair;
 import netscape.javascript.JSObject;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
@@ -46,13 +50,21 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.UUID;
+import commons.Collection;
 
 public class MarkdownEditorCtrl {
     @FXML
     private TextArea noteText;
 
     @FXML
+    private HBox topControlsContainer;
+
+    @FXML
     private TextField titleField;
+
+    @FXML
+    private ComboBox<Pair<UUID, String>> collectionDropdown;
 
     @FXML
     private WebView markdownPreview;
@@ -101,7 +113,10 @@ public class MarkdownEditorCtrl {
     @FXML
     public void initialize(SidebarCtrl sidebarCtrl) {
         this.sidebarCtrl = sidebarCtrl;
-        activeNote = serverUtils.mockGetDefaultNote();
+
+        // TODO: stupidest fix possible; MUST be resolve - remove mocking
+        Note n = serverUtils.mockGetDefaultNote();
+        updateNote(n.id);
 
         noteText.setText(activeNote.content);
         titleField.setText(activeNote.title);
@@ -115,8 +130,11 @@ public class MarkdownEditorCtrl {
         );
 
         // let title field fill 100% width of left plane //
-        AnchorPane.setLeftAnchor(titleField, 0.0);
-        AnchorPane.setRightAnchor(titleField, 0.0);
+        AnchorPane.setLeftAnchor(topControlsContainer, 0.0);
+        AnchorPane.setRightAnchor(topControlsContainer, 0.0);
+
+        collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
+        collectionDropdown.setButtonCell(createCollectionDropdownOption());
     }
 
     /**
@@ -124,15 +142,84 @@ public class MarkdownEditorCtrl {
      * @param newId The database ID of the note that need to be displayed.
      */
     public void updateNote(long newId) {
-        activeNote.content = noteText.getText();
-        if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
-            serverUtils.updateNote(activeNote);
-            mainCtrl.updateTags(activeNote);
+        // In case initial note is being set
+        if (activeNote != null) {
+            activeNote.content = noteText.getText();
+
+            if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
+                serverUtils.updateNote(activeNote);
+                mainCtrl.updateTags(activeNote);
+            }
         }
+
         activeNote = serverUtils.getNoteById(newId);
         noteText.setText(activeNote.content);
         titleField.setText(activeNote.title);
         requestRefresh();
+        loadCollectionDropdown();
+    }
+
+    private ListCell<Pair<UUID, String>> createCollectionDropdownOption() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(Pair<UUID, String> item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    setText(item.getValue());
+                }
+            }
+        };
+    }
+
+    private void loadCollectionDropdown() {
+        List<Collection> collections = serverUtils.getAllCollections();
+        List<Pair<UUID, String>> titles = collections.stream()
+                .map(c -> new Pair<>(c.id, c.title)).toList();
+
+        collectionDropdown.getItems().clear();
+        collectionDropdown.getItems().addAll(titles);
+
+        // Select a collection where the note belongs
+        for (var pair : titles) {
+            if (pair.getKey().equals(activeNote.collection.id)) {
+                collectionDropdown.getSelectionModel().select(pair);
+                break;
+            }
+        }
+    }
+
+    @FXML
+    private void onCollectionClick() {
+        Pair<UUID, String> selected = collectionDropdown.getSelectionModel().getSelectedItem();
+
+        if (selected != null && !selected.getKey().equals(activeNote.collection.id)) {
+            Collection savedCollection = activeNote.collection;
+
+            try {
+                activeNote.collection = serverUtils.getCollectionById(selected.getKey());
+                serverUtils.updateNote(activeNote);
+
+                sidebarCtrl.refresh();
+                sidebarCtrl.showMessage("Note moved to collection " + activeNote.collection.title, false);
+            } catch (Exception e) {
+                sidebarCtrl.showMessage(
+                        "Failed to move note to collection: %s".formatted(selected.getValue()) +
+                        "Make sure that the destination collection doesn't have a note with the same title.",
+                        true);
+
+                // Restore to the original collection
+                activeNote.collection = savedCollection;
+
+                // Select a correct collection in the dropdown after failure
+                for (var pair : collectionDropdown.getItems()) {
+                    if (pair.getKey().equals(activeNote.collection.id)) {
+                        collectionDropdown.getSelectionModel().select(pair);
+                    }
+                }
+            }
+        }
     }
 
     public synchronized void onKeyTyped(KeyEvent e) {
