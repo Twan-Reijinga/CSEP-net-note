@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.NoteEditorCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.NoteEditorCtrl">
    <children>
       <BorderPane layoutX="-1.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <center>
@@ -40,7 +40,7 @@
                         <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onSearchButtonPressed" text="%searchButton" />
                         <ToggleButton fx:id="advSearchButton" mnemonicParsing="false" onAction="#onAdvSearchButtonPressed" prefHeight="26.0" prefWidth="26.0" text="Search options" />
                         <Region HBox.hgrow="ALWAYS" />
-                        <ComboBox fx:id="collectionDropdown" onAction="#onCollectionDropdownAction" prefHeight="26.0" prefWidth="80.0" />
+                        <ComboBox fx:id="collectionDropdown" onAction="#onCollectionDropdownAction" prefHeight="26.0" prefWidth="116.0" />
                         <ComboBox fx:id="languageDropdown" onAction="#onLanguageDropdownAction" prefHeight="26.0" prefWidth="80.0" />
                      </children>
                      <padding>

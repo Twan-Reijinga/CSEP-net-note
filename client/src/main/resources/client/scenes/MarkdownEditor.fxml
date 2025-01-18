@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.web.WebView?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
 
-<SplitPane fx:id="divider" dividerPositions="0.5" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MarkdownEditorCtrl">
+<SplitPane fx:id="divider" dividerPositions="0.5" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MarkdownEditorCtrl">
   <items>
     <AnchorPane fx:id="leftPlane" minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="216.0">
          <children>
-            <TextField fx:id="titleField" onKeyTyped="#onTitleEdit" prefHeight="29.0" prefWidth="296.0" />
-            <TextArea fx:id="noteText" layoutY="29.0" onKeyTyped="#onKeyTyped" prefHeight="369.0" prefWidth="296.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0" />
+            <HBox fx:id="topControlsContainer" layoutX="-2.0" layoutY="-2.0" prefHeight="30.0" prefWidth="297.0">
+               <children>
+                  <TextField fx:id="titleField" onKeyTyped="#onTitleEdit" prefHeight="30.0" HBox.hgrow="ALWAYS" />
+                  <ComboBox fx:id="collectionDropdown" onAction="#onCollectionClick" prefHeight="30.0" prefWidth="100.0" />
+               </children>
+            </HBox>
+            <TextArea fx:id="noteText" layoutY="28.0" onKeyTyped="#onKeyTyped" prefHeight="369.0" prefWidth="296.0" AnchorPane.bottomAnchor="0.8000000000000114" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="28.0" />
          </children></AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
