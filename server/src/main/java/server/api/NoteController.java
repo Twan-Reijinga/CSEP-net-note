@@ -6,15 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.NoteRepository;
+import server.services.NoteService;
 
 @RestController
 @RequestMapping("/api/notes")
 public class NoteController {
     private final NoteRepository noteRepository;
+    private final NoteService noteService;
 
     @Autowired
-    public NoteController(NoteRepository noteRepository) {
+    public NoteController(NoteRepository noteRepository, NoteService noteService) {
         this.noteRepository = noteRepository;
+        this.noteService = noteService;
     }
 
     @GetMapping(path = {"", "/"})
@@ -104,5 +107,11 @@ public class NoteController {
         }
 
         return ResponseEntity.ok(notes.get(0));
+    }
+
+    @GetMapping(path="/last")
+    public ResponseEntity<Boolean> isLastNoteInCollection(@RequestParam long noteId) {
+        boolean isLastNote = noteService.isLastNoteInCollection(noteId);
+        return ResponseEntity.ok(isLastNote);
     }
 }

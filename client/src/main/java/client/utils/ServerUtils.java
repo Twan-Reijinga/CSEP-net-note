@@ -134,6 +134,24 @@ public class ServerUtils {
 				.get(new GenericType<>() {});
 	}
 
+
+
+	public NoteTitle getNoteTitleById(long id) {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(server).path("api/titles/" + id) //
+				.request(APPLICATION_JSON) //
+				.get(new GenericType<>() {});
+	}
+
+
+	public boolean isLastNoteInCollection(long id) {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(server).path("api/notes/last") //
+				.queryParam("noteId", id)
+				.request(APPLICATION_JSON) //
+				.get(new GenericType<>() {});
+	}
+
 	/**
 	 * gets the note title object in a specified collection
 	 * @param collectionId the collection id you want to get the note titles from

@@ -59,6 +59,16 @@ public class MainCtrl {
 
             Collection defaultCollection = serverUtils.getDefaultCollection();
             config.setDefaultCollectionId(defaultCollection.id);
+        } else {
+            try {
+                // TODO: create a dedicated collection exists method in server utils
+                // Check if collection exists, because sometimes it would cause a bug
+                //  when for example a server restarts it creates a new default collection (different ID)
+                serverUtils.getCollectionById(config.getDefaultCollectionId());
+            } catch (Exception e) {
+                Collection defaultCollection = serverUtils.getDefaultCollection();
+                config.setDefaultCollectionId(defaultCollection.id);
+            }
         }
     }
 

@@ -33,6 +33,9 @@ public class DataInitializer {
             // Add another collection to show off multi-collection support
             Collection arbitraryCollection = new Collection("arbitrary", "Arbitrary Collection");
 
+            // TODO: *IMPORTANT*: note to the future: app will (most likely) crash if
+            //  there is NO collection named *"default"* with AT LEAST *one note* inside
+
             defaultCollection = collectionRepository.save(defaultCollection);
             arbitraryCollection = collectionRepository.save(arbitraryCollection);
 

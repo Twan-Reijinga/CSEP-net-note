@@ -29,7 +29,7 @@
             </Pane>
             <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="NEVER">
                <children>
-                    <Button minWidth="30.0" mnemonicParsing="false" onAction="#createNote" text="+">
+                    <Button minWidth="30.0" mnemonicParsing="false" onAction="#onCreateNote" text="+">
                      <HBox.margin>
                         <Insets right="5.0" />
                      </HBox.margin>
