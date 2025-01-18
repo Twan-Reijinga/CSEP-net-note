@@ -392,14 +392,17 @@ public class NoteEditorCtrl {
         return alreadyIn;
     }
 
+    /**
+     * focus on the text field of the searchbar you can immediately search when starting to type
+     */
+    public void focusOnSearch() {
+        searchBox.requestFocus();
+    }
+
     private String getSelectedTagStyle(){
         return "-fx-border-color: black;"
                 + "-fx-border-width: 1px;"
                 + "-fx-border-radius: 10px;"
                 + "-fx-padding: 1px 5px 1px 5px;";
-    }
-
-    public void focusOnSearch() {
-        searchBox.requestFocus();
     }
 }

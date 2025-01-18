@@ -254,6 +254,9 @@ public class MainCtrl {
         return this.tagFilteringHandler.getAvailableTags();
     }
 
+    /**
+     * focus on the text field of the searchbar you can immediately search when starting to type
+     */
     public void focusOnSearch() {
         noteEditorCtrl.focusOnSearch();
     }
