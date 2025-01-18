@@ -51,16 +51,30 @@ public class ShortcutHandler {
      * @param event The key press that is detected.
      */
     private void handleKeyPresses(KeyEvent event) {
+        if (event.isControlDown()) {
+            handleCtrlKeyPresses(event);
+        } else if (event.getCode() == KeyCode.ESCAPE) {
+            mainCtrl.focusOnSearch();
+        }
+    }
+
+    private void handleCtrlKeyPresses(KeyEvent event) {
         if (event.isControlDown() && event.getCode() == KeyCode.Z) {
             this.undo();
-        } else if (event.isControlDown() && event.getCode() == KeyCode.R) {
-            sidebarCtrl.refresh();
         } else if (event.isControlDown() && event.getCode() == KeyCode.DOWN) {
             this.noteSelectionChange(ChangeType.DOWN);
         } else if (event.isControlDown() && event.getCode() == KeyCode.UP) {
             this.noteSelectionChange(ChangeType.UP);
-        } else if (event.getCode() == KeyCode.ESCAPE) {
-            mainCtrl.focusOnSearch();
+        } else {
+            handleFocusShortcuts(event);
+        }
+    }
+
+    private void handleFocusShortcuts(KeyEvent event) {
+        if (event.isControlDown() && event.getCode() == KeyCode.R) {
+            sidebarCtrl.refresh();
+        } else if (event.isControlDown() && event.getCode() == KeyCode.L) {
+            mainCtrl.focusOnTitle();
         }
     }
 
