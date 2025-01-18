@@ -398,4 +398,8 @@ public class NoteEditorCtrl {
                 + "-fx-border-radius: 10px;"
                 + "-fx-padding: 1px 5px 1px 5px;";
     }
+
+    public void focusOnSearch() {
+        searchBox.requestFocus();
+    }
 }

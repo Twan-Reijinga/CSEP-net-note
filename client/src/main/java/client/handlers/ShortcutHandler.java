@@ -1,5 +1,6 @@
 package client.handlers;
 
+import client.scenes.MainCtrl;
 import client.scenes.SidebarCtrl;
 import client.utils.AddNoteAction;
 import client.utils.DeleteNoteAction;
@@ -17,6 +18,7 @@ import java.util.Stack;
  * across any JavaFX Scene. It is independent of specific scenes or controllers.
  */
 public class ShortcutHandler {
+    private final MainCtrl mainCtrl;
     private final SidebarCtrl sidebarCtrl;
     private final Stack<NoteAction> actionStack = new Stack<>();
     private final HashMap<Long, Long> idMapping = new HashMap<>();
@@ -28,9 +30,11 @@ public class ShortcutHandler {
 
     /**
      * Initialization for the ShortcutHandler.
+     * @param mainCtrl The main controller to communicate general functionality.
      * @param sidebarCtrl The sidebar controller to change things in the sidebar.
      */
-    public ShortcutHandler(SidebarCtrl sidebarCtrl) {
+    public ShortcutHandler(MainCtrl mainCtrl, SidebarCtrl sidebarCtrl) {
+        this.mainCtrl = mainCtrl;
         this.sidebarCtrl = sidebarCtrl;
     }
 
@@ -55,6 +59,8 @@ public class ShortcutHandler {
             this.noteSelectionChange(ChangeType.DOWN);
         } else if (event.isControlDown() && event.getCode() == KeyCode.UP) {
             this.noteSelectionChange(ChangeType.UP);
+        } else if (event.getCode() == KeyCode.ESCAPE) {
+            mainCtrl.focusOnSearch();
         }
     }
 

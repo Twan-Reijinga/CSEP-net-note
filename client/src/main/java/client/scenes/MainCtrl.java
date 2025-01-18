@@ -85,7 +85,7 @@ public class MainCtrl {
         markdownEditorCtrl.initialize(sidebarCtrl);
         sidebarCtrl.initialize(this);
 
-        this.shortcutHandler = new ShortcutHandler(sidebarCtrl);
+        this.shortcutHandler = new ShortcutHandler(this, sidebarCtrl);
         shortcutHandler.attach(this.noteEditor);
 
         showNoteEditor();
@@ -252,5 +252,9 @@ public class MainCtrl {
      */
     public List<String> listAvailableTags(){
         return this.tagFilteringHandler.getAvailableTags();
+    }
+
+    public void focusOnSearch() {
+        noteEditorCtrl.focusOnSearch();
     }
 }
