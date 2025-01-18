@@ -135,11 +135,20 @@ public class MarkdownEditorCtrl {
         requestRefresh();
     }
 
+    /**
+     * action when a new key is typed
+     * requests a refresh
+     * @param e the key event that is typed
+     */
     public synchronized void onKeyTyped(KeyEvent e) {
         isContentsSynced = false;
         requestRefresh();
     }
 
+    /**
+     * action when title is edited
+     * requests a refresh and updates title immediately in sidebar
+     */
     public synchronized void onTitleEdit() {
         activeNote.title = titleField.getText();
         isContentsSynced = false;
@@ -147,6 +156,9 @@ public class MarkdownEditorCtrl {
         sidebarCtrl.updateTitle(activeNote.id, activeNote.title);
     }
 
+    /**
+     * request to do a refresh if it wasn't refreshed in a while
+     */
     public synchronized void requestRefresh() {
         if(getTimeState()) return;
 
@@ -234,6 +246,10 @@ public class MarkdownEditorCtrl {
         return textBuffer.toString();
     }
 
+    /**
+     * event when a tag is clicked
+     * @param tag the tag that is clicked on
+     */
     public void onTagClicked(String tag){
         this.mainCtrl.addTagFilter("#" + tag);
     }
