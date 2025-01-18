@@ -95,7 +95,7 @@ public class MainCtrl {
         markdownEditorCtrl.initialize(sidebarCtrl);
         sidebarCtrl.initialize(this);
 
-        this.shortcutHandler = new ShortcutHandler(sidebarCtrl);
+        this.shortcutHandler = new ShortcutHandler(this, sidebarCtrl);
         shortcutHandler.attach(this.noteEditor);
 
         showNoteEditor();
@@ -266,5 +266,19 @@ public class MainCtrl {
      */
     public List<String> listAvailableTags(){
         return this.tagFilteringHandler.getAvailableTags();
+    }
+
+    /**
+     * focus on the text field of the searchbar you can immediately search when starting to type
+     */
+    public void focusOnSearch() {
+        noteEditorCtrl.focusOnSearch();
+    }
+
+    /**
+     * focus on the text field for the title to immediately start editing the title
+     */
+    public void focusOnTitle() {
+        markdownEditorCtrl.focusOnTitle();
     }
 }

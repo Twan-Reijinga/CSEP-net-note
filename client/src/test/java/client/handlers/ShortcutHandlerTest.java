@@ -1,28 +1,42 @@
 package client.handlers;
 
+import client.Main;
 import client.config.Config;
+import client.scenes.MainCtrl;
+import client.scenes.NoteEditorCtrl;
 import client.scenes.SidebarCtrl;
 import client.utils.AddNoteAction;
 import client.utils.ServerUtils;
+import client.utils.ServerUtilsRepository;
 import commons.Collection;
 import commons.Note;
+import javafx.geometry.Side;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ShortcutHandlerTest {
 
+    private ShortcutHandler shortcutHandler;
+
+    @BeforeEach
+    void setUp() {
+        Config config = new Config();
+        MainCtrl mainCtrl = new MainCtrl(config, new ServerUtilsRepository(config));
+        SidebarCtrl sidebarCtrl = new SidebarCtrl(new ServerUtilsRepository(config), config);
+        this.shortcutHandler = new ShortcutHandler(mainCtrl, sidebarCtrl);
+    }
+
     @Test
     void recordAdd() {
-        ShortcutHandler s = new ShortcutHandler(new SidebarCtrl(new ServerUtils(new Config()), new Config()));
-        s.recordAdd(1L);
+        shortcutHandler.recordAdd(1L);
     }
 
     @Test
     void recordDelete() {
-        ShortcutHandler s = new ShortcutHandler(new SidebarCtrl(new ServerUtils(new Config()), new Config()));
         Collection collection = new Collection();
         Note note = new Note("test", "test", collection);
-        s.recordDelete(note);
+        shortcutHandler.recordDelete(note);
     }
 }

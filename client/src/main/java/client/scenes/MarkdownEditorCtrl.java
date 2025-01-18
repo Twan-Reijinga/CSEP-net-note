@@ -87,7 +87,7 @@ public class MarkdownEditorCtrl {
 
     private Note activeNote;
     private SidebarCtrl sidebarCtrl;
-
+    
     @Inject
     public MarkdownEditorCtrl(ServerUtils serverUtils, Config config, MainCtrl mainCtrl) {
         this.serverUtils = serverUtils;
@@ -111,6 +111,10 @@ public class MarkdownEditorCtrl {
 
     }
 
+    /**
+     * JavaFX method that automatically runs when this controller is initialized.
+     * @param sidebarCtrl The sidebar controller.
+     */
     @FXML
     public void initialize(SidebarCtrl sidebarCtrl) {
         this.sidebarCtrl = sidebarCtrl;
@@ -236,11 +240,20 @@ public class MarkdownEditorCtrl {
         }
     }
 
+    /**
+     * Action when a new key is typed.
+     * Requests a refresh.
+     * @param e the key event that is typed.
+     */
     public synchronized void onKeyTyped(KeyEvent e) {
         isContentsSynced = false;
         requestRefresh();
     }
 
+    /**
+     * Action when title is edited.
+     * Requests a refresh and updates title immediately in sidebar.
+     */
     public synchronized void onTitleEdit() {
         // To remove possible error color of having the same title
         titleField.setStyle("");
@@ -251,6 +264,9 @@ public class MarkdownEditorCtrl {
         sidebarCtrl.updateTitle(activeNote.id, activeNote.title);
     }
 
+    /**
+     * Request to do a refresh if it wasn't refreshed in a while.
+     */
     public synchronized void requestRefresh() {
         if(getTimeState()) return;
 
@@ -259,6 +275,13 @@ public class MarkdownEditorCtrl {
             @Override
             public void run() { refreshView(); }
         }, REFRESH_THRESHOLD);
+    }
+
+    /**
+     * Focus on the text field for the title to immediately start editing the title.
+     */
+    public void focusOnTitle() {
+        titleField.requestFocus();
     }
 
     private synchronized void refreshView() {
@@ -349,6 +372,10 @@ public class MarkdownEditorCtrl {
         return textBuffer.toString();
     }
 
+    /**
+     * Event when a tag is clicked.
+     * @param tag the tag that is clicked on.
+     */
     public void onTagClicked(String tag){
         this.mainCtrl.addTagFilter("#" + tag);
     }
