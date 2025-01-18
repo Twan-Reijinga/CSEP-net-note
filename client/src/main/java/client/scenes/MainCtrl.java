@@ -260,4 +260,11 @@ public class MainCtrl {
     public void focusOnSearch() {
         noteEditorCtrl.focusOnSearch();
     }
+
+    /**
+     * focus on the text field for the title to immediately start editing the title
+     */
+    public void focusOnTitle() {
+        markdownEditorCtrl.focusOnTitle();
+    }
 }

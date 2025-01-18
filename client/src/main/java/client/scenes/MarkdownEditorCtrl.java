@@ -169,6 +169,13 @@ public class MarkdownEditorCtrl {
         }, REFRESH_THRESHOLD);
     }
 
+    /**
+     * focus on the text field for the title to immediately start editing the title
+     */
+    public void focusOnTitle() {
+        titleField.requestFocus();
+    }
+
     private synchronized void refreshView() {
         setTimeState(false);
         String convertedTags = convertTagsToLinks(noteText.getText());
