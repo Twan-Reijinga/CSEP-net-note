@@ -162,54 +162,48 @@ public class SidebarCtrl {
     }
 
     /**
-     * Creates a new title that is unique to the other title in the format "New note: #"
-     * <p>
-     * @param input an integer that indicates what the first default title should be (usually 1)
-     * 				every other title will have a higher number.
-     * @return an integer which increments the current highest "New note: #", so that every note is unique in title.
+     * Creates a new title that is unique to the other title in the format "New note #"
+     * @param collectionId an id of collection where the note will be created
+     * @return a title with incremented number in "New note #", so that every note is unique in title.
      */
-    private int createDefaultTitle(int input) {
-        List<NoteTitle> notes = server.getNoteTitles();
-        if (!notes.isEmpty()) {
-        	boolean correctTitle = true;
-        	for (NoteTitle currentNote : notes) {
-        		correctTitle = true;
-        		char[] chars = currentNote.getTitle().substring(10).toCharArray();
-        		if (chars.length == 0) {
-        			correctTitle = false;
-        		}
-        		for (char currentChar : chars) {
-        			if (!Character.isDigit(currentChar))
-        				correctTitle = false;
-        		}
-        		if (correctTitle && currentNote.getTitle().startsWith("New note: ")) {
-        			int tempInt = Integer.parseInt(currentNote.getTitle().split(" ")[2]);
-        			if (tempInt >= input) {
-        				input = tempInt + 1;
-        			}
-                }
-            }
-        }
-        return input;
+    private String createDefaultTitle(UUID collectionId) {
+        List<NoteTitle> notes = server.getNoteTitlesInCollection(collectionId);
+
+        int maxNoteNumber = notes.stream()
+                .filter(nt -> nt.getTitle().startsWith("New note #"))
+                .mapToInt(nt -> {
+                    try {
+                        return Integer.parseInt(nt.getTitle().replace("New note #", ""));
+                    } catch (Exception e) {
+                        return -1;
+                    }
+                })
+                .max()
+                .orElse(0);
+
+        return "New note #" + (maxNoteNumber + 1);
+    }
+
+    @FXML
+    public void onCreateNote() {
+        // If no collection is selected, create notes in default one
+        UUID destinationCollectionId = selectedCollectionId == null ?
+                config.getDefaultCollectionId() : selectedCollectionId;
+
+        createNote(destinationCollectionId);
     }
 
     /**
      * Adds a default note to the database with a unique title, unique id, content and a default collection,
      * or the collection of the selected note.
      * Afterward selects the newly created note (last note).
+     * @param collectionID a collection id where a note will be created
      */
-    public void createNote() {
-        // If no collection is selected, create notes in default one
-        UUID destinationCollectionId = selectedCollectionId == null ?
-                config.getDefaultCollectionId() : selectedCollectionId;
+    public void createNote(UUID collectionID) {
+        Collection collection = server.getCollectionById(collectionID);
 
-        Collection collection = server.getCollectionById(destinationCollectionId);
-        if (getSelectedNoteId() > 0) {
-            collection = server.getNoteById(getSelectedNoteId()).collection;
-        }
-
-        int input = createDefaultTitle(1);
-        Note newNote = new Note("New note: " + input, "Edit content here.", collection);
+        String title = createDefaultTitle(collectionID);
+        Note newNote = new Note(title, "Edit content here.", collection);
 
         addNote(newNote);
         mainCtrl.recordAdd(selectedNoteId);
@@ -259,12 +253,11 @@ public class SidebarCtrl {
             return; // note didn't exist anymore //
         }
 
-        if (id <= 0) {
-            return;
-        }
-
-        if (server.getAllNotes().size() < 2){
-            createNote();
+        // New note must be created to ensure no empty collections
+        boolean isLastNote = server.isLastNoteInCollection(id);
+        if (isLastNote) {
+            Note note = server.getNoteById(id);
+            createNote(note.collection.id);
         }
 
         Note note = server.getNoteById(id);
@@ -274,7 +267,6 @@ public class SidebarCtrl {
         if (isReversible) {
             mainCtrl.recordDelete(note);
         }
-
 
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
