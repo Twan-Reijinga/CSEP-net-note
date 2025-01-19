@@ -4,6 +4,8 @@ import commons.Collection;
 import commons.Note;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.services.CollectionService;
+import server.services.NoteService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,11 @@ public class NoteControllerTest {
         repo.save(note2);
         note3 = new Note("Title 3", "Content 3", null);
 
-        controller = new NoteController(repo);
+        // FIXME: invalid service, collection service cannot be null
+        //  it requires fixing the tests (because even here, all notes have collection null which is not possible)
+        NoteService service = new NoteService(repo, null);
+
+        controller = new NoteController(repo, service);
     }
 
     @Test
