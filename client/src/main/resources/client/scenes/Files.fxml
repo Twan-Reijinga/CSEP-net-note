@@ -15,7 +15,7 @@
             <items>
                 <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Unspecified Action">
                     <content>
-                        <TextField fx:id="filePathContainer" onKeyPressed="#checkEnter" pickOnBounds="false" prefHeight="25.0" prefWidth="100.0" promptText="File path">
+                        <TextField fx:id="filePathContainer" onKeyPressed="#checkEnter" pickOnBounds="false" prefHeight="25.0" prefWidth="250.0" promptText="File path">
                             <cursor>
                                 <Cursor fx:constant="DEFAULT" />
                             </cursor>
@@ -24,16 +24,16 @@
                 </CustomMenuItem>
                 <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Unspecified Action">
                     <content>
-                        <Button mnemonicParsing="false" onAction="#addFile" prefWidth="100.0" text="Add file" />
+                        <Button mnemonicParsing="false" onAction="#addFile" prefWidth="250.0" text="Add file" />
                     </content>
                 </CustomMenuItem>
                 <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Unspecified Action">
                     <content>
-                        <AnchorPane prefHeight="45.0" prefWidth="100.0">
+                        <AnchorPane prefHeight="45.0" prefWidth="250.0">
                             <children>
-                                <ScrollPane prefHeight="50.0" prefWidth="100.0" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <ScrollPane prefHeight="50.0" prefWidth="250.0" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <content>
-                                        <HBox fx:id="fileContainer" minHeight="0.0" minWidth="0.0" prefHeight="45.0" />
+                                        <HBox fx:id="filesContainer" minHeight="0.0" minWidth="0.0" />
                                     </content>
                                 </ScrollPane>
                             </children>
