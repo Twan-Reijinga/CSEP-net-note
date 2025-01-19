@@ -56,10 +56,14 @@ public class FilesCtrl {
         if (main.getSelectedNoteId() == -1) {
             return;     //A note must be selected
         }
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.*"));
-        File file = fileChooser.showOpenDialog(null);
-        addFile(file);
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.*"));
+            File file = fileChooser.showOpenDialog(null);
+            addFile(file);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -103,20 +107,27 @@ public class FilesCtrl {
         popupStage.setTitle("Edit Title");
         TextField newTitle = new TextField();
         newTitle.setPromptText("Enter new title");
-
         Label oldTitle = new Label("Previous title: " + server.getFileFromNote(noteId, id).title);
-
         Button button = new Button("Change Title");
         button.setOnAction(event -> {
             String title = newTitle.getText();
-            if (title != null && !title.trim().isEmpty()) {
+            if (title != null && !server.getAllTitlesFromNote(noteId).contains(title)) {
+                if(!title.contains(".jpg") &&
+                        !title.contains(".png") &&
+                        !title.contains(".gif") &&
+                        !title.contains(".bmp") &&
+                        !title.contains(".txt") &&
+                        !title.contains(".pdf") &&
+                        !title.contains(".plain")
+                ) {
+                    String type = server.getFileFromNote(noteId, id).title.split("\\.")[1];
+                    title += "." + type;
+                }
                 changeTitle(title, noteId, id);
                 popupStage.close();
             }
         });
-
         VBox layout = new VBox(10, newTitle, oldTitle, button);
-
         Scene popupScene = new Scene(layout, 300, 150);
         popupStage.setScene(popupScene);
         popupStage.showAndWait();

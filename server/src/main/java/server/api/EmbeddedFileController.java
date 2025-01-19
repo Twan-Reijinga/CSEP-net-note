@@ -98,6 +98,20 @@ public class EmbeddedFileController {
         }
     }
 
+    @GetMapping("/title")
+    public ResponseEntity<List<String>> getAllTitles(@PathVariable("noteId") long id) {
+        List<String> titles = new ArrayList<>();
+        try {
+            List<EmbeddedFile> embeddedFiles = embeddedFileRepository.findAll();
+            for (EmbeddedFile embeddedFile : embeddedFiles) {
+                titles.add(embeddedFile.title);
+            }
+            return ResponseEntity.ok(titles);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @GetMapping("/title/{title}")
     public ResponseEntity<String> getFile(@PathVariable("title") String title) {
         try {

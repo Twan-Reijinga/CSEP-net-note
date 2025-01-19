@@ -391,4 +391,11 @@ public class ServerUtils {
 				.request(APPLICATION_JSON)
 				.put(Entity.entity(file, APPLICATION_JSON), EmbeddedFile.class);
 	}
+
+	public List<String> getAllTitlesFromNote(long noteId) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/" + noteId + "/embedded/title")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<List<String>>() {});
+	}
 }
