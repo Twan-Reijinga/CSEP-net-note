@@ -9,23 +9,20 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 
 import java.io.*;
 import java.util.Base64;
 import java.util.List;
 
+@SuppressWarnings("checkstyle:Indentation")
 public class FilesCtrl {
     private final ServerUtils server;
     private final MainCtrl main;
 
     @FXML
     public HBox filesContainer;
-
-    @FXML
-    public TextField filePathContainer;
 
     @Inject
     public FilesCtrl(ServerUtils server, MainCtrl main) {
@@ -51,26 +48,39 @@ public class FilesCtrl {
             filesContainer.getChildren().add(wrapper);
         }
     }
+
+    public void selectFile() {
+        if (main.getSelectedNoteId() == -1) {
+            return;     //A note must be selected
+        }
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.*"));
+        File file = fileChooser.showOpenDialog(null);
+        addFile(file);
+    }
+
     /**
      * Adds file to be stored in the database
      *  File is saved in base64, this can store all filetypes and large files (also works with JSON)
+     * @param addedFile the selected file out of the
      */
-    public void addFile() {
-        System.out.println(filePathContainer.getText());
-        if (main.getSelectedNoteId() == -1) {return;}
-
+    public void addFile(File addedFile) {
         Note note = server.getNoteById(main.getSelectedNoteId());
-        File thisFile = new File(filePathContainer.getText());
-        filePathContainer.clear();
+        for (EmbeddedFile file : server.getAllFilesFromNote(note)) {
+            if (file.title.equals(addedFile.getName())) {
+                return;
+            }
+        }
+
         String fileString;
-        try (FileInputStream input = new FileInputStream(thisFile)) {
-            byte[] fileBytes = new byte[(int) thisFile.length()];
+        try (FileInputStream input = new FileInputStream(addedFile)) {
+            byte[] fileBytes = new byte[(int) addedFile.length()];
             input.read(fileBytes);
             fileString = Base64.getEncoder().encodeToString(fileBytes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        EmbeddedFile file = new EmbeddedFile("Title", note, fileString);
+        EmbeddedFile file = new EmbeddedFile(addedFile.getName(), note, fileString);
         server.addFileToNote(file);
         refresh();
     }
@@ -103,12 +113,6 @@ public class FilesCtrl {
             System.out.println("File downloaded");
         }catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public void checkEnter(KeyEvent event) {
-        if (event.getCode().equals(KeyCode.ENTER)) {
-            addFile();
         }
     }
 }
