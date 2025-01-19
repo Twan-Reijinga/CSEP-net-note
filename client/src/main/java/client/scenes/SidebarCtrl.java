@@ -214,13 +214,18 @@ public class SidebarCtrl {
      */
     public void deleteNoteById(long id, boolean isReversible) {
         if (!server.existsNoteById(id)) {
-            return; // note didn't exist anymore //
+            return; // note already didn't exist anymore //
         }
-
         if (id <= 0) {
             return;
         }
 
+        String noteTitle = server.getNoteById(id).title;
+
+        System.out.println(isReversible);
+        if (!isReversible && !mainCtrl.userConfirmDeletion(noteTitle)) {
+            return;
+        }
         if (server.getAllNotes().size() < 2){
             createNote();
         }
@@ -232,8 +237,6 @@ public class SidebarCtrl {
         if (isReversible) {
             mainCtrl.recordDelete(note);
         }
-
-
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
         noteClick(selectedNoteId);
