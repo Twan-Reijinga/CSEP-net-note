@@ -259,7 +259,7 @@ public class SidebarCtrl {
         Note note = server.getNoteById(id);
 
         System.out.println(isReversible);
-        if (!isReversible && !mainCtrl.userConfirmDeletion(note.title)) {
+        if (!mainCtrl.userConfirmDeletion(note.title)) {
             return;
         }
 
