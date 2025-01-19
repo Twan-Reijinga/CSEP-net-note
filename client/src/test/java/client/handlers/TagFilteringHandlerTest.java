@@ -30,7 +30,7 @@ class TagFilteringHandlerTest {
 
     @BeforeEach
     void setUp() {
-        serverUtils = new ServerUtilsRepository(new Config());
+        serverUtils = new ServerUtilsRepository();
         collection = new Collection("name", "title");
         tagFilteringHandler = new TagFilteringHandler(serverUtils);
     }

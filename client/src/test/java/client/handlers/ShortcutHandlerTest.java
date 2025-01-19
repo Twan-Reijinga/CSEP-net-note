@@ -23,8 +23,8 @@ class ShortcutHandlerTest {
     @BeforeEach
     void setUp() {
         Config config = new Config();
-        MainCtrl mainCtrl = new MainCtrl(config, new ServerUtilsRepository(config));
-        SidebarCtrl sidebarCtrl = new SidebarCtrl(new ServerUtilsRepository(config), config);
+        MainCtrl mainCtrl = new MainCtrl(config, new ServerUtilsRepository());
+        SidebarCtrl sidebarCtrl = new SidebarCtrl(new ServerUtilsRepository(), config);
         this.shortcutHandler = new ShortcutHandler(mainCtrl, sidebarCtrl);
     }
 
