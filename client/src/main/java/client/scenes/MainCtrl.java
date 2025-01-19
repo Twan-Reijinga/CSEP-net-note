@@ -17,6 +17,7 @@ package client.scenes;
 
 import client.Main;
 import client.config.Config;
+import client.utils.DialogBoxUtils;
 import client.utils.Language;
 import client.utils.ServerUtils;
 import client.handlers.TagFilteringHandler;
@@ -24,6 +25,8 @@ import commons.NoteTitle;
 import client.handlers.ShortcutHandler;
 import commons.Note;
 import jakarta.inject.Inject;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -121,7 +124,7 @@ public class MainCtrl {
      * Sets a new UI language based on user selection
      * Builds a new scene but with all components translated
      * and parses the main stage the root node of the scene
-     * @param languageStr the chosen language by the user
+     * @param languageStr The chosen language by the user
      */
     public void switchLanguage(String languageStr) {
         Language language = switch (languageStr) {
@@ -150,7 +153,7 @@ public class MainCtrl {
     }
 
     /**
-     * record the action of adding a note so the noteId can be locally stored and reversed with an undo later.
+     * Record the action of adding a note so the noteId can be locally stored and reversed with an undo later.
      * @param noteId The noteId of the added note.
      */
     public void recordAdd(Long noteId) {
@@ -269,16 +272,41 @@ public class MainCtrl {
     }
 
     /**
-     * focus on the text field of the searchbar you can immediately search when starting to type
+     * Focus on the text field of the searchbar you can immediately search when starting to type
      */
     public void focusOnSearch() {
         noteEditorCtrl.focusOnSearch();
     }
 
     /**
-     * focus on the text field for the title to immediately start editing the title
+     * Focus on the text field for the title to immediately start editing the title
      */
     public void focusOnTitle() {
         markdownEditorCtrl.focusOnTitle();
+    }
+
+    /**
+     * Open a popup to ask the user if it wants to delete a specific note.
+     * The user can choose between delete and cancel.
+     * @param noteTitle The title of the note.
+     * @return True for delete and false for cancel.
+     */
+    public boolean userConfirmDeletion(String noteTitle) {
+        // needs to be final for eventHandlers //
+        final boolean[] isConfirmed = {false};
+
+        EventHandler<ActionEvent> deleteAction = _ -> isConfirmed[0] = true; // Confirm deletion
+        EventHandler<ActionEvent> cancelAction = _ -> isConfirmed[0] = false; // Cancel deletion
+
+        String title = "Delete Note";
+        String content = "Are you sure you want to delete \"" + noteTitle + "\"?";
+
+        DialogBoxUtils.createSimpleDialog(
+                title, content,
+                "Delete", deleteAction,
+                "Cancel", cancelAction
+        ).showAndWait();
+
+        return isConfirmed[0];
     }
 }
