@@ -17,6 +17,7 @@ package client.scenes;
 
 import client.Main;
 import client.config.Config;
+import client.utils.DialogBoxUtils;
 import client.utils.Language;
 import client.utils.ServerUtils;
 import client.handlers.TagFilteringHandler;
@@ -24,6 +25,8 @@ import commons.NoteTitle;
 import client.handlers.ShortcutHandler;
 import commons.Note;
 import jakarta.inject.Inject;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -42,6 +45,8 @@ public class MainCtrl {
 
     private MarkdownEditorCtrl markdownEditorCtrl;
     private SidebarCtrl sidebarCtrl;
+    private FilesCtrl filesCtrl;
+
     private ShortcutHandler shortcutHandler;
     private TagFilteringHandler tagFilteringHandler;
 
@@ -78,6 +83,7 @@ public class MainCtrl {
             Pair<MarkdownEditorCtrl, Parent> markdownEditor,
             Pair<NoteEditorCtrl, Parent> noteEditor,
             Pair<SidebarCtrl, Parent> sidebarEditor,
+            Pair<FilesCtrl, Parent> filesEditor,
             ResourceBundle bundle
     )
     {
@@ -90,12 +96,14 @@ public class MainCtrl {
 
         this.markdownEditorCtrl = markdownEditor.getKey();
         this.sidebarCtrl = sidebarEditor.getKey();
+        this.filesCtrl = filesEditor.getKey();
 
-        noteEditorCtrl.initialize(sidebarEditor, markdownEditor, bundle);
+
+        noteEditorCtrl.initialize(sidebarEditor, markdownEditor, filesEditor, bundle);
         markdownEditorCtrl.initialize(sidebarCtrl);
-        sidebarCtrl.initialize(this);
+        sidebarCtrl.initialize(this, filesCtrl);
 
-        this.shortcutHandler = new ShortcutHandler(sidebarCtrl);
+        this.shortcutHandler = new ShortcutHandler(this, sidebarCtrl);
         shortcutHandler.attach(this.noteEditor);
 
         showNoteEditor();
@@ -121,7 +129,7 @@ public class MainCtrl {
      * Sets a new UI language based on user selection
      * Builds a new scene but with all components translated
      * and parses the main stage the root node of the scene
-     * @param languageStr the chosen language by the user
+     * @param languageStr The chosen language by the user
      */
     public void switchLanguage(String languageStr) {
         Language language = switch (languageStr) {
@@ -150,7 +158,7 @@ public class MainCtrl {
     }
 
     /**
-     * record the action of adding a note so the noteId can be locally stored and reversed with an undo later.
+     * Record the action of adding a note so the noteId can be locally stored and reversed with an undo later.
      * @param noteId The noteId of the added note.
      */
     public void recordAdd(Long noteId) {
@@ -266,5 +274,44 @@ public class MainCtrl {
      */
     public List<String> listAvailableTags(){
         return this.tagFilteringHandler.getAvailableTags();
+    }
+
+    /**
+     * Focus on the text field of the searchbar you can immediately search when starting to type
+     */
+    public void focusOnSearch() {
+        noteEditorCtrl.focusOnSearch();
+    }
+
+    /**
+     * Focus on the text field for the title to immediately start editing the title
+     */
+    public void focusOnTitle() {
+        markdownEditorCtrl.focusOnTitle();
+    }
+
+    /**
+     * Open a popup to ask the user if it wants to delete a specific note.
+     * The user can choose between delete and cancel.
+     * @param noteTitle The title of the note.
+     * @return True for delete and false for cancel.
+     */
+    public boolean userConfirmDeletion(String noteTitle) {
+        // needs to be final for eventHandlers //
+        final boolean[] isConfirmed = {false};
+
+        EventHandler<ActionEvent> deleteAction = _ -> isConfirmed[0] = true; // Confirm deletion
+        EventHandler<ActionEvent> cancelAction = _ -> isConfirmed[0] = false; // Cancel deletion
+
+        String title = "Delete Note";
+        String content = "Are you sure you want to delete \"" + noteTitle + "\"?";
+
+        DialogBoxUtils.createSimpleDialog(
+                title, content,
+                "Delete", deleteAction,
+                "Cancel", cancelAction
+        ).showAndWait();
+
+        return isConfirmed[0];
     }
 }

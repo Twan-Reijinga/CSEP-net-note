@@ -30,6 +30,7 @@ public class SidebarCtrl {
     private Label messageTextLabel;
 
     private MainCtrl mainCtrl;
+    private FilesCtrl filesCtrl;
 
     // Injectable
     private final ServerUtils server;
@@ -56,9 +57,11 @@ public class SidebarCtrl {
     /**
      * initializer for the SidebarCtrl object.
      * @param mainCtrl The mainCtrl to execute actions outside the sidebar.
+     * @param filesCtrl The fileCtrl to execute actions outside the sidebar.
      */
-    public void initialize(MainCtrl mainCtrl) {
+    public void initialize(MainCtrl mainCtrl, FilesCtrl filesCtrl) {
         this.mainCtrl = mainCtrl;
+        this.filesCtrl = filesCtrl;
 
         // Hide and remove message container from layout
         messageContainer.setVisible(false);
@@ -250,24 +253,30 @@ public class SidebarCtrl {
      */
     public void deleteNoteById(long id, boolean isReversible) {
         if (!server.existsNoteById(id)) {
-            return; // note didn't exist anymore //
+            return; // note already didn't exist anymore //
         }
-
-        // New note must be created to ensure no empty collections
-        boolean isLastNote = server.isLastNoteInCollection(id);
-        if (isLastNote) {
-            Note note = server.getNoteById(id);
-            createNote(note.collection.id);
+        if (id <= 0) {
+            return;
         }
 
         Note note = server.getNoteById(id);
+        server.deleteAllFilesToNote(note);
+
+        if (!mainCtrl.userConfirmDeletion(note.title)) {
+            return;
+        }
+
+
+        boolean isLastNote = server.isLastNoteInCollection(id);
+        if (isLastNote) {
+            createNote(note.collection.id);
+        }
 
         server.deleteNote(note);
         mainCtrl.deleteTags(note.id);
         if (isReversible) {
             mainCtrl.recordDelete(note);
         }
-
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
         noteClick(selectedNoteId);
@@ -288,6 +297,7 @@ public class SidebarCtrl {
         }
         selectedNoteId = id;
         mainCtrl.updateNote(id);
+        filesCtrl.refresh();
     }
 
     private void selectFirstNote() {
