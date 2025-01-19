@@ -122,4 +122,15 @@ public class EmbeddedFileController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping("/title/{title}")
+    public ResponseEntity<String> getAllFile(@PathVariable("title") String title) {
+        try {
+            List<EmbeddedFile> embeddedFiles = embeddedFileRepository.findAll();
+            embeddedFiles.removeIf(CurrentFile -> !CurrentFile.title.equals(title));
+            return ResponseEntity.ok(embeddedFiles.getFirst().file);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
