@@ -19,7 +19,6 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.net.ConnectException;
 import java.util.List;
-import java.util.SimpleTimeZone;
 import java.util.UUID;
 
 import client.config.Config;
