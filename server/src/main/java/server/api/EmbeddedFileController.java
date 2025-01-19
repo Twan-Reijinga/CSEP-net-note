@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.EmbeddedFileRepository;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @RestController
 @RequestMapping("/api/notes/{noteId}/embedded")
 public class EmbeddedFileController {
@@ -86,11 +88,22 @@ public class EmbeddedFileController {
         return ResponseEntity.ok(removed);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<EmbeddedFile> updateFile(@RequestBody EmbeddedFile file) {
         try {
             EmbeddedFile saved = embeddedFileRepository.save(file);
             return ResponseEntity.ok(saved);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/title/{title}")
+    public ResponseEntity<String> getFile(@PathVariable("title") String title) {
+        try {
+            List<EmbeddedFile> embeddedFiles = embeddedFileRepository.findAll();
+            embeddedFiles.removeIf(CurrentFile -> !CurrentFile.title.equals(title));
+            return ResponseEntity.ok(embeddedFiles.getFirst().file);
         }catch (Exception e){
             return ResponseEntity.badRequest().build();
         }

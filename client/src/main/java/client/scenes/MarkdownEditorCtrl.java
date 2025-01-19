@@ -369,7 +369,7 @@ public class MarkdownEditorCtrl {
         }
         matcher.appendTail(textBuffer);
 
-        return textBuffer.toString();
+        return embeddedFileToLinks(textBuffer.toString());
     }
 
     /**
@@ -389,5 +389,23 @@ public class MarkdownEditorCtrl {
                 "border-radius: 8px; " +
                 "color: #000; " +
                 "text-decoration: none;'";
+    }
+
+    private String embeddedFileToLinks(String text) {
+        Pattern pattern = Pattern.compile("!\\[([\\w\\s]]+)]\\(([^)]+)\\)");
+        Matcher matcher = pattern.matcher(text);
+
+        StringBuffer textBuffer = new StringBuffer();
+        while (matcher.find()) {
+            String alt = matcher.group(1);
+            String img = matcher.group(2);
+
+            String imgURL = "api/notes/" + mainCtrl.getSelectedNoteId() + "/embedded/title/" + img;
+            String markdownFormat = "![" + alt + "](" + imgURL + ")";
+
+            matcher.appendReplacement(textBuffer, markdownFormat);
+        }
+        matcher.appendTail(textBuffer);
+        return textBuffer.toString();
     }
 }
