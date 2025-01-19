@@ -39,6 +39,7 @@
                         </TextField>
                         <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onSearchButtonPressed" text="%searchButton" />
                         <ToggleButton fx:id="advSearchButton" mnemonicParsing="false" onAction="#onAdvSearchButtonPressed" prefHeight="26.0" prefWidth="26.0" text="Search options" />
+                        <AnchorPane fx:id="filesContainer" prefHeight="25.0" prefWidth="55.0" />
                         <Region HBox.hgrow="ALWAYS" />
                         <ComboBox fx:id="collectionDropdown" onAction="#onCollectionDropdownAction" prefHeight="26.0" prefWidth="80.0" />
                         <ComboBox fx:id="languageDropdown" onAction="#onLanguageDropdownAction" prefHeight="26.0" prefWidth="80.0" />
@@ -80,6 +81,6 @@
             </VBox>
          </top>
       </BorderPane>
-      <AnchorPane fx:id="filesContainer" layoutX="195.0" layoutY="402.0" prefHeight="79.0" prefWidth="181.0" />
    </children>
 </AnchorPane>
+
