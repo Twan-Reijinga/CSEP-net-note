@@ -231,10 +231,19 @@ public class NoteEditorCtrl {
 
         var popup = FXML.load(CollectionSettingsCtrl.class, bundle,"client", "scenes", "CollectionSettings.fxml");
 
+        var popupCtrl = popup.getKey();
         var popupNode = popup.getValue();
         var popupScene = new Scene(popupNode);
 
-        popupStage.setOnCloseRequest(_ -> loadCollectionDropdown());
+        popupStage.setResizable(false);
+        popupStage.setOnCloseRequest(event -> {
+            if (popupCtrl.hasUnsavedChanges()) {
+                boolean cancel = popupCtrl.handleUnsavedChanges();
+                if (cancel) event.consume();
+            } else {
+                loadCollectionDropdown();
+            }
+        });
 
         popupStage.setScene(popupScene);
         popupStage.show();
@@ -396,6 +405,13 @@ public class NoteEditorCtrl {
             }
         }
         return alreadyIn;
+    }
+
+    /**
+     * focus on the text field of the searchbar you can immediately search when starting to type
+     */
+    public void focusOnSearch() {
+        searchBox.requestFocus();
     }
 
     private String getSelectedTagStyle(){

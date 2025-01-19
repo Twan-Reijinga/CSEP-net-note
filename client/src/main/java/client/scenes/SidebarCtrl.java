@@ -9,12 +9,10 @@ import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 public class SidebarCtrl {
@@ -24,11 +22,22 @@ public class SidebarCtrl {
 
     @FXML
     public VBox noteContainer;
+
+    @FXML
+    private Pane messageContainer;
+
+    @FXML
+    private Label messageTextLabel;
+
     private MainCtrl mainCtrl;
 
     // Injectable
     private final ServerUtils server;
     private final Config config;
+
+    private Timer messageTimer;
+    private TimerTask messageClearTask;
+
 
     /**
      * Sidebar control constructor for functionality behind the sidebar UI element.
@@ -40,6 +49,8 @@ public class SidebarCtrl {
         this.server = server;
         this.config = config;
         selectedNoteId = -1;
+
+        messageTimer = new Timer();
     }
 
     /**
@@ -48,6 +59,34 @@ public class SidebarCtrl {
      */
     public void initialize(MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
+
+        // Hide and remove message container from layout
+        messageContainer.setVisible(false);
+        messageContainer.setManaged(false);
+    }
+
+    public void showMessage(String message, boolean isError) {
+        if (messageClearTask != null) {
+            messageClearTask.cancel();
+        }
+
+        if (isError) messageContainer.setStyle("-fx-background-color: #FFA07A;");
+        else messageContainer.setStyle("-fx-background-color: #90EE90;");
+
+        messageTextLabel.setText(message);
+
+        messageContainer.setVisible(true);
+        messageContainer.setManaged(true);
+
+        messageClearTask = new TimerTask() {
+            public void run() {
+                messageContainer.setVisible(false);
+                messageContainer.setManaged(false);
+                messageClearTask = null;
+            }
+        };
+
+        messageTimer.schedule(messageClearTask, 3000);
     }
 
     /**
@@ -123,57 +162,53 @@ public class SidebarCtrl {
     }
 
     /**
-     * Creates a new title that is unique to the other title in the format "New note: #"
-     * <p>
-     * @param input an integer that indicates what the first default title should be (usually 1)
-     * 				every other title will have a higher number.
-     * @return an integer which increments the current highest "New note: #", so that every note is unique in title.
+     * Creates a new title that is unique to the other title in the format "New note #"
+     * @param collectionId an id of collection where the note will be created
+     * @return a title with incremented number in "New note #", so that every note is unique in title.
      */
-    private int createDefaultTitle(int input) {
-        List<NoteTitle> notes = server.getNoteTitles();
-        if (!notes.isEmpty()) {
-        	boolean correctTitle = true;
-        	for (NoteTitle currentNote : notes) {
-        		correctTitle = true;
-        		char[] chars = currentNote.getTitle().substring(10).toCharArray();
-        		if (chars.length == 0) {
-        			correctTitle = false;
-        		}
-        		for (char currentChar : chars) {
-        			if (!Character.isDigit(currentChar))
-        				correctTitle = false;
-        		}
-        		if (correctTitle && currentNote.getTitle().startsWith("New note: ")) {
-        			int tempInt = Integer.parseInt(currentNote.getTitle().split(" ")[2]);
-        			if (tempInt >= input) {
-        				input = tempInt + 1;
-        			}
-                }
-            }
-        }
-        return input;
+    private String createDefaultTitle(UUID collectionId) {
+        List<NoteTitle> notes = server.getNoteTitlesInCollection(collectionId);
+
+        int maxNoteNumber = notes.stream()
+                .filter(nt -> nt.getTitle().startsWith("New note #"))
+                .mapToInt(nt -> {
+                    try {
+                        return Integer.parseInt(nt.getTitle().replace("New note #", ""));
+                    } catch (Exception e) {
+                        return -1;
+                    }
+                })
+                .max()
+                .orElse(0);
+
+        return "New note #" + (maxNoteNumber + 1);
+    }
+
+    @FXML
+    public void onCreateNote() {
+        // If no collection is selected, create notes in default one
+        UUID destinationCollectionId = selectedCollectionId == null ?
+                config.getDefaultCollectionId() : selectedCollectionId;
+
+        createNote(destinationCollectionId);
     }
 
     /**
      * Adds a default note to the database with a unique title, unique id, content and a default collection,
      * or the collection of the selected note.
      * Afterward selects the newly created note (last note).
+     * @param collectionID a collection id where a note will be created
      */
-    public void createNote() {
-        // If no collection is selected, create notes in default one
-        UUID destinationCollectionId = selectedCollectionId == null ?
-                config.getDefaultCollectionId() : selectedCollectionId;
+    public void createNote(UUID collectionID) {
+        Collection collection = server.getCollectionById(collectionID);
 
-        Collection collection = server.getCollectionById(destinationCollectionId);
-        if (getSelectedNoteId() > 0) {
-            collection = server.getNoteById(getSelectedNoteId()).collection;
-        }
-
-        int input = createDefaultTitle(1);
-        Note newNote = new Note("New note: " + input, "Edit content here.", collection);
+        String title = createDefaultTitle(collectionID);
+        Note newNote = new Note(title, "Edit content here.", collection);
 
         addNote(newNote);
         mainCtrl.recordAdd(selectedNoteId);
+
+        showMessage("Note successfully created!", false);
     }
 
     /**
@@ -203,6 +238,7 @@ public class SidebarCtrl {
      */
     public void deleteSelectedNote() {
         deleteNoteById(selectedNoteId, true);
+        showMessage("Note successfully deleted!", false);
     }
 
     /**
@@ -214,26 +250,29 @@ public class SidebarCtrl {
      */
     public void deleteNoteById(long id, boolean isReversible) {
         if (!server.existsNoteById(id)) {
-            return; // note didn't exist anymore //
+            return; // note already didn't exist anymore //
         }
-
         if (id <= 0) {
             return;
         }
 
-        if (server.getAllNotes().size() < 2){
-            createNote();
+        Note note = server.getNoteById(id);
+
+        if (!mainCtrl.userConfirmDeletion(note.title)) {
+            return;
         }
 
-        Note note = server.getNoteById(id);
+
+        boolean isLastNote = server.isLastNoteInCollection(id);
+        if (isLastNote) {
+            createNote(note.collection.id);
+        }
 
         server.deleteNote(note);
         mainCtrl.deleteTags(note.id);
         if (isReversible) {
             mainCtrl.recordDelete(note);
         }
-
-
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
         noteClick(selectedNoteId);

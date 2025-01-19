@@ -19,14 +19,19 @@ import client.config.Config;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Note;
+import commons.NoteTitle;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.util.Pair;
 import netscape.javascript.JSObject;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
@@ -46,13 +51,21 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.UUID;
+import commons.Collection;
 
 public class MarkdownEditorCtrl {
     @FXML
     private TextArea noteText;
 
     @FXML
+    private HBox topControlsContainer;
+
+    @FXML
     private TextField titleField;
+
+    @FXML
+    private ComboBox<Pair<UUID, String>> collectionDropdown;
 
     @FXML
     private WebView markdownPreview;
@@ -74,7 +87,7 @@ public class MarkdownEditorCtrl {
 
     private Note activeNote;
     private SidebarCtrl sidebarCtrl;
-
+    
     @Inject
     public MarkdownEditorCtrl(ServerUtils serverUtils, Config config, MainCtrl mainCtrl) {
         this.serverUtils = serverUtils;
@@ -98,10 +111,17 @@ public class MarkdownEditorCtrl {
 
     }
 
+    /**
+     * JavaFX method that automatically runs when this controller is initialized.
+     * @param sidebarCtrl The sidebar controller.
+     */
     @FXML
     public void initialize(SidebarCtrl sidebarCtrl) {
         this.sidebarCtrl = sidebarCtrl;
-        activeNote = serverUtils.mockGetDefaultNote();
+
+        // TODO: stupidest fix possible; MUST be resolve - remove mocking
+        Note n = serverUtils.mockGetDefaultNote();
+        updateNote(n.id);
 
         noteText.setText(activeNote.content);
         titleField.setText(activeNote.title);
@@ -115,8 +135,11 @@ public class MarkdownEditorCtrl {
         );
 
         // let title field fill 100% width of left plane //
-        AnchorPane.setLeftAnchor(titleField, 0.0);
-        AnchorPane.setRightAnchor(titleField, 0.0);
+        AnchorPane.setLeftAnchor(topControlsContainer, 0.0);
+        AnchorPane.setRightAnchor(topControlsContainer, 0.0);
+
+        collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
+        collectionDropdown.setButtonCell(createCollectionDropdownOption());
     }
 
     /**
@@ -124,29 +147,126 @@ public class MarkdownEditorCtrl {
      * @param newId The database ID of the note that need to be displayed.
      */
     public void updateNote(long newId) {
-        activeNote.content = noteText.getText();
-        if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
-            serverUtils.updateNote(activeNote);
-            mainCtrl.updateTags(activeNote);
+        // To remove possible error color of having the same title
+        titleField.setStyle("");
+
+        if (activeNote != null) {
+            activeNote.content = noteText.getText();
+            if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
+                try {
+                    serverUtils.updateNote(activeNote);
+
+                    // FIXME: while the note title is updated on the server and in the sidebar
+                    //  it is not updated in the tags logic, causing the change in title to blink for a second
+                    //  eventually it is restored to a proper title but it is not very user-friendly
+                    mainCtrl.updateTags(activeNote);
+                } catch (Exception e) {
+                    System.out.println("Error updating note: " + activeNote.id);
+                    // FIXME: implement proper error handling (in case of the same title or whatever)
+                    // FOR NOW just reset the title in the sidebar (immediately after selection)
+                    NoteTitle note = serverUtils.getNoteTitleById(activeNote.id);
+                    sidebarCtrl.updateTitle(note.getId(), note.getTitle());
+                }
+            }
         }
+
         activeNote = serverUtils.getNoteById(newId);
         noteText.setText(activeNote.content);
         titleField.setText(activeNote.title);
         requestRefresh();
+        loadCollectionDropdown();
     }
 
+    private ListCell<Pair<UUID, String>> createCollectionDropdownOption() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(Pair<UUID, String> item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    setText(item.getValue());
+                }
+            }
+        };
+    }
+
+    private void loadCollectionDropdown() {
+        List<Collection> collections = serverUtils.getAllCollections();
+        List<Pair<UUID, String>> titles = collections.stream()
+                .map(c -> new Pair<>(c.id, c.title)).toList();
+
+        collectionDropdown.getItems().clear();
+        collectionDropdown.getItems().addAll(titles);
+
+        // Select a collection where the note belongs
+        for (var pair : titles) {
+            if (pair.getKey().equals(activeNote.collection.id)) {
+                collectionDropdown.getSelectionModel().select(pair);
+                break;
+            }
+        }
+    }
+
+    @FXML
+    private void onCollectionClick() {
+        Pair<UUID, String> selected = collectionDropdown.getSelectionModel().getSelectedItem();
+
+        if (selected != null && !selected.getKey().equals(activeNote.collection.id)) {
+            Collection savedCollection = activeNote.collection;
+
+            try {
+                activeNote.collection = serverUtils.getCollectionById(selected.getKey());
+                serverUtils.updateNote(activeNote);
+
+                sidebarCtrl.refresh();
+                sidebarCtrl.showMessage("Note moved to collection " + activeNote.collection.title, false);
+            } catch (Exception e) {
+                sidebarCtrl.showMessage(
+                        "Failed to move note to collection: %s".formatted(selected.getValue()) +
+                        "Make sure that the destination collection doesn't have a note with the same title.",
+                        true);
+
+                // Restore to the original collection
+                activeNote.collection = savedCollection;
+
+                // Select a correct collection in the dropdown after failure
+                for (var pair : collectionDropdown.getItems()) {
+                    if (pair.getKey().equals(activeNote.collection.id)) {
+                        collectionDropdown.getSelectionModel().select(pair);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Action when a new key is typed.
+     * Requests a refresh.
+     * @param e the key event that is typed.
+     */
     public synchronized void onKeyTyped(KeyEvent e) {
         isContentsSynced = false;
         requestRefresh();
     }
 
+    /**
+     * Action when title is edited.
+     * Requests a refresh and updates title immediately in sidebar.
+     */
     public synchronized void onTitleEdit() {
+        // To remove possible error color of having the same title
+        titleField.setStyle("");
+
         activeNote.title = titleField.getText();
         isContentsSynced = false;
         requestRefresh();
         sidebarCtrl.updateTitle(activeNote.id, activeNote.title);
     }
 
+    /**
+     * Request to do a refresh if it wasn't refreshed in a while.
+     */
     public synchronized void requestRefresh() {
         if(getTimeState()) return;
 
@@ -155,6 +275,13 @@ public class MarkdownEditorCtrl {
             @Override
             public void run() { refreshView(); }
         }, REFRESH_THRESHOLD);
+    }
+
+    /**
+     * Focus on the text field for the title to immediately start editing the title.
+     */
+    public void focusOnTitle() {
+        titleField.requestFocus();
     }
 
     private synchronized void refreshView() {
@@ -190,7 +317,18 @@ public class MarkdownEditorCtrl {
         // https://openjfx.io/javadoc/23/javafx.graphics/javafx/application/Platform.html#runLater(java.lang.Runnable)
         Platform.runLater(() -> {
             activeNote.content = noteText.getText();
-            serverUtils.updateNote(activeNote);
+            try {
+                serverUtils.updateNote(activeNote);
+            } catch (Exception e) {
+                // FIXME: right now, I assume that the only error is having same title in two notes
+                NoteTitle note = serverUtils.getNoteTitleById(activeNote.id);
+                sidebarCtrl.updateTitle(note.getId(), note.getTitle());
+                titleField.setStyle("-fx-background-color: #FFA07A;");
+            }
+
+            // To ensure that the titles are properly updated
+            sidebarCtrl.refresh();
+
             mainCtrl.updateTags(activeNote);
             isContentsSynced = true;
         });
@@ -234,6 +372,10 @@ public class MarkdownEditorCtrl {
         return textBuffer.toString();
     }
 
+    /**
+     * Event when a tag is clicked.
+     * @param tag the tag that is clicked on.
+     */
     public void onTagClicked(String tag){
         this.mainCtrl.addTagFilter("#" + tag);
     }
