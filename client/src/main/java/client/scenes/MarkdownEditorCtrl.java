@@ -130,7 +130,7 @@ public class MarkdownEditorCtrl {
         scheduler.scheduleAtFixedRate(
                 this::syncNoteContents,
                 0,
-                config.getSyncThresholdMs(),
+                5000,
                 TimeUnit.MILLISECONDS
         );
 

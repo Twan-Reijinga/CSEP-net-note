@@ -37,23 +37,7 @@ import jakarta.ws.rs.core.GenericType;
 import commons.Collection;
 
 public class ServerUtils {
-	private final Config config;
-	private final String server;
-
-	@Inject
-	public ServerUtils(Config config) {
-		this.config = config;
-		this.server = config.getLocalServer();
-	}
-
-	private ServerUtils(Config config, String server) {
-		this.config = config;
-		this.server = server;
-	}
-
-	public ServerUtils withServer(String server) {
-		return new ServerUtils(config, server);
-	}
+	private final String server = "http://localhost:8080";
 
 	/**
 	 * getting all collection on the server
