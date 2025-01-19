@@ -6,11 +6,16 @@ import commons.EmbeddedFile;
 import commons.Note;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.Base64;
@@ -96,9 +101,32 @@ public class FilesCtrl {
     }
 
     public void editTitle(long noteId, long id) {
+        Stage popupStage = new Stage();
+        popupStage.setTitle("Edit Title");
+        TextField newTitle = new TextField();
+        newTitle.setPromptText("Enter new title");
+
+        Label oldTitle = new Label("Previous title: " + server.getFileFromNote(noteId, id).title);
+
+        Button button = new Button("Change Title");
+        button.setOnAction(event -> {
+            String title = newTitle.getText();
+            if (title != null && !title.trim().isEmpty()) {
+                changeTitle(title, noteId, id);
+                popupStage.close();
+            }
+        });
+
+        VBox layout = new VBox(10, newTitle, oldTitle, button);
+
+        Scene popupScene = new Scene(layout, 300, 150);
+        popupStage.setScene(popupScene);
+        popupStage.showAndWait();
+    }
+
+    public void changeTitle(String title, long noteId, long id) {
         EmbeddedFile file = server.getFileFromNote(noteId, id);
-        String MockTitle = "MockTitle1";
-        file.title = MockTitle;
+        file.title = title;
         server.editFileTitle(file);
 
         refresh();
