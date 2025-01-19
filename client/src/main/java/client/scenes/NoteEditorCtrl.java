@@ -81,6 +81,9 @@ public class NoteEditorCtrl {
     @FXML
     private HBox tagContainerHBox;
 
+    @FXML
+    private AnchorPane filesContainer;
+
     @Inject
     public NoteEditorCtrl(LoaderFXML FXML, ServerUtils serverUtils, MainCtrl mainCtrl) {
         this.FXML = FXML;
@@ -92,12 +95,14 @@ public class NoteEditorCtrl {
      * JavaFX method that automatically runs when this controller is initialized.
      * @param sidebar root element of the Sidebar fxml
      * @param markdownEditor root element of the Markdown fxml
+     * @param files root element of the files fxml
      * @param bundle resource bundle for current language
      */
     @FXML
-    public void initialize(Pair<SidebarCtrl,
-                           Parent> sidebar,
-                           Pair<MarkdownEditorCtrl, Parent> markdownEditor,
+    public void initialize(Pair<SidebarCtrl, Parent> sidebar,
+                           Pair<MarkdownEditorCtrl,
+                            Parent> markdownEditor,
+                           Pair<FilesCtrl, Parent> files,
                            ResourceBundle bundle) {
         sidebarCtrl = sidebar.getKey();
         Node sidebarNode = sidebar.getValue();
@@ -106,6 +111,7 @@ public class NoteEditorCtrl {
         Node markdownEditorNode = markdownEditor.getValue();
 
         appendSidebar(sidebarNode);
+        appendFiles(files.getValue());
         appendMarkdownEditor(markdownEditorNode);
 
         collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
@@ -132,6 +138,12 @@ public class NoteEditorCtrl {
         sidebarContainer.getChildren().add(sidebarNode);
         AnchorPane.setTopAnchor(sidebarNode, 0.0);
         AnchorPane.setBottomAnchor(sidebarNode, 0.0);
+    }
+
+    private void appendFiles(Node filesNode) {
+        filesContainer.getChildren().add(filesNode);
+        AnchorPane.setTopAnchor(filesNode, 0.0);
+        AnchorPane.setBottomAnchor(filesNode, 0.0);
     }
 
     private void appendMarkdownEditor(Node markdownEditorNode) {
@@ -278,7 +290,6 @@ public class NoteEditorCtrl {
                 Platform.runLater(() -> onSearchButtonPressed());
             }
         }, delayBetweenKeyPresses);
-
     }
 
     /**
