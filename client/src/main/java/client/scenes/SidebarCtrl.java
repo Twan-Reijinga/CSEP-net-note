@@ -260,7 +260,6 @@ public class SidebarCtrl {
         }
 
         Note note = server.getNoteById(id);
-        server.deleteAllFilesToNote(note);
 
         if (!mainCtrl.userConfirmDeletion(note.title)) {
             return;
@@ -272,6 +271,7 @@ public class SidebarCtrl {
             createNote(note.collection.id);
         }
 
+        server.deleteAllFilesToNote(note);
         server.deleteNote(note);
         mainCtrl.deleteTags(note.id);
         if (isReversible) {

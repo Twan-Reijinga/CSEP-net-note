@@ -19,7 +19,6 @@ import java.io.*;
 import java.util.Base64;
 import java.util.List;
 
-@SuppressWarnings("checkstyle:Indentation")
 public class FilesCtrl {
     private final ServerUtils server;
     private final MainCtrl main;
@@ -109,19 +108,13 @@ public class FilesCtrl {
         newTitle.setPromptText("Enter new title");
         Label oldTitle = new Label("Previous title: " + server.getFileFromNote(noteId, id).title);
         Button button = new Button("Change Title");
+
         button.setOnAction(event -> {
             String title = newTitle.getText();
             if (title != null && !server.getAllTitlesFromNote(noteId).contains(title)) {
-                if(!title.contains(".jpg") &&
-                        !title.contains(".png") &&
-                        !title.contains(".gif") &&
-                        !title.contains(".bmp") &&
-                        !title.contains(".txt") &&
-                        !title.contains(".pdf") &&
-                        !title.contains(".plain")
-                ) {
-                    String type = server.getFileFromNote(noteId, id).title.split("\\.")[1];
-                    title += "." + type;
+                String[] prevTitle = server.getFileFromNote(noteId, id).title.split("\\.");
+                if(!title.split("\\.")[title.split("\\.").length - 1].equals(prevTitle[prevTitle.length - 1])) {
+                    title += "." + prevTitle[prevTitle.length - 1];
                 }
                 changeTitle(title, noteId, id);
                 popupStage.close();
