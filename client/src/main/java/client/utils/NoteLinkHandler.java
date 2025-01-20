@@ -25,8 +25,9 @@ public class NoteLinkHandler {
      * @return the list of all links inside the string.
      */
     private List<String> findNoteLinks(String content){
+        String toMatch = content + " ";
         Pattern pattern = Pattern.compile("\\[\\[((?:(?!]]).)*)]]");
-        Matcher matcher = pattern.matcher(content);
+        Matcher matcher = pattern.matcher(toMatch);
 
         List<String> noteLinks = new ArrayList<>();
         while (matcher.find()) {
