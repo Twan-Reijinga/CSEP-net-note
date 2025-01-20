@@ -48,8 +48,9 @@ public class Main extends Application {
 	 */
 	@Override
 	public void start(Stage stage) {
+		// This method catches most error from all threads EXCEPT certain initialization errors
 		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-			handleException(throwable);
+			handleThreadException(throwable);
 		});
 
 		primaryStage = stage;
@@ -109,9 +110,14 @@ public class Main extends Application {
 	 * and shown to the user in the sidebar as any other error
 	 * @param throwable an error that hasn't been caught manually
 	 */
-	private void handleException(Throwable throwable) {
+	private void handleThreadException(Throwable throwable) {
+		System.err.println("\n>>>> EXCEPTION CAUGHT >>>>");
 		System.err.println(throwable.getMessage());
 		throwable.printStackTrace();
-		mainCtrl.showMessage("Unknown exception has occurred: " + throwable.getMessage(), true);
+		try {
+			mainCtrl.showMessage("Unknown exception has occurred: " + throwable.getMessage(), true);
+		} catch (Exception e) {
+			System.err.println("Unable to display unknown exception.");
+		}
 	}
 }
