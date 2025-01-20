@@ -48,6 +48,10 @@ public class Main extends Application {
 	 */
 	@Override
 	public void start(Stage stage) {
+		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+			handleException(throwable);
+		});
+
 		primaryStage = stage;
 		Language language = LanguagePreference.getLanguage();
 		loadApplication(language);
@@ -98,5 +102,16 @@ public class Main extends Application {
 		if (language == LanguagePreference.getLanguage()) return;
 		LanguagePreference.saveLanguage(language);
 		loadApplication(language);
+	}
+
+	/**
+	 * Any error that reaches the default exception handler will be caught
+	 * and shown to the user in the sidebar as any other error
+	 * @param throwable an error that hasn't been caught manually
+	 */
+	private void handleException(Throwable throwable) {
+		System.err.println(throwable.getMessage());
+		throwable.printStackTrace();
+		mainCtrl.showMessage("Unknown exception has occurred: " + throwable.getMessage(), true);
 	}
 }
