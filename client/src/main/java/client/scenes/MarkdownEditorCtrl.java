@@ -148,7 +148,7 @@ public class MarkdownEditorCtrl {
      */
     public void updateNote(long newId) {
         // To remove possible error color of having the same title
-        titleField.setStyle("");
+        clearInvalidTitleStyle();
 
         if (activeNote != null) {
             activeNote.content = noteText.getText();
@@ -256,10 +256,17 @@ public class MarkdownEditorCtrl {
      */
     public synchronized void onTitleEdit() {
         // To remove possible error color of having the same title
-        titleField.setStyle("");
+        clearInvalidTitleStyle();
+
+        if (titleField.getText().isEmpty()) {
+            mainCtrl.showMessage("Title cannot be empty.", true);
+            applyInvalidTitleStyle();
+            return;
+        }
 
         activeNote.title = titleField.getText();
         isContentsSynced = false;
+
         requestRefresh();
         sidebarCtrl.updateTitle(activeNote.id, activeNote.title);
     }
@@ -282,6 +289,14 @@ public class MarkdownEditorCtrl {
      */
     public void focusOnTitle() {
         titleField.requestFocus();
+    }
+
+    private void applyInvalidTitleStyle() {
+        titleField.setStyle("-fx-background-color: #FFA07A;");
+    }
+
+    private void clearInvalidTitleStyle() {
+        titleField.setStyle("");
     }
 
     private synchronized void refreshView() {
@@ -323,7 +338,7 @@ public class MarkdownEditorCtrl {
                 // FIXME: right now, I assume that the only error is having same title in two notes
                 NoteTitle note = serverUtils.getNoteTitleById(activeNote.id);
                 sidebarCtrl.updateTitle(note.getId(), note.getTitle());
-                titleField.setStyle("-fx-background-color: #FFA07A;");
+                applyInvalidTitleStyle();
             }
 
             // To ensure that the titles are properly updated
