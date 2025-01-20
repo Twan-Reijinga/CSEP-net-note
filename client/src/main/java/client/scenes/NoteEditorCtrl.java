@@ -255,6 +255,13 @@ public class NoteEditorCtrl {
         popupStage.show();
     }
 
+    public void selectNextCollection() {
+        collectionDropdown.getSelectionModel().selectNext();
+    }
+
+    public void selectPreviousCollection() {
+        collectionDropdown.getSelectionModel().selectPrevious();
+    }
 
     /** Called upon clicking the search button
      *  Calls the sendSearchRequest method from the mainCtrl with the text from the searchBox.

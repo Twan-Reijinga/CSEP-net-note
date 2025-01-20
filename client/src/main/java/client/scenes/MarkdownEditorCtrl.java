@@ -87,7 +87,6 @@ public class MarkdownEditorCtrl {
 
     private Note activeNote;
     private SidebarCtrl sidebarCtrl;
-    
     @Inject
     public MarkdownEditorCtrl(ServerUtils serverUtils, Config config, MainCtrl mainCtrl) {
         this.serverUtils = serverUtils;

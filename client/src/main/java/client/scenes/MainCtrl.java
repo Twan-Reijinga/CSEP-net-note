@@ -314,4 +314,12 @@ public class MainCtrl {
 
         return isConfirmed[0];
     }
+
+    public void selectNextCollection() {
+        noteEditorCtrl.selectNextCollection();
+    }
+
+    public void selectPreviousCollection() {
+        noteEditorCtrl.selectPreviousCollection();
+    }
 }
