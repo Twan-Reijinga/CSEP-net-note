@@ -1,7 +1,6 @@
 package client.scenes;
 
 import client.LoaderFXML;
-import client.config.Config;
 import client.utils.LanguageListCell;
 import client.utils.LanguageOption;
 import client.utils.ServerUtils;
@@ -62,7 +61,6 @@ public class NoteEditorCtrl {
     private final LoaderFXML FXML;
     private final ServerUtils serverUtils;
     private final MainCtrl mainCtrl;
-    private final Config config;
 
     // Search debouncing parameters
     private Timer timeKeyPresses = new Timer();
@@ -84,11 +82,10 @@ public class NoteEditorCtrl {
     private HBox tagContainerHBox;
 
     @Inject
-    public NoteEditorCtrl(LoaderFXML FXML, ServerUtils serverUtils, MainCtrl mainCtrl, Config config) {
+    public NoteEditorCtrl(LoaderFXML FXML, ServerUtils serverUtils, MainCtrl mainCtrl) {
         this.FXML = FXML;
         this.serverUtils = serverUtils;
         this.mainCtrl = mainCtrl;
-        this.config = config;
     }
 
     /**
@@ -155,7 +152,7 @@ public class NoteEditorCtrl {
                 } else {
                     UUID collectionId = item.getKey();
                     // Note: collectionId can be null if, for example, "Show all" is to be updated
-                    boolean isDefault = collectionId != null && collectionId.equals(config.getDefaultCollectionId());
+                    boolean isDefault = collectionId != null && collectionId.equals(mainCtrl.getDefaultCollectionId());
                     setText(item.getValue() + (isDefault ? " (Default)" : ""));
                 }
             }

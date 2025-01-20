@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.UUID;
 
 import client.config.Config;
-import com.google.inject.Inject;
 import commons.Note;
 import commons.NoteTags;
 import commons.NoteTitle;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
@@ -37,7 +37,12 @@ import jakarta.ws.rs.core.GenericType;
 import commons.Collection;
 
 public class ServerUtils {
-	private final String server = "http://localhost:8080";
+	private final String server;
+
+	@Inject
+	public ServerUtils(Config config) {
+		this.server = config.getServerUrl();
+	}
 
 	/**
 	 * getting all collection on the server

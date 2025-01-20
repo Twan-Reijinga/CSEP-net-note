@@ -310,4 +310,13 @@ public class MainCtrl {
 
         return isConfirmed[0];
     }
+
+    /**
+     * Get the default collection ID from the local config file.
+     * Propagates a call to a Config entity.
+     * @return a UUID of default collection
+     */
+    public UUID getDefaultCollectionId() {
+        return config.getDefaultCollectionId();
+    }
 }

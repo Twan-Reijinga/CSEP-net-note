@@ -5,12 +5,13 @@ import java.io.*;
 
 import client.utils.Language;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import commons.Collection;
 
 public class Config {
 
     private static final String CONFIG_LOCATION = "user-config.json";
 
+    // Server URL defaults to localhost on port 8080
+    private String serverUrl = "http://localhost:8080";
     // Default collection ID is supposed to be null at initial launch
     private UUID defaultCollectionId = null;
     // Language defaults to English
@@ -25,6 +26,11 @@ public class Config {
         File configFile = new File(CONFIG_LOCATION);
         try {
             Config config = objectMapper.readValue(configFile, Config.class);
+
+            // Server URL not allowed to be null
+            if (config.serverUrl == null) {
+                config.serverUrl = "http://localhost:8080";
+            }
 
             // Language not allowed to be null
             if (config.language == null) {
@@ -49,6 +55,14 @@ public class Config {
             // TODO: should be display to the user
             System.err.println("ERROR: Failed to save config: " + e.getMessage());
         }
+    }
+
+    /**
+     * Get a URL to a server that hosts user data
+     * @return a string URL
+     */
+    public String getServerUrl() {
+        return serverUrl;
     }
 
     /**
