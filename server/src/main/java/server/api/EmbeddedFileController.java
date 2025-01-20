@@ -4,6 +4,7 @@ import java.util.*;
 
 import commons.EmbeddedFile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.EmbeddedFileRepository;
@@ -91,6 +92,25 @@ public class EmbeddedFileController {
         try {
             EmbeddedFile saved = embeddedFileRepository.save(file);
             return ResponseEntity.ok(saved);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/title/{title}")
+    public ResponseEntity<byte[]> getFile(@PathVariable("title") String title) {
+        try {
+            List<EmbeddedFile> embeddedFiles = embeddedFileRepository.findAll();
+            embeddedFiles.removeIf(CurrentFile -> !CurrentFile.title.equals(title));
+            byte[] fileBytes = Base64.getDecoder().decode(embeddedFiles.getFirst().file);
+            String type = "image/" + title.split("\\.")[title.split("\\.").length - 1];
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Content-Type", type);
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(fileBytes);
         }catch (Exception e){
             return ResponseEntity.badRequest().build();
         }

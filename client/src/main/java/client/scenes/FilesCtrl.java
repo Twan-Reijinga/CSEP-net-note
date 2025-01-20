@@ -56,7 +56,6 @@ public class FilesCtrl {
      *  File is saved in base64, this can store all filetypes and large files (also works with JSON)
      */
     public void addFile() {
-        System.out.println(filePathContainer.getText());
         if (main.getSelectedNoteId() == -1) {return;}
 
         Note note = server.getNoteById(main.getSelectedNoteId());
@@ -70,7 +69,7 @@ public class FilesCtrl {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        EmbeddedFile file = new EmbeddedFile("Title", note, fileString);
+        EmbeddedFile file = new EmbeddedFile(thisFile.getName(), note, fileString);
         server.addFileToNote(file);
         refresh();
     }
@@ -100,7 +99,6 @@ public class FilesCtrl {
         try {
             FileOutputStream output = new FileOutputStream(file.title);
             output.write(thisFile);
-            System.out.println("File downloaded");
         }catch (IOException e) {
             throw new RuntimeException(e);
         }
