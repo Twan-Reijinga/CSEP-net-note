@@ -15,7 +15,6 @@ resources folder and calling ✮FXMLoader.setResources.
 
 - [?] The WebView should use a local .css file, if available, that allows to adjust the format of the rendered page
 - [?] To use a user-friendly name for my collections, so I can use short and descriptive names.
-- [?] To use a user-friendly name for my collections, so I can use short and descriptive names.
 - [?] To see the server status while I create/edit a collection, so I can spot typos.
 	*(At least the following states are supported: server not reachable, collection will be created, collection already exists.)*
 - [?] The configured collections are stored in a local config file, so they are persisted across restarts.
