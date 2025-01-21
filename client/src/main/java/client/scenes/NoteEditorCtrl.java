@@ -256,11 +256,47 @@ public class NoteEditorCtrl {
     }
 
     public void selectNextCollection() {
-        collectionDropdown.getSelectionModel().selectNext();
+        int selected = collectionDropdown
+                .getSelectionModel()
+                .getSelectedIndex();
+        int next = selected + 1;
+        int size = collectionDropdown
+                .getItems()
+                .size();
+        boolean isLastOption = size - 1 == next;
+
+        if (isLastOption) {
+            collectionDropdown
+                    .getSelectionModel()
+                    .selectFirst();
+            return;
+        }
+        collectionDropdown
+                .getSelectionModel()
+                .selectNext();
+        return;
     }
 
     public void selectPreviousCollection() {
-        collectionDropdown.getSelectionModel().selectPrevious();
+        int selected = collectionDropdown
+                .getSelectionModel()
+                .getSelectedIndex();
+        boolean isFirstOption = selected == 0;
+
+        if (isFirstOption) {
+            int size = collectionDropdown
+                    .getItems()
+                    .size();
+            int secondToLast = size - 2;
+            collectionDropdown
+                    .getSelectionModel()
+                    .select(secondToLast);
+            return;
+        }
+        collectionDropdown
+                .getSelectionModel()
+                .selectPrevious();
+        return;
     }
 
     /** Called upon clicking the search button
