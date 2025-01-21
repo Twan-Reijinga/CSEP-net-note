@@ -214,6 +214,12 @@ public class CollectionSettingsCtrl {
 
     @FXML
     private void onMakeDefault() {
+        // If user makes a newly create collection the default one, and it is not saved
+        // it causes unexpected behaviour down the road
+        if (createdCollection != null) {
+            saveModifiedChanges();
+        }
+
         config.setDefaultCollectionId(displayedCollection.id);
 
         // To ensure that the display collection is labeled as default
@@ -273,6 +279,7 @@ public class CollectionSettingsCtrl {
                 int idx = collectionsListView.getItems().indexOf(createdCollection);
                 collectionsListView.getItems().set(idx, savedCollection);
 
+                displayedCollection = savedCollection;
                 createdCollection = null;
             } else {
                 // Selected collection would not work here because it is different to the one we want to save
