@@ -30,6 +30,7 @@ public class SidebarCtrl {
     private Label messageTextLabel;
 
     private MainCtrl mainCtrl;
+    private FilesCtrl filesCtrl;
 
     // Injectable
     private final ServerUtils server;
@@ -56,9 +57,11 @@ public class SidebarCtrl {
     /**
      * initializer for the SidebarCtrl object.
      * @param mainCtrl The mainCtrl to execute actions outside the sidebar.
+     * @param filesCtrl The fileCtrl to execute actions outside the sidebar.
      */
-    public void initialize(MainCtrl mainCtrl) {
+    public void initialize(MainCtrl mainCtrl, FilesCtrl filesCtrl) {
         this.mainCtrl = mainCtrl;
+        this.filesCtrl = filesCtrl;
 
         // Hide and remove message container from layout
         messageContainer.setVisible(false);
@@ -257,6 +260,7 @@ public class SidebarCtrl {
         }
 
         Note note = server.getNoteById(id);
+        server.deleteAllFilesToNote(note);
 
         if (!mainCtrl.userConfirmDeletion(note.title)) {
             return;
@@ -293,6 +297,7 @@ public class SidebarCtrl {
         }
         selectedNoteId = id;
         mainCtrl.updateNote(id);
+        filesCtrl.refresh();
     }
 
     private void selectFirstNote() {

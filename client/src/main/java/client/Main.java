@@ -18,12 +18,9 @@ package client;
 import static com.google.inject.Guice.createInjector;
 
 import client.config.Config;
-import client.scenes.SidebarCtrl;
+import client.scenes.*;
 import client.utils.Language;
 import com.google.inject.Injector;
-import client.scenes.NoteEditorCtrl;
-import client.scenes.MainCtrl;
-import client.scenes.MarkdownEditorCtrl;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -51,6 +48,11 @@ public class Main extends Application {
 	 */
 	@Override
 	public void start(Stage stage) {
+		// This method catches most error from all threads EXCEPT certain initialization errors
+		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+			handleThreadException(throwable);
+		});
+
 		primaryStage = stage;
 		Language language = CONFIG.getLanguage();
 		loadApplication(language);
@@ -81,11 +83,13 @@ public class Main extends Application {
 		var markdownEditor = FXML.load(MarkdownEditorCtrl.class, resourceBundle,
 				"client", "scenes", "MarkdownEditor.fxml");
 		var sidebarEditor = FXML.load(SidebarCtrl.class, resourceBundle, "client", "scenes", "Sidebar.fxml");
+		var filesEditor = FXML.load(FilesCtrl.class, resourceBundle,"client", "scenes", "Files.fxml");
 		var noteEditor = FXML.load(NoteEditorCtrl.class, resourceBundle, "client", "scenes", "MainUI.fxml");
 		if (mainCtrl == null) {
 			mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 		}
-		mainCtrl.initialize(primaryStage, markdownEditor, noteEditor, sidebarEditor, resourceBundle);
+		mainCtrl.initialize(primaryStage, markdownEditor,
+				noteEditor, sidebarEditor, filesEditor, resourceBundle);
 		primaryStage.setWidth(width);
 		primaryStage.setHeight(height);
 	}
@@ -99,5 +103,21 @@ public class Main extends Application {
 		if (language == CONFIG.getLanguage()) return;
 		CONFIG.setLanguage(language);
 		loadApplication(language);
+	}
+
+	/**
+	 * Any error that reaches the default exception handler will be caught
+	 * and shown to the user in the sidebar as any other error
+	 * @param throwable an error that hasn't been caught manually
+	 */
+	private void handleThreadException(Throwable throwable) {
+		System.err.println("\n>>>> EXCEPTION CAUGHT >>>>");
+		System.err.println(throwable.getMessage());
+		throwable.printStackTrace();
+		try {
+			mainCtrl.showMessage("Unknown exception has occurred: " + throwable.getMessage(), true);
+		} catch (Exception e) {
+			System.err.println("Unable to display unknown exception.");
+		}
 	}
 }

@@ -22,10 +22,9 @@ import java.util.List;
 import java.util.UUID;
 
 import client.config.Config;
-import commons.Note;
-import commons.NoteTags;
-import commons.NoteTitle;
-import jakarta.inject.Inject;
+import com.google.inject.Inject;
+
+import commons.*;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
@@ -33,8 +32,6 @@ import org.glassfish.jersey.client.ClientConfig;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
-
-import commons.Collection;
 
 public class ServerUtils {
 	private final String server;
@@ -327,5 +324,60 @@ public class ServerUtils {
 				.target(server).path("api/tags/list")
 				.request(APPLICATION_JSON)
 				.post(Entity.entity(noteIds, APPLICATION_JSON), new GenericType<>(){});
+	}
+
+	/**
+	 * Adds the file to the database
+	 * @param file the file that needs to be stored
+	 */
+	public void addFileToNote(EmbeddedFile file) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/" + file.note.id + "/embedded/" + file.id)
+				.request(APPLICATION_JSON)
+				.post(Entity.entity(file, APPLICATION_JSON), EmbeddedFile.class);
+	}
+
+	/**
+	 * Deletes the specified file
+	 * @param noteId the id of the note the file is located in
+	 * @param fileId the id of the file that needs to be removed
+	 */
+	public void deleteFileToNote(long noteId, long fileId) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/" + noteId + "/embedded/" + fileId)
+				.request(APPLICATION_JSON)
+				.delete();
+	}
+
+	/**
+	 * Deletes all files from a specified note
+	 * @param note The note that needs its files cleared
+	 */
+	public void deleteAllFilesToNote(Note note) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/" + note.id + "/embedded")
+				.request(APPLICATION_JSON)
+				.delete();
+	}
+
+	public List<EmbeddedFile> getAllFilesFromNote(Note note) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/" + note.id + "/embedded")
+				.request(APPLICATION_JSON)
+				.get(new GenericType<List<EmbeddedFile>>() {});
+	}
+
+	public EmbeddedFile getFileFromNote(long noteId, long fileId) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/" + noteId + "/embedded/" + fileId)
+				.request(APPLICATION_JSON)
+				.get(new GenericType<EmbeddedFile>() {});
+	}
+
+	public void editFileTitle(EmbeddedFile file) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/" + file.note.id + "/embedded/" + file.id)
+				.request(APPLICATION_JSON)
+				.put(Entity.entity(file, APPLICATION_JSON), EmbeddedFile.class);
 	}
 }
