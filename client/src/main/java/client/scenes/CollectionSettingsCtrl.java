@@ -13,7 +13,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,19 +26,7 @@ public class CollectionSettingsCtrl {
     private TextField titleTextField;
 
     @FXML
-    private TextField serverTextField;
-
-    @FXML
     private TextField nameTextField;
-
-    @FXML
-    private Label statusLabel;
-
-    @FXML
-    private CheckBox isRemoteCheckBox;
-
-    @FXML
-    private Button deleteButton;
 
     @FXML
     private Button makeDefaultButton;
@@ -238,9 +225,7 @@ public class CollectionSettingsCtrl {
 
         // TODO: implement server/status
         titleTextField.setText(collection.title);
-        serverTextField.setText("[not implemented]");
         nameTextField.setText(collection.name);
-        statusLabel.setText("[not implemented]");
 
         boolean isDefault = collection.id.equals(config.getDefaultCollectionId());
         makeDefaultButton.setDisable(isDefault);
@@ -289,6 +274,7 @@ public class CollectionSettingsCtrl {
             isCollectionModified = false;
             saveButton.setDisable(true);
         } catch(Exception e) {
+            // TODO: should be display to the user (in sidebar)
             System.out.println("Server had an error while saving the collection.");
         }
     }
