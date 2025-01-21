@@ -42,16 +42,15 @@ import org.commonmark.ext.ins.InsExtension;
 import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
 import org.commonmark.ext.task.list.items.TaskListItemsExtension;
 import org.commonmark.ext.footnotes.FootnotesExtension;
+
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.UUID;
+
 import commons.Collection;
 
 public class MarkdownEditorCtrl {
@@ -75,6 +74,7 @@ public class MarkdownEditorCtrl {
 
     private boolean timeState = false;
     private boolean isContentsSynced = true;
+    private List<String> forbiddenTitles = new ArrayList<>();
 
     private final Timer refreshTimer;
     private final Parser parser;
@@ -122,10 +122,6 @@ public class MarkdownEditorCtrl {
         Note n = serverUtils.mockGetDefaultNote();
         updateNote(n.id);
 
-        noteText.setText(activeNote.content);
-        titleField.setText(activeNote.title);
-        requestRefresh();
-
         scheduler.scheduleAtFixedRate(
                 this::syncNoteContents,
                 0,
@@ -147,26 +143,11 @@ public class MarkdownEditorCtrl {
      */
     public void updateNote(long newId) {
         // To remove possible error color of having the same title
-        titleField.setStyle("");
+        clearInvalidTitleStyle();
 
-        if (activeNote != null) {
-            activeNote.content = noteText.getText();
-            if (serverUtils.existsNoteById(activeNote.id)) {    // Filtering removed notes
-                try {
-                    serverUtils.updateNote(activeNote);
-
-                    // FIXME: while the note title is updated on the server and in the sidebar
-                    //  it is not updated in the tags logic, causing the change in title to blink for a second
-                    //  eventually it is restored to a proper title but it is not very user-friendly
-                    mainCtrl.updateTags(activeNote);
-                } catch (Exception e) {
-                    System.out.println("Error updating note: " + activeNote.id);
-                    // FIXME: implement proper error handling (in case of the same title or whatever)
-                    // FOR NOW just reset the title in the sidebar (immediately after selection)
-                    NoteTitle note = serverUtils.getNoteTitleById(activeNote.id);
-                    sidebarCtrl.updateTitle(note.getId(), note.getTitle());
-                }
-            }
+        // If there was a previous note and if it still exists then save it
+        if (activeNote != null && serverUtils.existsNoteById(activeNote.id)) {
+            saveActiveNote();
         }
 
         activeNote = serverUtils.getNoteById(newId);
@@ -174,6 +155,52 @@ public class MarkdownEditorCtrl {
         titleField.setText(activeNote.title);
         requestRefresh();
         loadCollectionDropdown();
+
+        // Update forbidden titles for a newly chosen note
+        updateForbiddenTitles();
+    }
+
+    private void updateForbiddenTitles() {
+        if (activeNote == null) {
+            forbiddenTitles = new ArrayList<>();
+            return;
+        }
+
+        forbiddenTitles = serverUtils.getNoteTitlesInCollection(activeNote.collection.id).stream()
+                .filter(n -> n.getId() != activeNote.id)
+                .map(NoteTitle::getTitle)
+                .toList();
+    }
+
+    private void saveActiveNote() {
+        if (activeNote == null) return;
+        updateForbiddenTitles();
+
+        if (forbiddenTitles.contains(activeNote.title)) {
+            mainCtrl.showMessage("Duplicate title: " + activeNote.title, true);
+            // Replace a duplicate title with the original one
+            activeNote.title = serverUtils.getNoteTitleById(activeNote.id).getTitle();
+        }
+
+        // Note contents can be updated anyway because no validation is required
+        activeNote.content = noteText.getText();
+
+        try {
+            serverUtils.updateNote(activeNote);
+
+            // Update available tags
+            mainCtrl.updateTags(activeNote);
+            // Refresh the titles in the sidebar
+            sidebarCtrl.refresh();
+
+            // The active note has been synced
+            isContentsSynced = true;
+        } catch (Exception e) {
+            System.out.println("Error updating note: " + activeNote);
+            e.printStackTrace();
+
+            mainCtrl.showMessage("Failed to update note: " + activeNote.title, true);
+        }
     }
 
     private ListCell<Pair<UUID, String>> createCollectionDropdownOption() {
@@ -255,10 +282,25 @@ public class MarkdownEditorCtrl {
      */
     public synchronized void onTitleEdit() {
         // To remove possible error color of having the same title
-        titleField.setStyle("");
+        clearInvalidTitleStyle();
 
-        activeNote.title = titleField.getText();
+        String newTitle = titleField.getText().strip();
+
+        if (newTitle.isEmpty()) {
+            mainCtrl.showMessage("Title cannot be empty.", true);
+            applyInvalidTitleStyle();
+            return;
+        }
+
+        if (forbiddenTitles.contains(newTitle)) {
+            mainCtrl.showMessage("Duplicate title: " + newTitle, true);
+            applyInvalidTitleStyle();
+            return;
+        }
+
+        activeNote.title = newTitle;
         isContentsSynced = false;
+
         requestRefresh();
         sidebarCtrl.updateTitle(activeNote.id, activeNote.title);
     }
@@ -281,6 +323,14 @@ public class MarkdownEditorCtrl {
      */
     public void focusOnTitle() {
         titleField.requestFocus();
+    }
+
+    private void applyInvalidTitleStyle() {
+        titleField.setStyle("-fx-background-color: #FFA07A;");
+    }
+
+    private void clearInvalidTitleStyle() {
+        titleField.setStyle("");
     }
 
     private synchronized void refreshView() {
@@ -315,21 +365,7 @@ public class MarkdownEditorCtrl {
         // TODO: lazy implementation of threading (not sure of the performance)
         // https://openjfx.io/javadoc/23/javafx.graphics/javafx/application/Platform.html#runLater(java.lang.Runnable)
         Platform.runLater(() -> {
-            activeNote.content = noteText.getText();
-            try {
-                serverUtils.updateNote(activeNote);
-            } catch (Exception e) {
-                // FIXME: right now, I assume that the only error is having same title in two notes
-                NoteTitle note = serverUtils.getNoteTitleById(activeNote.id);
-                sidebarCtrl.updateTitle(note.getId(), note.getTitle());
-                titleField.setStyle("-fx-background-color: #FFA07A;");
-            }
-
-            // To ensure that the titles are properly updated
-            sidebarCtrl.refresh();
-
-            mainCtrl.updateTags(activeNote);
-            isContentsSynced = true;
+            saveActiveNote();
         });
     }
 
