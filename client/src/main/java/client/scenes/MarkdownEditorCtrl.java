@@ -212,7 +212,7 @@ public class MarkdownEditorCtrl {
         activeNote.content = noteText.getText();
 
         try {
-            serverUtils.updateNote(activeNote, titleChanged, initialTitle, activeNote.title);
+            this.mainCtrl.updateNote(activeNote, titleChanged, initialTitle, activeNote.title);
             this.titleChanged = false;
             this.initialTitle = activeNote.title;
 
@@ -278,7 +278,6 @@ public class MarkdownEditorCtrl {
                         "Failed to move note to collection: %s".formatted(selected.getValue()) +
                         "Make sure that the destination collection doesn't have a note with the same title.",
                         true);
-
                 // Restore to the original collection
                 activeNote.collection = savedCollection;
 
@@ -289,6 +288,7 @@ public class MarkdownEditorCtrl {
                     }
                 }
             }
+            requestRefresh();
         }
     }
 
@@ -420,6 +420,12 @@ public class MarkdownEditorCtrl {
         this.timeState = timeState;
     }
 
+    /**
+     * This method converts the tags that appear in the given array of strings into html links (anchor tags).
+     * It also checks whether the lines start with a tab character and if they do, it doesn't input the HTML.
+     * @param textLines an array containing the lines from the text that needs to be converted
+     * @return the updated array.
+     */
     private String[] convertTagsToLinks(String[] textLines){
         Pattern pattern = Pattern.compile("#\\w+");
         Matcher matcher;
@@ -454,6 +460,12 @@ public class MarkdownEditorCtrl {
         this.mainCtrl.addTagFilter("#" + tag);
     }
 
+    /**
+     * This method converts the note links that appear in the given array into HTML anchor tags.
+     * If a line starts with a tab character, it remains unchanged.
+     * @param textLines an array containing the lines from the text that needs to be converted
+     * @return the updated array.
+     */
     private String[] getNoteLinkHtml(String[] textLines){
         HashMap<String, Long> links = this.mainCtrl.getNoteLinks(this.activeNote);
         String html = "";
@@ -478,10 +490,22 @@ public class MarkdownEditorCtrl {
         return textLines;
     }
 
+    /**
+     * This method is called when a user clicks on a valid note-link;
+     * It selects the note that the link references as the active note for the controller.
+     * @param noteId the id of the note referenced.
+     */
     public void onLinkClicked(String noteId){
         this.mainCtrl.linkClicked(Long.parseLong(noteId));
     }
 
+    /**
+     * This method converts the tags and links in the textField into HTML before passing them to the
+     * Markdown parser. It also checks whether the text is a part of code
+     * blocks in which case it doesn't convert links/tags it into HTML.
+     * @param text the text from the content field.
+     * @return the text after making the necessary conversions.
+     */
     private String convertTagsAndLinks(String text){
         String[] textLines = text.split("\n");
         String[] tagsRendered = this.convertTagsToLinks(textLines);

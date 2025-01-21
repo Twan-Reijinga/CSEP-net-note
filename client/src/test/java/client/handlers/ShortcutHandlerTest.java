@@ -21,6 +21,7 @@ import client.scenes.MainCtrl;
 import client.scenes.NoteEditorCtrl;
 import client.scenes.SidebarCtrl;
 import client.utils.AddNoteAction;
+import client.utils.NoteLinkHandler;
 import client.utils.ServerUtils;
 import client.utils.ServerUtilsRepository;
 import commons.Collection;

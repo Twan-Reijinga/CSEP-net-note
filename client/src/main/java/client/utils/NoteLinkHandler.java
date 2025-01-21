@@ -21,6 +21,13 @@ public class NoteLinkHandler {
         setNoteTitlesForCollection(null);
     }
 
+    /**
+     * Updates the local list which tracks note-links in the current collection.
+     * Changes the title for the specified note if it's in the same collection as the one currently active.
+     * @param title the new title it has.
+     * @param id the id of the note.
+     * @param collectionId the collection of the note
+     */
     public void updateLink(String title, Long id, UUID collectionId) {
         if(this.currentCollectionId.equals(collectionId)) {
             this.noteTitlesInCollection.stream().filter(noteTitle -> noteTitle.getId() == id)
@@ -29,18 +36,34 @@ public class NoteLinkHandler {
         }
     }
 
+    /**
+     * Called when a new note is added. Adds the title and id to the local list used to check note-links only if
+     * the newly created note is in the same colleciton as the one currently active.
+     * @param collectionId the collection of the currently open note in the markdownEditorCtrl.
+     */
     public void addLink(UUID collectionId) {
         if(this.currentCollectionId.equals(collectionId)) {
             setNoteTitlesForCollection(collectionId);
         }
     }
 
+    /**
+     * Called when a new note is deleted. Removes it's title and id from the local list
+     * only if it is in the same colleciton as the note currently active.
+     * @param title The title of the note that was removed.
+     * @param collectionId the collection of the currently open note in the markdownEditorCtrl.
+     */
     public void deleteLink(String title, UUID collectionId){
         if(this.currentCollectionId.equals(collectionId)){
             this.noteTitlesInCollection.removeIf(noteTitle -> noteTitle.getTitle().equals(title));
         }
     }
 
+    /**
+     * Reads all note titles in the collection of the active note.
+     * Loads the noteTitles to a list that is later used to keep track of valid and invalid links.
+     * @param collectionId the collection of the active note.
+     */
     public void setNoteTitlesForCollection(UUID collectionId) {
         currentCollectionId = collectionId;
         noteTitlesInCollection = this.serverUtils.getNoteTitlesInCollection(currentCollectionId);

@@ -289,7 +289,6 @@ public class SidebarCtrl {
             return false;
         }
 
-
         boolean isLastNote = server.isLastNoteInCollection(id);
         if (isLastNote) {
             createNote(note.collection.id);
@@ -384,7 +383,6 @@ public class SidebarCtrl {
     public void noteLinkClicked(Long id){
         if(!this.noteTitles.stream().map(x -> x.getId()).toList().contains(id)){
             refresh();
-            //FIXME what if note is not loaded but exists in the collection
         }
         noteClick(id);
     }

@@ -59,10 +59,10 @@ public class MainCtrl {
     private boolean isWaiting;
 
     @Inject
-    public MainCtrl(Config config, ServerUtils serverUtils, NoteLinkHandler noteLinkHandler) {
+    public MainCtrl(Config config, ServerUtils serverUtils) {
         this.config = config;
         this.serverUtils = serverUtils;
-        this.noteLinkHandler = noteLinkHandler;
+        this.noteLinkHandler = new NoteLinkHandler(serverUtils);
         try {
             ServerUtils.connection.connect(new java.net.URI(this.serverUtils.server).getHost());
         } catch (Exception e) {
@@ -388,18 +388,44 @@ public class MainCtrl {
         return isWaiting;
     }
 
+    /**
+     * This method finds all links to notes in the note's content.
+     * @param note Note which we need the links of.
+     * @return A map mapping each link to the id of the note in the same collection
+     * it represents or null if the link is invalid.
+     */
     public HashMap<String, Long> getNoteLinks(Note note){
         return this.noteLinkHandler.getLinks(note.content, note.collection.id);
     }
 
+    /**
+     * Called when a note-link is clicked.
+     * Selects the id of the clicked as a selectedNote in the sidebar.
+     * @param id
+     */
     public void linkClicked(Long id){
         this.sidebarCtrl.noteLinkClicked(id);
     }
 
+    /**
+     * Called when a noteTitle is updated. Forces all notes referencing the one that had it's title
+     * updated to update their contents accordingly.
+     * @param id id of note updated
+     * @param oldTitle the previous title of the note
+     * @param newTitle the new title of the note
+     */
     public void updateNoteLinks(Long id, String oldTitle, String newTitle){
         this.serverUtils.updateLinksToNote(id, newTitle, oldTitle);
     }
 
+    /**
+     * Called when a note is updated. Checks whether the title was updated and
+     * updates the note links to this note if necessary.
+     * @param note The note that has to be updated
+     * @param titleChanged boolean for whether the title was changed
+     * @param oldTitle the old title of the note
+     * @param newTitle the new title of the note
+     */
     public void updateNote(Note note, boolean titleChanged, String oldTitle, String newTitle){
         serverUtils.updateNote(note);
         if(titleChanged){
