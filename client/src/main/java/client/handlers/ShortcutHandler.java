@@ -66,6 +66,10 @@ public class ShortcutHandler {
             this.noteSelectionChange(ChangeType.DOWN);
         } else if (event.getCode() == KeyCode.UP) {
             this.noteSelectionChange(ChangeType.UP);
+        } else if (event.isShiftDown() && event.getCode() == KeyCode.TAB) {
+            mainCtrl.selectPreviousCollection();
+        } else if (event.getCode() == KeyCode.TAB) {
+            mainCtrl.selectNextCollection();
         } else {
             handleFocusShortcuts(event);
         }

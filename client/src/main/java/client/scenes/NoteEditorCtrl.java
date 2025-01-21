@@ -257,6 +257,71 @@ public class NoteEditorCtrl {
         popupStage.show();
     }
 
+    /**
+     * Moves to the next item in the dropdown, skipping the last option ("Edit Collections").
+     * If the second-to-last item is selected, it wraps around to the first item.
+     *
+     * The method calculates the next index. If it reaches the last option, it wraps to the
+     * first item. Otherwise, it selects the next item. This ensures smooth navigation while
+     * avoiding the special last option.
+     *
+     * The dropdown must be properly set up with items before calling this method.
+     * If the dropdown is empty, nothing happens.
+     */
+    public void selectNextCollection() {
+        int selected = collectionDropdown
+                .getSelectionModel()
+                .getSelectedIndex();
+        int next = selected + 1;
+        int size = collectionDropdown
+                .getItems()
+                .size();
+        boolean isLastOption = size - 1 == next;
+
+        if (isLastOption) {
+            collectionDropdown
+                    .getSelectionModel()
+                    .selectFirst();
+            return;
+        }
+        collectionDropdown
+                .getSelectionModel()
+                .selectNext();
+        return;
+    }
+
+    /**
+     * Moves to the previous item in the dropdown, skipping the last option ("Edit Collections").
+     * If the first item is selected, it wraps around to the second-to-last item.
+     *
+     * The method checks if the current selection is the first item. If so, it selects the
+     * second-to-last item. Otherwise, it moves to the previous item. This ensures smooth
+     * backward navigation while avoiding the special last option.
+     *
+     * The dropdown must be properly set up with items before calling this method.
+     * If the dropdown is empty, nothing happens.
+     */
+    public void selectPreviousCollection() {
+        int selected = collectionDropdown
+                .getSelectionModel()
+                .getSelectedIndex();
+        boolean isFirstOption = selected == 0;
+
+        if (isFirstOption) {
+            int size = collectionDropdown
+                    .getItems()
+                    .size();
+            int secondToLast = size - 2;
+            collectionDropdown
+                    .getSelectionModel()
+                    .select(secondToLast);
+            return;
+        }
+        collectionDropdown
+                .getSelectionModel()
+                .selectPrevious();
+        return;
+    }
 
     /** Called upon clicking the search button
      *  Calls the sendSearchRequest method from the mainCtrl with the text from the searchBox.
