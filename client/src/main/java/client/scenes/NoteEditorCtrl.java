@@ -162,7 +162,10 @@ public class NoteEditorCtrl {
                 if (empty || item == null) {
                     setGraphic(null);
                 } else {
-                    setText(item.getValue());
+                    UUID collectionId = item.getKey();
+                    // Note: collectionId can be null if, for example, "Show all" is to be updated
+                    boolean isDefault = collectionId != null && collectionId.equals(mainCtrl.getDefaultCollectionId());
+                    setText(item.getValue() + (isDefault ? " (Default)" : ""));
                 }
             }
         };
@@ -244,8 +247,7 @@ public class NoteEditorCtrl {
         popupStage.setResizable(false);
         popupStage.setOnCloseRequest(event -> {
             if (popupCtrl.hasUnsavedChanges()) {
-                boolean cancel = popupCtrl.handleUnsavedChanges();
-                if (cancel) event.consume();
+                popupCtrl.handleUnsavedChanges();
             } else {
                 loadCollectionDropdown();
             }

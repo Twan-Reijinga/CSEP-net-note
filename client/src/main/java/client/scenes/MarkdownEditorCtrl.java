@@ -87,6 +87,7 @@ public class MarkdownEditorCtrl {
 
     private Note activeNote;
     private SidebarCtrl sidebarCtrl;
+
     @Inject
     public MarkdownEditorCtrl(ServerUtils serverUtils, Config config, MainCtrl mainCtrl) {
         this.serverUtils = serverUtils;
@@ -125,7 +126,7 @@ public class MarkdownEditorCtrl {
         scheduler.scheduleAtFixedRate(
                 this::syncNoteContents,
                 0,
-                config.getSyncThresholdMs(),
+                5000,
                 TimeUnit.MILLISECONDS
         );
 

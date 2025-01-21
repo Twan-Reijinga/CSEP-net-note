@@ -17,10 +17,9 @@ package client;
 
 import static com.google.inject.Guice.createInjector;
 
+import client.config.Config;
 import client.scenes.*;
 import client.utils.Language;
-import client.config.LanguagePreference;
-
 import com.google.inject.Injector;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -35,6 +34,7 @@ public class Main extends Application {
 
 	private static final Injector INJECTOR = createInjector(new GuiceModule());
 	private static final LoaderFXML FXML = INJECTOR.getInstance(LoaderFXML.class);
+	private static final Config CONFIG = INJECTOR.getInstance(Config.class);
 
 	public static void main(String[] args) {
 		launch(args);
@@ -54,7 +54,7 @@ public class Main extends Application {
 		});
 
 		primaryStage = stage;
-		Language language = LanguagePreference.getLanguage();
+		Language language = CONFIG.getLanguage();
 		loadApplication(language);
 	}
 
@@ -100,8 +100,8 @@ public class Main extends Application {
 	 * @param language the language configuration to be applied to the application
 	 */
 	public static void switchLanguage(Language language) {
-		if (language == LanguagePreference.getLanguage()) return;
-		LanguagePreference.saveLanguage(language);
+		if (language == CONFIG.getLanguage()) return;
+		CONFIG.setLanguage(language);
 		loadApplication(language);
 	}
 

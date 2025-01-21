@@ -34,22 +34,11 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
-	private final Config config;
 	private final String server;
 
 	@Inject
 	public ServerUtils(Config config) {
-		this.config = config;
-		this.server = config.getLocalServer();
-	}
-
-	private ServerUtils(Config config, String server) {
-		this.config = config;
-		this.server = server;
-	}
-
-	public ServerUtils withServer(String server) {
-		return new ServerUtils(config, server);
+		this.server = config.getServerUrl();
 	}
 
 	/**
