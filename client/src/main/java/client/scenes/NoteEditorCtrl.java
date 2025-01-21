@@ -247,8 +247,7 @@ public class NoteEditorCtrl {
         popupStage.setResizable(false);
         popupStage.setOnCloseRequest(event -> {
             if (popupCtrl.hasUnsavedChanges()) {
-                boolean cancel = popupCtrl.handleUnsavedChanges();
-                if (cancel) event.consume();
+                popupCtrl.handleUnsavedChanges();
             } else {
                 loadCollectionDropdown();
             }
