@@ -73,14 +73,10 @@
                   </HBox>
                   <HBox fx:id="tagContainerHBox" prefHeight="100.0" prefWidth="200.0" spacing="10.0" style="-fx-border-color: black; -fx-border-width: 1; -fx-background-color: e0dede;">
                      <children>
-                        <Label alignment="CENTER" minWidth="-Infinity" prefHeight="25.0" prefWidth="68.0" text="%filterByTag" textAlignment="CENTER" />
+                        <Label alignment="CENTER" minWidth="-Infinity" prefHeight="25.0" text="%filterByTag" textAlignment="CENTER" />
                         <MenuButton fx:id="tagOptionsButton" minWidth="-Infinity" mnemonicParsing="false" prefHeight="26.0" prefWidth="62.0" text="..." textAlignment="CENTER">
-                           <items>
-                              <MenuItem mnemonicParsing="false" text="Action 1" />
-                              <MenuItem mnemonicParsing="false" text="Action 2" />
-                           </items>
                         </MenuButton>
-                        <Hyperlink minWidth="-Infinity" onAction="#onClearAllTagsPressed" prefHeight="24.0" prefWidth="60.0" style="-fx-text-fill: black; -fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 16px; -fx-border-style: dashed;" text="%clearTag" />
+                        <Hyperlink minWidth="-Infinity" onAction="#onClearAllTagsPressed" prefHeight="24.0" style="-fx-text-fill: black; -fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 16px; -fx-border-style: dashed;" text="%clearTag" textAlignment="CENTER"/>
                         <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
                      </children>
                      <VBox.margin>
