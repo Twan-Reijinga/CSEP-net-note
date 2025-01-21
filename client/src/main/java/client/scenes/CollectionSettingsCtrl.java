@@ -163,7 +163,7 @@ public class CollectionSettingsCtrl {
         String collectionName = serverUtils.getUniqueCollectionName();
         Collection newCollection = new Collection(
                 collectionName,
-                "New Collection"
+                createCollectionTitle()
         );
 
         collectionsListView.getItems().add(newCollection);
@@ -287,6 +287,26 @@ public class CollectionSettingsCtrl {
 
         isCollectionModified = false;
         collectionsListView.refresh();
+    }
+
+    private String createCollectionTitle() {
+        List<Collection> collections = collectionsListView.getItems();
+
+        String prefix = "New collection #";
+        // FIXME: duplicate code in sidebar>create default note title
+        int maxNoteNumber = collections.stream()
+                .filter(collection -> collection.title.startsWith(prefix))
+                .mapToInt(collection -> {
+                    try {
+                        return Integer.parseInt(collection.title.replace(prefix, ""));
+                    } catch (Exception e) {
+                        return -1;
+                    }
+                })
+                .max()
+                .orElse(0);
+
+        return prefix + (maxNoteNumber + 1);
     }
 
     // >>>> Dialogs >>>>
