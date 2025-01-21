@@ -61,8 +61,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/collections")
 				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 	/**
@@ -74,8 +73,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/collections/default")
 				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 	/**
@@ -137,8 +135,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig()) //
 				.target(server).path("api/titles") //
 				.request(APPLICATION_JSON) //
-				.get(new GenericType<>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 
@@ -146,8 +143,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig()) //
 				.target(server).path("api/titles/" + id) //
 				.request(APPLICATION_JSON) //
-				.get(new GenericType<>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 
@@ -156,8 +152,7 @@ public class ServerUtils {
 				.target(server).path("api/notes/last") //
 				.queryParam("noteId", id)
 				.request(APPLICATION_JSON) //
-				.get(new GenericType<>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 	/**
@@ -171,8 +166,7 @@ public class ServerUtils {
 				.target(server).path("api/titles")
 				.queryParam("collectionId", collectionId)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 	/**
@@ -184,8 +178,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/mock")
 				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 	/**
@@ -212,8 +205,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/" + id)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 	/**
@@ -244,8 +236,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes")
 				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 	/**
@@ -258,8 +249,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/" + id)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 	/**
@@ -272,8 +262,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/exists/" + id)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<Boolean>() {
-				});
+				.get(new GenericType<Boolean>() {});
 	}
 
 	/**
@@ -310,8 +299,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/collections/" + collectionId)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 	/**
@@ -341,8 +329,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(builder.build())
 				.request(APPLICATION_JSON)
-				.post(Entity.entity(text, APPLICATION_JSON), new GenericType<>() {
-				});
+				.post(Entity.entity(text, APPLICATION_JSON), new GenericType<>() {});
 	}
 
 	/**
@@ -355,8 +342,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/tags/")
 				.request(APPLICATION_JSON)
-				.post(Entity.entity(collectionId, APPLICATION_JSON), new GenericType<>() {
-				});
+				.post(Entity.entity(collectionId, APPLICATION_JSON), new GenericType<>() {});
 	}
 
 	/**
@@ -369,8 +355,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/tags/list")
 				.request(APPLICATION_JSON)
-				.post(Entity.entity(noteIds, APPLICATION_JSON), new GenericType<>() {
-				});
+				.post(Entity.entity(noteIds, APPLICATION_JSON), new GenericType<>() {});
 	}
 
 	/**
@@ -414,16 +399,14 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/" + note.id + "/embedded")
 				.request(APPLICATION_JSON)
-				.get(new GenericType<List<EmbeddedFile>>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 	public EmbeddedFile getFileFromNote(long noteId, long fileId) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/" + noteId + "/embedded/" + fileId)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<EmbeddedFile>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 	public void editFileTitle(EmbeddedFile file) {
@@ -437,15 +420,13 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/" + noteId + "/embedded/title")
 				.request(APPLICATION_JSON)
-				.get(new GenericType<List<String>>() {
-				});
+				.get(new GenericType<>() {});
 	}
 
 	public String getTitlesFromNote(long noteId, String title) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/" + noteId + "/embedded/title/" + title)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<String>() {
-				});
+				.get(new GenericType<>() {});
 	}
 }

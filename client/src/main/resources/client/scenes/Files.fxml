@@ -5,24 +5,24 @@
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
 
+<?import javafx.scene.layout.VBox?>
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="25.0" prefWidth="55.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.FilesCtrl">
     <children>
         <MenuButton contentDisplay="TEXT_ONLY" graphicTextGap="0.0" layoutX="-1.0" layoutY="-1.0" lineSpacing="1.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="55.0" text="Files" wrapText="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
             <items>
                 <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Unspecified Action">
                     <content>
-                        <Button mnemonicParsing="false" onAction="#selectFile" prefWidth="250.0" text="Add file" />
+                        <Button mnemonicParsing="false" onAction="#selectFile" prefWidth="200.0" text="Add file" />
                     </content>
                 </CustomMenuItem>
                 <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Unspecified Action">
                     <content>
-                        <AnchorPane prefHeight="45.0" prefWidth="250.0">
+                        <AnchorPane prefHeight="250.0" prefWidth="200.0">
                             <children>
-                                <ScrollPane prefHeight="50.0" prefWidth="250.0" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <ScrollPane prefHeight="250.0" prefWidth="200.0" hbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <content>
-                                        <HBox fx:id="filesContainer" minHeight="0.0" minWidth="0.0" />
+                                        <VBox fx:id="filesContainer" minHeight="0.0" minWidth="0.0" />
                                     </content>
                                 </ScrollPane>
                             </children>

@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -25,7 +26,7 @@ public class FilesCtrl {
     private final MainCtrl main;
 
     @FXML
-    public HBox filesContainer;
+    public VBox filesContainer;
 
     @Inject
     public FilesCtrl(ServerUtils server, MainCtrl main) {
@@ -43,17 +44,15 @@ public class FilesCtrl {
         for (EmbeddedFile currentFile : files) {
             Label label = new Label(currentFile.title);
             label.setCursor(Cursor.HAND);
-            label.setMaxWidth(100);
             label.setStyle("-fx-text-fill: blue");
             label.setOnMouseClicked(event -> downloadFile(currentFile.note.id, currentFile.id));
-            Button remove = new Button("⮾");
+            Button remove = new Button("Remove");
             remove.setOnAction(event -> deleteFile(currentFile.note.id, currentFile.id));
-            Button edit = new Button("&");
+            Button edit = new Button("Edit");
             edit.setOnAction(event -> editTitle(currentFile.note.id, currentFile.id));
-            HBox wrapper = new HBox(label, edit, remove);
-            wrapper.setPadding(new Insets(10, 5, 10, 5));
-            wrapper.setOnMouseClicked(event -> {
-            });
+            HBox buttons = new HBox(10,edit, remove);
+            VBox wrapper = new VBox(label, buttons);
+            wrapper.setPadding(new Insets(5, 10, 5, 10));
             filesContainer.getChildren().add(wrapper);
         }
     }
@@ -63,13 +62,17 @@ public class FilesCtrl {
      */
     public void selectFile() {
         if (main.getSelectedNoteId() == -1) {
-            return;     //A note must be selected
+            main.showMessage("Please select a note in the sidebar.", true);
+            return;
+            //A note must be selected
         }
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.*"));
             File file = fileChooser.showOpenDialog(null);
-            addFile(file);
+            if (file != null) {
+                addFile(file);
+            }
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -84,6 +87,7 @@ public class FilesCtrl {
         Note note = server.getNoteById(main.getSelectedNoteId());
         for (EmbeddedFile file : server.getAllFilesFromNote(note)) {
             if (file.title.equals(addedFile.getName())) {
+                main.showMessage("File was already added before.", true);
                 return;
             }
         }
@@ -94,10 +98,12 @@ public class FilesCtrl {
             input.read(fileBytes);
             fileString = Base64.getEncoder().encodeToString(fileBytes);
         } catch (IOException e) {
+            main.showMessage("File was not found, try to select a valid file.", true);
             throw new RuntimeException(e);
         }
         EmbeddedFile file = new EmbeddedFile(addedFile.getName(), note, fileString);
         server.addFileToNote(file);
+        main.showMessage("File was successfully added.\n" + addedFile.getName(), false);
         refresh();
     }
 
@@ -107,7 +113,12 @@ public class FilesCtrl {
      * @param id the unique id that defines the file
      */
     public void deleteFile(long noteId, long id) {
-        server.deleteFileToNote(noteId, id);
+        try {
+            server.deleteFileToNote(noteId, id);
+            main.showMessage("File was successfully deleted.", false);
+        }catch (Exception e) {
+            main.showMessage("File was not deleted, Please try again.", true);
+        }
         refresh();
     }
 
@@ -122,14 +133,19 @@ public class FilesCtrl {
         popupStage.setTitle("Edit Title");
         TextField newTitle = new TextField();
         newTitle.setPromptText("Enter new title");
-        newTitle.setOnKeyPressed(event -> {feedback.setText("");});
+        newTitle.setOnKeyPressed(event -> {
+            if ((event.getCode() == KeyCode.ENTER)) {
+                onChangeTitle(noteId, id, popupStage, newTitle, feedback);
+            } else {feedback.setText("");}});
+
         Label oldTitle = new Label("Previous title: " + server.getFileFromNote(noteId, id).title);
-        oldTitle.setMaxWidth(250);
+        oldTitle.setMaxWidth(290);
         Button button = new Button("Change Title");
 
-        button.setOnAction(event -> {buttonChangeTitle(noteId, id, popupStage, newTitle, feedback);});
-        VBox layout = new VBox(10, newTitle, oldTitle, feedback, button);
-        Scene popupScene = new Scene(layout, 300, 150);
+        button.setOnAction(event -> {onChangeTitle(noteId, id, popupStage, newTitle, feedback);});
+        HBox titleFeedback = new HBox(10,button, feedback);
+        VBox layout = new VBox (5, newTitle, oldTitle, titleFeedback);
+        Scene popupScene = new Scene(layout, 300, 90);
         popupStage.setScene(popupScene);
         popupStage.showAndWait();
     }
@@ -142,15 +158,19 @@ public class FilesCtrl {
      * @param newTitle the text field where the user enters a new title
      * @param feedback the label that gives user feedback
      */
-    private void buttonChangeTitle(long noteId, long id, Stage popupStage, TextField newTitle, Label feedback) {
+    private void onChangeTitle(long noteId, long id, Stage popupStage, TextField newTitle, Label feedback) {
         String title = newTitle.getText();
         if (!title.isEmpty()) {
-            String[] prevTitle = server.getFileFromNote(noteId, id).title.split("\\.");
-            if(!title.split("\\.")[title.split("\\.").length - 1].equals(prevTitle[prevTitle.length - 1])) {
-                title += "." + prevTitle[prevTitle.length - 1];
+            String prevTitle = server.getFileFromNote(noteId, id).title;
+            String[] prevList = prevTitle.split("\\.");
+            if(!title.split("\\.")[title.split("\\.").length - 1].equals(prevList[prevList.length - 1])) {
+                title += "." + prevList[prevList.length - 1];
             }
             if (!server.getAllTitlesFromNote(noteId).contains(title)) {
                 changeTitle(title, noteId, id);
+                main.showMessage("Title successfully changed." +
+                        "\nFrom: " + prevTitle +
+                        "\nTo: " + title, false);
                 popupStage.close();
             }else {
                 newTitle.clear();
@@ -186,10 +206,12 @@ public class FilesCtrl {
         EmbeddedFile file = server.getFileFromNote(noteId, id);
         byte[] thisFile = Base64.getDecoder().decode(file.file);
         try {
-            FileOutputStream output = new FileOutputStream(file.title);
+            String filePath = System.getProperty("user.home") + "/Downloads/" + file.title;
+            FileOutputStream output = new FileOutputStream(filePath);
             output.write(thisFile);
-            System.out.println("File downloaded");
+            main.showMessage("File downloaded successfully to:\n" + filePath, false);
         }catch (IOException e) {
+            main.showMessage("Error downloading file:\n" + file.title, true);
             throw new RuntimeException(e);
         }
     }
