@@ -420,21 +420,30 @@ public class MarkdownEditorCtrl {
         this.timeState = timeState;
     }
 
-    private String convertTagsToLinks(String text){
+    private String[] convertTagsToLinks(String[] textLines){
         Pattern pattern = Pattern.compile("#\\w+");
-        Matcher matcher = pattern.matcher(text);
+        Matcher matcher;
+        StringBuffer textBuffer;
 
-        StringBuffer textBuffer = new StringBuffer();
-        while (matcher.find()) {
-            String tag = matcher.group().substring(1);
-            String link = "<a href='#' class='tags' onclick='app.onTagClicked(\""
-                    + tag + "\")'>"
-                    + tag + "</a>";
-            matcher.appendReplacement(textBuffer, link);
+        for(int i=0; i<textLines.length; i++){
+            if(!textLines[i].startsWith("\t")){
+                matcher = pattern.matcher(textLines[i]);
+
+                textBuffer = new StringBuffer();
+                while (matcher.find()) {
+                    String tag = matcher.group().substring(1);
+                    String link = "<a href='#' class='tags' onclick='app.onTagClicked(\""
+                            + tag + "\")'>"
+                            + tag + "</a>";
+                    matcher.appendReplacement(textBuffer, link);
+                }
+                matcher.appendTail(textBuffer);
+
+                textLines[i] = textBuffer.toString();
+            }
         }
-        matcher.appendTail(textBuffer);
 
-        return textBuffer.toString();
+        return textLines;
     }
 
     /**
@@ -445,7 +454,7 @@ public class MarkdownEditorCtrl {
         this.mainCtrl.addTagFilter("#" + tag);
     }
 
-    private String getNoteLinkHtml(String text){
+    private String[] getNoteLinkHtml(String[] textLines){
         HashMap<String, Long> links = this.mainCtrl.getNoteLinks(this.activeNote);
         String html = "";
 
@@ -459,10 +468,14 @@ public class MarkdownEditorCtrl {
             }
             html +=  link + "</a>";
 
-            text = text.replace("[[" + link + "]]", html);
+            for(int i=0; i<textLines.length; i++){
+                if(!textLines[i].startsWith("\t")){
+                    textLines[i] = textLines[i].replace("[[" + link + "]]", html);
+                }
+            }
         }
 
-        return text;
+        return textLines;
     }
 
     public void onLinkClicked(String noteId){
@@ -470,9 +483,10 @@ public class MarkdownEditorCtrl {
     }
 
     private String convertTagsAndLinks(String text){
-        String tagsRendered = this.convertTagsToLinks(text);
-        String linksRendered = this.getNoteLinkHtml(tagsRendered);
+        String[] textLines = text.split("\n");
+        String[] tagsRendered = this.convertTagsToLinks(textLines);
+        String[] linksRendered = this.getNoteLinkHtml(tagsRendered);
 
-        return linksRendered;
+        return String.join("\n", linksRendered);
     }
 }
