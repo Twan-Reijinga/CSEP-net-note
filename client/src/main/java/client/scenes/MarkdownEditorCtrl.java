@@ -169,9 +169,14 @@ public class MarkdownEditorCtrl {
         if (activeNote != null && serverUtils.existsNoteById(activeNote.id)) {
             saveActiveNote();
         }
+
+        // Update available tags
+        mainCtrl.updateTags(activeNote);
+        activeNote = serverUtils.getNoteById(newId);
+
         this.titleChanged = false;
         this.initialTitle = activeNote.title;
-        activeNote = serverUtils.getNoteById(newId);
+
         noteText.setText(activeNote.content);
         titleField.setText(activeNote.title);
         requestRefresh();
@@ -208,9 +213,9 @@ public class MarkdownEditorCtrl {
 
         try {
             serverUtils.updateNote(activeNote, titleChanged, initialTitle, activeNote.title);
+            this.titleChanged = false;
+            this.initialTitle = activeNote.title;
 
-            // Update available tags
-            mainCtrl.updateTags(activeNote);
             // Refresh the titles in the sidebar
             sidebarCtrl.refresh();
 
@@ -378,7 +383,7 @@ public class MarkdownEditorCtrl {
                 window.setMember("app", this);
             }
         });
-        String stylesheetUrl = "/stylesheets/link_tag_stylesheets.css";
+        String stylesheetUrl = "/stylesheets/webView_styles.css";
         engine.setUserStyleSheetLocation(getClass().getResource(stylesheetUrl).toExternalForm());
         return engine;
     }

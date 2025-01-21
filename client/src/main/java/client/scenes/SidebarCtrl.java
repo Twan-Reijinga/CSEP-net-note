@@ -252,6 +252,7 @@ public class SidebarCtrl {
         note.createdAt = new Date();
         server.addNote(note);
         mainCtrl.addNewTags(note);
+        mainCtrl.addLink(note.collection.id);
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getLast().getId());
         noteClick(selectedNoteId);
@@ -297,6 +298,7 @@ public class SidebarCtrl {
         server.deleteAllFilesToNote(note);
         server.deleteNote(note);
         mainCtrl.deleteTags(note.id);
+        mainCtrl.deleteLink(note.title, note.collection.id);
         if (isReversible) {
             mainCtrl.recordDelete(note);
         }

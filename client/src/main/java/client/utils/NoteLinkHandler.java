@@ -12,10 +12,38 @@ import java.util.regex.Pattern;
 
 public class NoteLinkHandler {
     private ServerUtils serverUtils;
+    private UUID currentCollectionId;
+    private List<NoteTitle> noteTitlesInCollection;
 
     @Inject
     public NoteLinkHandler(ServerUtils serverUtils) {
         this.serverUtils = serverUtils;
+        setNoteTitlesForCollection(null);
+    }
+
+    public void updateLink(String title, Long id, UUID collectionId) {
+        if(this.currentCollectionId.equals(collectionId)) {
+            this.noteTitlesInCollection.stream().filter(noteTitle -> noteTitle.getId() == id)
+                                                .findFirst()
+                                                .ifPresent(noteTitle -> {noteTitle.setTitle(title);});
+        }
+    }
+
+    public void addLink(UUID collectionId) {
+        if(this.currentCollectionId.equals(collectionId)) {
+            setNoteTitlesForCollection(collectionId);
+        }
+    }
+
+    public void deleteLink(String title, UUID collectionId){
+        if(this.currentCollectionId.equals(collectionId)){
+            this.noteTitlesInCollection.removeIf(noteTitle -> noteTitle.getTitle().equals(title));
+        }
+    }
+
+    public void setNoteTitlesForCollection(UUID collectionId) {
+        currentCollectionId = collectionId;
+        noteTitlesInCollection = this.serverUtils.getNoteTitlesInCollection(currentCollectionId);
     }
 
     /**
@@ -49,11 +77,13 @@ public class NoteLinkHandler {
         List<String> noteLinks = findNoteLinks(content);
         HashMap<String, Long> noteLinkMap = new HashMap<>();
 
-        List<NoteTitle> noteTitles = this.serverUtils.getNoteTitlesInCollection(collectionId);
+        if(!collectionId.equals(currentCollectionId)){
+            setNoteTitlesForCollection(collectionId);
+        }
 
         for(String noteLink : noteLinks){
             Long idOfLinked = null;
-            NoteTitle linkedNote = noteTitles.stream().filter(x -> x.getTitle().equals(noteLink))
+            NoteTitle linkedNote = noteTitlesInCollection.stream().filter(x -> x.getTitle().equals(noteLink))
                                                         .findFirst().orElse(null);
             if(linkedNote != null){
                 idOfLinked = linkedNote.getId();

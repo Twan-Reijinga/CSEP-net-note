@@ -404,6 +404,34 @@ public class MainCtrl {
         serverUtils.updateNote(note);
         if(titleChanged){
             this.updateNoteLinks(note.id, oldTitle, newTitle);
+            this.updateLink(newTitle, note.id, note.collection.id);
         }
+    }
+
+    /**
+     * Called when a note is deleted, deletes it from the valid links.
+     * @param title The title of the note that was deleted
+     * @param collectionId The id of the collection that the note is in.
+     */
+    public void deleteLink(String title, UUID collectionId){
+        this.noteLinkHandler.deleteLink(title, collectionId);
+    }
+
+    /**
+     * Called when a note is added, updates the localy stored links to include its title as a valid link.
+     * @param collectionId The id of the collection that the note is in.
+     */
+    public void addLink(UUID collectionId){
+        this.noteLinkHandler.addLink(collectionId);
+    }
+
+    /**
+     * Called when a note's title is updated.
+     * @param title The new title for the note
+     * @param id the id of the note that was added.
+     * @param collectionId The id of the collection that the note is in.
+     */
+    public void updateLink(String title, Long id, UUID collectionId){
+        this.noteLinkHandler.updateLink(title, id, collectionId);
     }
 }
