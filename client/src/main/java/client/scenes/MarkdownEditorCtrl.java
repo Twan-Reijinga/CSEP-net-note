@@ -170,8 +170,6 @@ public class MarkdownEditorCtrl {
             saveActiveNote();
         }
 
-        // Update available tags
-        mainCtrl.updateTags(activeNote);
         activeNote = serverUtils.getNoteById(newId);
 
         this.titleChanged = false;
@@ -210,7 +208,6 @@ public class MarkdownEditorCtrl {
 
         // Note contents can be updated anyway because no validation is required
         activeNote.content = noteText.getText();
-
         try {
             this.mainCtrl.updateNote(activeNote, titleChanged, initialTitle, activeNote.title);
             this.titleChanged = false;
@@ -224,9 +221,9 @@ public class MarkdownEditorCtrl {
         } catch (Exception e) {
             System.out.println("Error updating note: " + activeNote);
             e.printStackTrace();
-
             mainCtrl.showMessage("Failed to update note: " + activeNote.title, true);
         }
+        mainCtrl.updateTags(activeNote);
     }
 
     private ListCell<Pair<UUID, String>> createCollectionDropdownOption() {
@@ -464,10 +461,11 @@ public class MarkdownEditorCtrl {
      * This method converts the note links that appear in the given array into HTML anchor tags.
      * If a line starts with a tab character, it remains unchanged.
      * @param textLines an array containing the lines from the text that needs to be converted
+     * @param fullText the text from the noteText field.
      * @return the updated array.
      */
-    private String[] getNoteLinkHtml(String[] textLines){
-        HashMap<String, Long> links = this.mainCtrl.getNoteLinks(this.activeNote);
+    private String[] getNoteLinkHtml(String[] textLines, String fullText){
+        HashMap<String, Long> links = this.mainCtrl.getNoteLinks(fullText, this.activeNote.collection.id);
         String html = "";
 
         for(String link: links.keySet()){
@@ -509,7 +507,7 @@ public class MarkdownEditorCtrl {
     private String convertTagsAndLinks(String text){
         String[] textLines = text.split("\n");
         String[] tagsRendered = this.convertTagsToLinks(textLines);
-        String[] linksRendered = this.getNoteLinkHtml(tagsRendered);
+        String[] linksRendered = this.getNoteLinkHtml(tagsRendered, text);
 
         return String.join("\n", linksRendered);
     }

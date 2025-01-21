@@ -390,18 +390,19 @@ public class MainCtrl {
 
     /**
      * This method finds all links to notes in the note's content.
-     * @param note Note which we need the links of.
+     * @param content The text (content of the note) which is scanned for note links
+     * @param collectionId the id of the note's collection.
      * @return A map mapping each link to the id of the note in the same collection
      * it represents or null if the link is invalid.
      */
-    public HashMap<String, Long> getNoteLinks(Note note){
-        return this.noteLinkHandler.getLinks(note.content, note.collection.id);
+    public HashMap<String, Long> getNoteLinks(String content, UUID collectionId){
+        return this.noteLinkHandler.getLinks(content, collectionId);
     }
 
     /**
      * Called when a note-link is clicked.
      * Selects the id of the clicked as a selectedNote in the sidebar.
-     * @param id
+     * @param id the id of the note to which the link points to
      */
     public void linkClicked(Long id){
         this.sidebarCtrl.noteLinkClicked(id);
