@@ -45,9 +45,6 @@ public class CollectionSettingsCtrl {
     // This is necessary because if a user creates a collection it doesn't guarantee that they'll save it
     private Collection createdCollection;
 
-    // Set in the dialog when user is prompted to save the changes
-    private boolean isSaveCancelled = false;
-
     // Injectable
     private final ServerUtils serverUtils;
     private final Config config;
@@ -76,10 +73,8 @@ public class CollectionSettingsCtrl {
         return isCollectionModified || createdCollection != null;
     }
 
-    public boolean handleUnsavedChanges() {
-        showConfirmSaveDialog(displayedCollection.title, this::saveModifiedChanges);
-
-        return isSaveCancelled;
+    public void handleUnsavedChanges() {
+        showConfirmSaveDialog(displayedCollection.title, this::saveModifiedChanges, this::discardModifiedChanges);
     }
 
     private Collection getSelectedCollection() {
@@ -162,8 +157,7 @@ public class CollectionSettingsCtrl {
     @FXML
     private void onCreate() {
         if (hasUnsavedChanges()) {
-            boolean isCancelled = handleUnsavedChanges();
-            if (isCancelled) return;
+            handleUnsavedChanges();
         }
 
         String collectionName = serverUtils.getUniqueCollectionName();
@@ -279,6 +273,22 @@ public class CollectionSettingsCtrl {
         }
     }
 
+    private void discardModifiedChanges() {
+        if (createdCollection == null) {
+            Collection originalCollection = serverUtils.getCollectionById(displayedCollection.id);
+
+            // Reset all attributes to the original ones
+            displayedCollection.title = originalCollection.title;
+            displayedCollection.name = originalCollection.name;
+        } else {
+            collectionsListView.getItems().remove(createdCollection);
+            createdCollection = null;
+        }
+
+        isCollectionModified = false;
+        collectionsListView.refresh();
+    }
+
     // >>>> Dialogs >>>>
 
     private void showDeletionNotPossibleDialog() {
@@ -304,13 +314,14 @@ public class CollectionSettingsCtrl {
     }
 
 
-    private void showConfirmSaveDialog(String collectionName, Runnable yes) {
+    private void showConfirmSaveDialog(String collectionName, Runnable yes, Runnable no) {
         var dialog = DialogBoxUtils.createYesNoDialog(
                 "Save changes to the collection?",
-                "Collection \"" + collectionName + "\" has been modified. Do you want to save changes?",
+                "Collection \"" + collectionName + "\" has been modified. Do you want to save changes? \n" +
+                        "Otherwise the changes will be lost.",
                 (confirmed) -> {
-                    isSaveCancelled = !confirmed;
                     if (confirmed) yes.run();
+                    else no.run();
                 }
         );
 
