@@ -13,7 +13,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,19 +26,7 @@ public class CollectionSettingsCtrl {
     private TextField titleTextField;
 
     @FXML
-    private TextField serverTextField;
-
-    @FXML
     private TextField nameTextField;
-
-    @FXML
-    private Label statusLabel;
-
-    @FXML
-    private CheckBox isRemoteCheckBox;
-
-    @FXML
-    private Button deleteButton;
 
     @FXML
     private Button makeDefaultButton;
@@ -57,9 +44,6 @@ public class CollectionSettingsCtrl {
     // The collection that is created by pressing the button
     // This is necessary because if a user creates a collection it doesn't guarantee that they'll save it
     private Collection createdCollection;
-
-    // Set in the dialog when user is prompted to save the changes
-    private boolean isSaveCancelled = false;
 
     // Injectable
     private final ServerUtils serverUtils;
@@ -89,10 +73,8 @@ public class CollectionSettingsCtrl {
         return isCollectionModified || createdCollection != null;
     }
 
-    public boolean handleUnsavedChanges() {
-        showConfirmSaveDialog(displayedCollection.title, this::saveModifiedChanges);
-
-        return isSaveCancelled;
+    public void handleUnsavedChanges() {
+        showConfirmSaveDialog(displayedCollection.title, this::saveModifiedChanges, this::discardModifiedChanges);
     }
 
     private Collection getSelectedCollection() {
@@ -103,7 +85,7 @@ public class CollectionSettingsCtrl {
         UUID defaultCollectionId = config.getDefaultCollectionId();
 
         for (Collection collection : collectionsListView.getItems()) {
-            if (collection.id == defaultCollectionId) {
+            if (collection.id.equals(defaultCollectionId)) {
                 collectionsListView.getSelectionModel().select(collection);
                 return;
             }
@@ -121,7 +103,8 @@ public class CollectionSettingsCtrl {
                 if (empty || item == null) {
                     setGraphic(null);
                 } else {
-                    setGraphic(new Label(item.title));
+                    boolean isDefault = item.id.equals(config.getDefaultCollectionId());
+                    setGraphic(new Label(item.title + (isDefault ? " (Default)" : "")));
                 }
             }
         };
@@ -174,14 +157,13 @@ public class CollectionSettingsCtrl {
     @FXML
     private void onCreate() {
         if (hasUnsavedChanges()) {
-            boolean isCancelled = handleUnsavedChanges();
-            if (isCancelled) return;
+            handleUnsavedChanges();
         }
 
         String collectionName = serverUtils.getUniqueCollectionName();
         Collection newCollection = new Collection(
                 collectionName,
-                "New Collection"
+                createCollectionTitle()
         );
 
         collectionsListView.getItems().add(newCollection);
@@ -213,7 +195,16 @@ public class CollectionSettingsCtrl {
 
     @FXML
     private void onMakeDefault() {
-        // TODO: implement
+        // If user makes a newly create collection the default one, and it is not saved
+        // it causes unexpected behaviour down the road
+        if (createdCollection != null) {
+            saveModifiedChanges();
+        }
+
+        config.setDefaultCollectionId(displayedCollection.id);
+
+        // To ensure that the display collection is labeled as default
+        collectionsListView.refresh();
     }
 
     @FXML
@@ -228,9 +219,10 @@ public class CollectionSettingsCtrl {
 
         // TODO: implement server/status
         titleTextField.setText(collection.title);
-        serverTextField.setText("[not implemented]");
         nameTextField.setText(collection.name);
-        statusLabel.setText("[not implemented]");
+
+        boolean isDefault = collection.id.equals(config.getDefaultCollectionId());
+        makeDefaultButton.setDisable(isDefault);
     }
 
     private void deleteSelectedCollection() {
@@ -266,6 +258,7 @@ public class CollectionSettingsCtrl {
                 int idx = collectionsListView.getItems().indexOf(createdCollection);
                 collectionsListView.getItems().set(idx, savedCollection);
 
+                displayedCollection = savedCollection;
                 createdCollection = null;
             } else {
                 // Selected collection would not work here because it is different to the one we want to save
@@ -275,8 +268,45 @@ public class CollectionSettingsCtrl {
             isCollectionModified = false;
             saveButton.setDisable(true);
         } catch(Exception e) {
+            // TODO: should be display to the user (in sidebar)
             System.out.println("Server had an error while saving the collection.");
         }
+    }
+
+    private void discardModifiedChanges() {
+        if (createdCollection == null) {
+            Collection originalCollection = serverUtils.getCollectionById(displayedCollection.id);
+
+            // Reset all attributes to the original ones
+            displayedCollection.title = originalCollection.title;
+            displayedCollection.name = originalCollection.name;
+        } else {
+            collectionsListView.getItems().remove(createdCollection);
+            createdCollection = null;
+        }
+
+        isCollectionModified = false;
+        collectionsListView.refresh();
+    }
+
+    private String createCollectionTitle() {
+        List<Collection> collections = collectionsListView.getItems();
+
+        String prefix = "New collection #";
+        // FIXME: duplicate code in sidebar>create default note title
+        int maxNoteNumber = collections.stream()
+                .filter(collection -> collection.title.startsWith(prefix))
+                .mapToInt(collection -> {
+                    try {
+                        return Integer.parseInt(collection.title.replace(prefix, ""));
+                    } catch (Exception e) {
+                        return -1;
+                    }
+                })
+                .max()
+                .orElse(0);
+
+        return prefix + (maxNoteNumber + 1);
     }
 
     // >>>> Dialogs >>>>
@@ -304,13 +334,14 @@ public class CollectionSettingsCtrl {
     }
 
 
-    private void showConfirmSaveDialog(String collectionName, Runnable yes) {
+    private void showConfirmSaveDialog(String collectionName, Runnable yes, Runnable no) {
         var dialog = DialogBoxUtils.createYesNoDialog(
                 "Save changes to the collection?",
-                "Collection \"" + collectionName + "\" has been modified. Do you want to save changes?",
+                "Collection \"" + collectionName + "\" has been modified. Do you want to save changes? \n" +
+                        "Otherwise the changes will be lost.",
                 (confirmed) -> {
-                    isSaveCancelled = !confirmed;
                     if (confirmed) yes.run();
+                    else no.run();
                 }
         );
 

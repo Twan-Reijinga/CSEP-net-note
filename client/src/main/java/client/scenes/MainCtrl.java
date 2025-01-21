@@ -62,6 +62,7 @@ public class MainCtrl {
         if (config.getDefaultCollectionId() == null) {
             System.out.println("Requesting default collection...");
 
+            // TODO: what if default collection returned from the server is NULL?
             Collection defaultCollection = serverUtils.getDefaultCollection();
             config.setDefaultCollectionId(defaultCollection.id);
         } else {
@@ -313,5 +314,14 @@ public class MainCtrl {
         ).showAndWait();
 
         return isConfirmed[0];
+    }
+
+    /**
+     * Get the default collection ID from the local config file.
+     * Propagates a call to a Config entity.
+     * @return a UUID of default collection
+     */
+    public UUID getDefaultCollectionId() {
+        return config.getDefaultCollectionId();
     }
 }
