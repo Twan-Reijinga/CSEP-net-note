@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -206,12 +207,15 @@ public class FilesCtrl {
         EmbeddedFile file = server.getFileFromNote(noteId, id);
         byte[] thisFile = Base64.getDecoder().decode(file.file);
         try {
-            String filePath = System.getProperty("user.home") + "/Downloads/" + file.title;
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setTitle("Select folder");
+            String filePath = directoryChooser.showDialog(null).getAbsolutePath() + File.separator + file.title;
+
             FileOutputStream output = new FileOutputStream(filePath);
             output.write(thisFile);
             main.showMessage("File downloaded successfully to:\n" + filePath, false);
         }catch (IOException e) {
-            main.showMessage("Error downloading file:\n" + file.title, true);
+            main.showMessage("Error downloading file:\n" + file.title + "\n" + e.getMessage(), true);
             throw new RuntimeException(e);
         }
     }
