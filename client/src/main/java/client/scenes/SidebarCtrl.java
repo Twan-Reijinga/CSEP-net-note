@@ -66,6 +66,10 @@ public class SidebarCtrl {
         // Hide and remove message container from layout
         messageContainer.setVisible(false);
         messageContainer.setManaged(false);
+
+
+        refresh();
+        selectFirstNote();
     }
 
     public void showMessage(String message, boolean isError) {
@@ -344,5 +348,4 @@ public class SidebarCtrl {
         // never reached
         return previousNoteId;
     }
-
 }

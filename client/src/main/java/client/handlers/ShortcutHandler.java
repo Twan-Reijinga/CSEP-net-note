@@ -51,6 +51,9 @@ public class ShortcutHandler {
      * @param event The key press that is detected.
      */
     private void handleKeyPresses(KeyEvent event) {
+        if (mainCtrl.isWaiting()) {
+            return;
+        }
         if (event.getCode() == KeyCode.ESCAPE) {
             mainCtrl.focusOnSearch();
             return;
@@ -66,19 +69,34 @@ public class ShortcutHandler {
             this.noteSelectionChange(ChangeType.DOWN);
         } else if (event.getCode() == KeyCode.UP) {
             this.noteSelectionChange(ChangeType.UP);
-        } else if (event.isShiftDown() && event.getCode() == KeyCode.TAB) {
-            mainCtrl.selectPreviousCollection();
         } else if (event.getCode() == KeyCode.TAB) {
-            mainCtrl.selectNextCollection();
+            handleTabShortcuts(event);
         } else {
-            handleFocusShortcuts(event);
+            handleCtrlNoteShortcuts(event);
+            handleCtrlFocusShortcuts(event);
         }
     }
 
-    private void handleFocusShortcuts(KeyEvent event) {
-        if (event.isControlDown() && event.getCode() == KeyCode.R) {
+    private void handleTabShortcuts(KeyEvent event) {
+        if (event.isShiftDown()) {
+            mainCtrl.selectPreviousCollection();
+        } else {
+            mainCtrl.selectNextCollection();
+        }
+    }
+
+    private void handleCtrlNoteShortcuts(KeyEvent event) {
+        if (event.getCode() == KeyCode.N) {
+            sidebarCtrl.onCreateNote();
+        } else if (event.getCode() == KeyCode.W) {
+            sidebarCtrl.deleteSelectedNote();
+        }
+    }
+
+    private void handleCtrlFocusShortcuts(KeyEvent event) {
+        if (event.getCode() == KeyCode.R) {
             sidebarCtrl.refresh();
-        } else if (event.isControlDown() && event.getCode() == KeyCode.L) {
+        } else if (event.getCode() == KeyCode.L) {
             mainCtrl.focusOnTitle();
         }
     }

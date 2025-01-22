@@ -52,6 +52,7 @@ public class MainCtrl {
 
     private final Config config;
     private final ServerUtils serverUtils;
+    private boolean isWaiting;
 
     @Inject
     public MainCtrl(Config config, ServerUtils serverUtils) {
@@ -109,7 +110,6 @@ public class MainCtrl {
 
         showNoteEditor();
         primaryStage.show();
-        sidebarCtrl.refresh();
     }
 
     /**
@@ -300,6 +300,7 @@ public class MainCtrl {
     public boolean userConfirmDeletion(String noteTitle) {
         // needs to be final for eventHandlers //
         final boolean[] isConfirmed = {false};
+        isWaiting = true;
 
         EventHandler<ActionEvent> deleteAction = _ -> isConfirmed[0] = true; // Confirm deletion
         EventHandler<ActionEvent> cancelAction = _ -> isConfirmed[0] = false; // Cancel deletion
@@ -313,6 +314,7 @@ public class MainCtrl {
                 "Cancel", cancelAction
         ).showAndWait();
 
+        isWaiting = false;
         return isConfirmed[0];
     }
 
@@ -353,5 +355,9 @@ public class MainCtrl {
      */
     public void selectPreviousCollection() {
         noteEditorCtrl.selectPreviousCollection();
+    }
+
+    public boolean isWaiting() {
+        return isWaiting;
     }
 }
