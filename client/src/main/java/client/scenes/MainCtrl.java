@@ -182,7 +182,7 @@ public class MainCtrl {
      * @param matchAll option to match all keywords or not
      * @param whereToSearch option to search specific parts of a note
      */
-    public void sendSearchRequest(String text, UUID collectionId, boolean matchAll, String whereToSearch) {
+    public void sendSearchRequest(String text, UUID collectionId, boolean matchAll, int whereToSearch) {
         List<NoteTitle> results = serverUtils.searchNotesInCollection(collectionId, text, matchAll, whereToSearch);
         updateSideBar(results);
     }

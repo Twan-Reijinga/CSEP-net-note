@@ -31,7 +31,7 @@ public class SearchController {
     @PostMapping(path = "/")
     public ResponseEntity<List<NoteTitle>> searchNotes(@RequestBody String keywords,
                                                        @RequestParam("matchAll") String matchAll,
-                                                       @RequestParam("searchIn") String searchIn,
+                                                       @RequestParam("searchIn") int searchIn,
                                                        @RequestParam(required=false, name="collectionId")
                                                            UUID collectionId) {
 

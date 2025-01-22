@@ -285,7 +285,7 @@ public class ServerUtils {
 			UUID collectionId,
 			String text,
 			boolean matchAll,
-			String whereToSearch
+			int whereToSearch
 	){
 		String requestPath = "api/search/";
 		UriBuilder builder = UriBuilder.fromUri(server)

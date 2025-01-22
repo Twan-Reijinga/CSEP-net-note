@@ -21,6 +21,7 @@ import commons.Collection;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -50,6 +51,9 @@ public class NoteEditorCtrl {
 
     @FXML
     private HBox advSearchHBox;
+
+    @FXML
+    private Label searchInLabel;
 
     @FXML
     private ComboBox<Pair<UUID, String>> collectionDropdown;
@@ -117,12 +121,7 @@ public class NoteEditorCtrl {
         collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
         collectionDropdown.setButtonCell(createCollectionDropdownOption());
 
-        advSearchHBox.setSpacing(10.0);
-
-        this.searchInOptionsList.getItems().clear();
-        this.searchInOptionsList.getItems().addAll("Title", "Content", "Both");
-        this.searchInOptionsList.setValue("Both");
-        this.matchAllCheckBox.setSelected(true);
+        setupSearchElements(bundle);
 
         this.bundle = bundle;
 
@@ -330,7 +329,7 @@ public class NoteEditorCtrl {
     public void onSearchButtonPressed(){
         String searchText = searchBox.getText();
         boolean matchAll = this.matchAllCheckBox.isSelected();
-        String whereToSearch = this.searchInOptionsList.getSelectionModel().getSelectedItem();
+        int whereToSearch = this.searchInOptionsList.getSelectionModel().getSelectedIndex();
 
         UUID collectionId = chosenCollectionFilter.getKey();
         if(!searchText.isEmpty()){
@@ -373,6 +372,7 @@ public class NoteEditorCtrl {
         }
         matchAllCheckBox.setDisable(!selected);
         searchInOptionsList.setDisable(!selected);
+        searchInLabel.setVisible(selected);
         matchAllCheckBox.setVisible(selected);
         searchInOptionsList.setVisible(selected);
     }
@@ -491,5 +491,25 @@ public class NoteEditorCtrl {
                 + "-fx-border-width: 1px;"
                 + "-fx-border-radius: 10px;"
                 + "-fx-padding: 1px 5px 1px 5px;";
+    }
+
+    /**
+     * This method is called on initialization of NoteEditorCtrl. It sets the elements and initial
+     * values for the nodes related to the advanced searching and also creates a tooltip for
+     * the advanced search button.
+     * @param bundle used to load the text for the nodes in the correct language.
+     */
+    private void setupSearchElements(ResourceBundle bundle){
+        Tooltip advSearchButtonTooltip = new Tooltip(bundle.getString("advSearchButtonTooltip"));
+        advSearchButtonTooltip.setShowDelay(Duration.seconds(0.1));
+        this.advSearchButton.setTooltip(advSearchButtonTooltip);
+        advSearchHBox.setSpacing(10.0);
+        this.searchInOptionsList.getItems().clear();
+        String bothOption = bundle.getString("inBoth");
+        String titleOption = bundle.getString("inTitle");
+        String contentOption = bundle.getString("inContent");
+        this.searchInOptionsList.getItems().addAll(bothOption, titleOption, contentOption);
+        this.searchInOptionsList.getSelectionModel().selectFirst();
+        this.matchAllCheckBox.setSelected(true);
     }
 }
