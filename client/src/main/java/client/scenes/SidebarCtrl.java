@@ -244,8 +244,9 @@ public class SidebarCtrl {
      * Afterward selects the first note.
      */
     public void deleteSelectedNote() {
-        deleteNoteById(selectedNoteId, true);
-        showMessage("Note successfully deleted!", false);
+        boolean isDeleted = deleteNoteById(selectedNoteId, true);
+        if (isDeleted) showMessage("Note successfully deleted!", false);
+        else showMessage("Deletion cancelled.", true);
     }
 
     /**
@@ -254,20 +255,18 @@ public class SidebarCtrl {
      * But if it deletes a note as part of an undo action it does not need to record it again.
      * @param id The ID of the note that needs to be deleted.
      * @param isReversible The option to record the action so it can be reverse with an undo action.
+     * @return returns if a note was deleted
      */
-    public void deleteNoteById(long id, boolean isReversible) {
-        if (!server.existsNoteById(id)) {
-            return; // note already didn't exist anymore //
-        }
-        if (id <= 0) {
-            return;
+    public boolean deleteNoteById(long id, boolean isReversible) {
+        if (id <= 0 || !server.existsNoteById(id)) {
+            return false; // note already didn't exist anymore //
         }
 
         Note note = server.getNoteById(id);
         server.deleteAllFilesToNote(note);
 
         if (!mainCtrl.userConfirmDeletion(note.title)) {
-            return;
+            return false;
         }
 
 
@@ -284,6 +283,8 @@ public class SidebarCtrl {
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
         noteClick(selectedNoteId);
+
+        return true;
     }
 
     /**
