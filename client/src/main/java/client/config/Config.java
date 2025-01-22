@@ -3,7 +3,6 @@ package client.config;
 import java.util.*;
 import java.io.*;
 
-import client.utils.Language;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Config {
@@ -15,7 +14,7 @@ public class Config {
     // Default collection ID is supposed to be null at initial launch
     private UUID defaultCollectionId = null;
     // Language defaults to English
-    private Language language = Language.EN;
+    private Locale language = Locale.of("EN", "us");
 
     public Config() {
         // for object mapper
@@ -34,7 +33,7 @@ public class Config {
 
             // Language not allowed to be null
             if (config.language == null) {
-                config.language = Language.EN;
+                config.language = Locale.of("EN", "us");
             }
 
             return config;
@@ -69,7 +68,7 @@ public class Config {
      * Restore language from storage to use in app when re-opened.
      * @return The stored language or the default english.
      */
-    public Language getLanguage() {
+    public Locale getLanguage() {
         return language;
     }
 
@@ -77,7 +76,7 @@ public class Config {
      * Save language locally to restore preference when app is opened again.
      * @param language The language to save.
      */
-    public void setLanguage(Language language) {
+    public void setLanguage(Locale language) {
         this.language = language;
         save();
     }
