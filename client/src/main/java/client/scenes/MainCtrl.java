@@ -62,6 +62,7 @@ public class MainCtrl {
         if (config.getDefaultCollectionId() == null) {
             System.out.println("Requesting default collection...");
 
+            // TODO: what if default collection returned from the server is NULL?
             Collection defaultCollection = serverUtils.getDefaultCollection();
             config.setDefaultCollectionId(defaultCollection.id);
         } else {
@@ -181,7 +182,7 @@ public class MainCtrl {
      * @param matchAll option to match all keywords or not
      * @param whereToSearch option to search specific parts of a note
      */
-    public void sendSearchRequest(String text, UUID collectionId, boolean matchAll, String whereToSearch) {
+    public void sendSearchRequest(String text, UUID collectionId, boolean matchAll, int whereToSearch) {
         List<NoteTitle> results = serverUtils.searchNotesInCollection(collectionId, text, matchAll, whereToSearch);
         updateSideBar(results);
     }
@@ -313,5 +314,44 @@ public class MainCtrl {
         ).showAndWait();
 
         return isConfirmed[0];
+    }
+
+    /**
+     * Get the default collection ID from the local config file.
+     * Propagates a call to a Config entity.
+     * @return a UUID of default collection
+     */
+    public UUID getDefaultCollectionId() {
+        return config.getDefaultCollectionId();
+    }
+
+    /**
+     * Moves to the next item in the dropdown, skipping the last option ("Edit Collections").
+     * If the second-to-last item is selected, it wraps around to the first item.
+     *
+     * The method calculates the next index. If it reaches the last option, it wraps to the
+     * first item. Otherwise, it selects the next item. This ensures smooth navigation while
+     * avoiding the special last option.
+     *
+     * The dropdown must be properly set up with items before calling this method.
+     * If the dropdown is empty, nothing happens.
+     */
+    public void selectNextCollection() {
+        noteEditorCtrl.selectNextCollection();
+    }
+
+    /**
+     * Moves to the previous item in the dropdown, skipping the last option ("Edit Collections").
+     * If the first item is selected, it wraps around to the second-to-last item.
+     *
+     * The method checks if the current selection is the first item. If so, it selects the
+     * second-to-last item. Otherwise, it moves to the previous item. This ensures smooth
+     * backward navigation while avoiding the special last option.
+     *
+     * The dropdown must be properly set up with items before calling this method.
+     * If the dropdown is empty, nothing happens.
+     */
+    public void selectPreviousCollection() {
+        noteEditorCtrl.selectPreviousCollection();
     }
 }

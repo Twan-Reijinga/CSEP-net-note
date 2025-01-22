@@ -17,10 +17,9 @@ package client;
 
 import static com.google.inject.Guice.createInjector;
 
+import client.config.Config;
 import client.scenes.*;
 import client.utils.Language;
-import client.config.LanguagePreference;
-
 import com.google.inject.Injector;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -35,6 +34,7 @@ public class Main extends Application {
 
 	private static final Injector INJECTOR = createInjector(new GuiceModule());
 	private static final LoaderFXML FXML = INJECTOR.getInstance(LoaderFXML.class);
+	private static final Config CONFIG = INJECTOR.getInstance(Config.class);
 
 	public static void main(String[] args) {
 		launch(args);
@@ -48,8 +48,13 @@ public class Main extends Application {
 	 */
 	@Override
 	public void start(Stage stage) {
+		// This method catches most error from all threads EXCEPT certain initialization errors
+		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+			handleThreadException(throwable);
+		});
+
 		primaryStage = stage;
-		Language language = LanguagePreference.getLanguage();
+		Language language = CONFIG.getLanguage();
 		loadApplication(language);
 	}
 
@@ -95,8 +100,24 @@ public class Main extends Application {
 	 * @param language the language configuration to be applied to the application
 	 */
 	public static void switchLanguage(Language language) {
-		if (language == LanguagePreference.getLanguage()) return;
-		LanguagePreference.saveLanguage(language);
+		if (language == CONFIG.getLanguage()) return;
+		CONFIG.setLanguage(language);
 		loadApplication(language);
+	}
+
+	/**
+	 * Any error that reaches the default exception handler will be caught
+	 * and shown to the user in the sidebar as any other error
+	 * @param throwable an error that hasn't been caught manually
+	 */
+	private void handleThreadException(Throwable throwable) {
+		System.err.println("\n>>>> EXCEPTION CAUGHT >>>>");
+		System.err.println(throwable.getMessage());
+		throwable.printStackTrace();
+		try {
+			mainCtrl.showMessage("Unknown exception has occurred: " + throwable.getMessage(), true);
+		} catch (Exception e) {
+			System.err.println("Unable to display unknown exception.");
+		}
 	}
 }

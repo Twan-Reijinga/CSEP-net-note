@@ -21,6 +21,7 @@ import commons.Collection;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -50,6 +51,9 @@ public class NoteEditorCtrl {
 
     @FXML
     private HBox advSearchHBox;
+
+    @FXML
+    private Label searchInLabel;
 
     @FXML
     private ComboBox<Pair<UUID, String>> collectionDropdown;
@@ -117,12 +121,7 @@ public class NoteEditorCtrl {
         collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
         collectionDropdown.setButtonCell(createCollectionDropdownOption());
 
-        advSearchHBox.setSpacing(10.0);
-
-        this.searchInOptionsList.getItems().clear();
-        this.searchInOptionsList.getItems().addAll("Title", "Content", "Both");
-        this.searchInOptionsList.setValue("Both");
-        this.matchAllCheckBox.setSelected(true);
+        setupSearchElements(bundle);
 
         this.bundle = bundle;
 
@@ -162,7 +161,10 @@ public class NoteEditorCtrl {
                 if (empty || item == null) {
                     setGraphic(null);
                 } else {
-                    setText(item.getValue());
+                    UUID collectionId = item.getKey();
+                    // Note: collectionId can be null if, for example, "Show all" is to be updated
+                    boolean isDefault = collectionId != null && collectionId.equals(mainCtrl.getDefaultCollectionId());
+                    setText(item.getValue() + (isDefault ? " (Default)" : ""));
                 }
             }
         };
@@ -244,8 +246,7 @@ public class NoteEditorCtrl {
         popupStage.setResizable(false);
         popupStage.setOnCloseRequest(event -> {
             if (popupCtrl.hasUnsavedChanges()) {
-                boolean cancel = popupCtrl.handleUnsavedChanges();
-                if (cancel) event.consume();
+                popupCtrl.handleUnsavedChanges();
             } else {
                 loadCollectionDropdown();
             }
@@ -255,6 +256,71 @@ public class NoteEditorCtrl {
         popupStage.show();
     }
 
+    /**
+     * Moves to the next item in the dropdown, skipping the last option ("Edit Collections").
+     * If the second-to-last item is selected, it wraps around to the first item.
+     *
+     * The method calculates the next index. If it reaches the last option, it wraps to the
+     * first item. Otherwise, it selects the next item. This ensures smooth navigation while
+     * avoiding the special last option.
+     *
+     * The dropdown must be properly set up with items before calling this method.
+     * If the dropdown is empty, nothing happens.
+     */
+    public void selectNextCollection() {
+        int selected = collectionDropdown
+                .getSelectionModel()
+                .getSelectedIndex();
+        int next = selected + 1;
+        int size = collectionDropdown
+                .getItems()
+                .size();
+        boolean isLastOption = size - 1 == next;
+
+        if (isLastOption) {
+            collectionDropdown
+                    .getSelectionModel()
+                    .selectFirst();
+            return;
+        }
+        collectionDropdown
+                .getSelectionModel()
+                .selectNext();
+        return;
+    }
+
+    /**
+     * Moves to the previous item in the dropdown, skipping the last option ("Edit Collections").
+     * If the first item is selected, it wraps around to the second-to-last item.
+     *
+     * The method checks if the current selection is the first item. If so, it selects the
+     * second-to-last item. Otherwise, it moves to the previous item. This ensures smooth
+     * backward navigation while avoiding the special last option.
+     *
+     * The dropdown must be properly set up with items before calling this method.
+     * If the dropdown is empty, nothing happens.
+     */
+    public void selectPreviousCollection() {
+        int selected = collectionDropdown
+                .getSelectionModel()
+                .getSelectedIndex();
+        boolean isFirstOption = selected == 0;
+
+        if (isFirstOption) {
+            int size = collectionDropdown
+                    .getItems()
+                    .size();
+            int secondToLast = size - 2;
+            collectionDropdown
+                    .getSelectionModel()
+                    .select(secondToLast);
+            return;
+        }
+        collectionDropdown
+                .getSelectionModel()
+                .selectPrevious();
+        return;
+    }
 
     /** Called upon clicking the search button
      *  Calls the sendSearchRequest method from the mainCtrl with the text from the searchBox.
@@ -263,7 +329,7 @@ public class NoteEditorCtrl {
     public void onSearchButtonPressed(){
         String searchText = searchBox.getText();
         boolean matchAll = this.matchAllCheckBox.isSelected();
-        String whereToSearch = this.searchInOptionsList.getSelectionModel().getSelectedItem();
+        int whereToSearch = this.searchInOptionsList.getSelectionModel().getSelectedIndex();
 
         UUID collectionId = chosenCollectionFilter.getKey();
         if(!searchText.isEmpty()){
@@ -306,6 +372,7 @@ public class NoteEditorCtrl {
         }
         matchAllCheckBox.setDisable(!selected);
         searchInOptionsList.setDisable(!selected);
+        searchInLabel.setVisible(selected);
         matchAllCheckBox.setVisible(selected);
         searchInOptionsList.setVisible(selected);
     }
@@ -424,5 +491,25 @@ public class NoteEditorCtrl {
                 + "-fx-border-width: 1px;"
                 + "-fx-border-radius: 10px;"
                 + "-fx-padding: 1px 5px 1px 5px;";
+    }
+
+    /**
+     * This method is called on initialization of NoteEditorCtrl. It sets the elements and initial
+     * values for the nodes related to the advanced searching and also creates a tooltip for
+     * the advanced search button.
+     * @param bundle used to load the text for the nodes in the correct language.
+     */
+    private void setupSearchElements(ResourceBundle bundle){
+        Tooltip advSearchButtonTooltip = new Tooltip(bundle.getString("advSearchButtonTooltip"));
+        advSearchButtonTooltip.setShowDelay(Duration.seconds(0.1));
+        this.advSearchButton.setTooltip(advSearchButtonTooltip);
+        advSearchHBox.setSpacing(10.0);
+        this.searchInOptionsList.getItems().clear();
+        String bothOption = bundle.getString("inBoth");
+        String titleOption = bundle.getString("inTitle");
+        String contentOption = bundle.getString("inContent");
+        this.searchInOptionsList.getItems().addAll(bothOption, titleOption, contentOption);
+        this.searchInOptionsList.getSelectionModel().selectFirst();
+        this.matchAllCheckBox.setSelected(true);
     }
 }

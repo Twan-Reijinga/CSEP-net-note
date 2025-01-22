@@ -143,7 +143,7 @@ public class ServerUtilsRepository extends ServerUtils {
     }
 
     @Override
-    public List<NoteTitle> searchNotesInCollection(UUID collectionId, String text, boolean matchAll, String whereToSearch) {
+    public List<NoteTitle> searchNotesInCollection(UUID collectionId, String text, boolean matchAll, int whereToSearch) {
         return notes.values().stream()
                 .filter(note -> collectionId == null || note.collection.id.equals(collectionId))
                 .filter(note -> matchesSearchCriteria(note, text, matchAll, whereToSearch))
@@ -174,7 +174,7 @@ public class ServerUtilsRepository extends ServerUtils {
         return this.lastNoteId++;
     }
 
-    private boolean matchesSearchCriteria(Note note, String text, boolean matchAll, String whereToSearch) {
+    private boolean matchesSearchCriteria(Note note, String text, boolean matchAll, int whereToSearch) {
         if (text == null || text.isEmpty()) {
             return true;
         }
@@ -183,9 +183,9 @@ public class ServerUtilsRepository extends ServerUtils {
         String noteTitle = note.title.toLowerCase();
         String noteContent = note.content.toLowerCase();
 
-        if ("title".equals(whereToSearch)) {
+        if (1 == whereToSearch) {
             return matchTerms(searchTerms, noteTitle, matchAll);
-        } else if ("content".equals(whereToSearch)) {
+        } else if (2 == whereToSearch) {
             return matchTerms(searchTerms, noteContent, matchAll);
         } else {
             return matchAll ?

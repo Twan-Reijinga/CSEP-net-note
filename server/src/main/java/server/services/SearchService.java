@@ -32,10 +32,9 @@ public class SearchService {
      * @param searchIn specifies where to search (e.g., title, content).
      * @return a list of Notes that match the search query.
      */
-    public List<NoteTitle> getSearchResults(UUID id, String keywords, boolean matchAll, String searchIn) {
+    public List<NoteTitle> getSearchResults(UUID id, String keywords, boolean matchAll, int searchIn) {
         List<Note> notesInCollection = loadNotesForSearch(id);
         List<NoteTitle> resultNotes = new ArrayList<>();
-        int searchInValue = getSearchInValue(searchIn);
         String validated = validateUserInput(keywords);
         String[] words = new String[]{};
         boolean useRegularSearch = false;
@@ -46,7 +45,7 @@ public class SearchService {
         else words = validated.split("\\s+");
 
         for (Note note : notesInCollection) {
-            if(noteContainsKeywords(note, words, matchAll, searchInValue, useRegularSearch)) {
+            if(noteContainsKeywords(note, words, matchAll, searchIn, useRegularSearch)) {
                 NoteTitle nt = new NoteTitle(note.title, note.id);
                 resultNotes.add(nt);
             }
@@ -159,19 +158,6 @@ public class SearchService {
             }
         }
         return all;
-    }
-
-    /**
-     * This method is used to get the numerical value for the searchIn variable.
-     * @param searchIn the string value read from the http request
-     * @return the numerical value corresponding to the string given
-     */
-    private int getSearchInValue(String searchIn){
-        return switch (searchIn) {
-            case "Title" -> 1;
-            case "Content" -> 2;
-            default -> 0;
-        };
     }
 
     /**

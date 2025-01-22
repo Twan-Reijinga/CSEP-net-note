@@ -30,7 +30,8 @@ public class GuiceModule implements Module {
         // TODO: what controllers (fxml) should be here?
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(NoteEditorCtrl.class).in(Scopes.SINGLETON);
-        binder.bind(CollectionSettingsCtrl.class).in(Scopes.SINGLETON);
+        // NO_SCOPE ensures a new fresh instance of a pop-up will be created everytime
+        binder.bind(CollectionSettingsCtrl.class).in(Scopes.NO_SCOPE);
     }
 
     @Provides
