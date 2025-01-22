@@ -128,9 +128,33 @@ public class NoteEditorCtrl {
         editCollections = new Pair<>(null, bundle.getString("editCollections"));
         showAll = new Pair<>(null, bundle.getString("showAll"));
 
-        loadLanguageDropdown(bundle.getBaseBundleName());
+        Locale locale = bundle.getLocale();
+        String fullLanguageName =
+                convertLocaleToLanguageString(locale);
+        loadLanguageDropdown(fullLanguageName);
         loadCollectionDropdown();
         this.loadTagOptions();
+    }
+
+    private String convertLocaleToLanguageString(Locale locale) {
+        String language = locale.getLanguage();
+        String fullLanguageName;
+
+        switch (language) {
+            case "en":
+                fullLanguageName = "English";
+                break;
+            case "nl":
+                fullLanguageName = "Dutch";
+                break;
+            case "es":
+                fullLanguageName = "Spanish";
+                break;
+            default:
+                fullLanguageName = "English";
+                break;
+        }
+        return fullLanguageName;
     }
 
     private void appendSidebar(Node sidebarNode) {
@@ -214,13 +238,35 @@ public class NoteEditorCtrl {
 
     @FXML
     private void onLanguageDropdownAction() {
-        String chosenLanguage = languageDropdown.getSelectionModel().getSelectedItem().getName();
-        mainCtrl.switchLanguage(chosenLanguage);
+        String chosenLanguage = languageDropdown
+                .getSelectionModel()
+                .getSelectedItem()
+                .getName();
+        Locale language;
+
+        switch (chosenLanguage) {
+            case "English":
+                language = Locale.of("EN", "us");
+                break;
+            case "Dutch":
+                language = Locale.of("NL", "nl");
+                break;
+            case "Spanish":
+                language = Locale.of("ES", "es");
+                break;
+            default:
+                language = Locale.of("EN", "en");
+                break;
+        }
+        mainCtrl.switchLanguage(language);
+        return;
     }
 
     @FXML
     private void onCollectionDropdownAction() {
-        Pair<UUID, String> selectedItem = collectionDropdown.getSelectionModel().getSelectedItem();
+        Pair<UUID, String> selectedItem = collectionDropdown
+                .getSelectionModel()
+                .getSelectedItem();
 
         if (selectedItem == null) return;
 
