@@ -209,8 +209,14 @@ public class FilesCtrl {
         try {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("Select folder");
-            String filePath = directoryChooser.showDialog(null).getAbsolutePath() + File.separator + file.title;
+            directoryChooser.setInitialDirectory(
+                    new File(System.getProperty("user.home") + File.separator + "Downloads"));
 
+            File selectedFile = directoryChooser.showDialog(null);
+            if (selectedFile == null) {
+                return;
+            }
+            String filePath = selectedFile.getAbsolutePath() + File.separator + file.title;
             FileOutputStream output = new FileOutputStream(filePath);
             output.write(thisFile);
             main.showMessage("File downloaded successfully to:\n" + filePath, false);
