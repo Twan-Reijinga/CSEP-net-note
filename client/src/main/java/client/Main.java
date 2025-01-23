@@ -76,9 +76,6 @@ public class Main extends Application {
 			}
 		);
 
-		double width = primaryStage.getWidth();
-		double height = primaryStage.getHeight();
-
 		Main mainInstance = new Main();
 		FXMLLoader loader = new FXMLLoader(mainInstance.getClass().getResource("/fxml/main.fxml"));
 		loader.setResources(resourceBundle);
@@ -92,8 +89,6 @@ public class Main extends Application {
 		}
 		mainCtrl.initialize(primaryStage, markdownEditor,
 				noteEditor, sidebarEditor, filesEditor, resourceBundle);
-		primaryStage.setWidth(width);
-		primaryStage.setHeight(height);
 	}
 
 	/**
