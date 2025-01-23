@@ -57,19 +57,20 @@ public class MainCtrl {
     public MainCtrl(Config config, ServerUtils serverUtils) {
         this.config = config;
         this.serverUtils = serverUtils;
+        initializeDefaultCollection();
+    }
 
-        // TODO: consider a better place for default collection initialization
+    private void initializeDefaultCollection() {
         if (config.getDefaultCollectionId() == null) {
             System.out.println("Requesting default collection...");
-
-            // TODO: what if default collection returned from the server is NULL?
             Collection defaultCollection = serverUtils.getDefaultCollection();
+            if (defaultCollection == null) {
+                throw new IllegalStateException("Default collection cannot be null");
+            }
             config.setDefaultCollectionId(defaultCollection.id);
         } else {
             try {
-                // TODO: create a dedicated collection exists method in server utils
-                // Check if collection exists, because sometimes it would cause a bug
-                //  when for example a server restarts it creates a new default collection (different ID)
+                // Verify if collection still exists on server
                 serverUtils.getCollectionById(config.getDefaultCollectionId());
             } catch (Exception e) {
                 Collection defaultCollection = serverUtils.getDefaultCollection();
@@ -78,7 +79,6 @@ public class MainCtrl {
         }
     }
 
-
     public void initialize(
             Stage primaryStage,
             Pair<MarkdownEditorCtrl, Parent> markdownEditor,
@@ -86,10 +86,8 @@ public class MainCtrl {
             Pair<SidebarCtrl, Parent> sidebarEditor,
             Pair<FilesCtrl, Parent> filesEditor,
             ResourceBundle bundle
-    )
-    {
+    ) {
         this.primaryStage = primaryStage;
-
         this.tagFilteringHandler = new TagFilteringHandler(this.serverUtils);
 
         this.noteEditorCtrl = noteEditor.getKey();
@@ -98,7 +96,6 @@ public class MainCtrl {
         this.markdownEditorCtrl = markdownEditor.getKey();
         this.sidebarCtrl = sidebarEditor.getKey();
         this.filesCtrl = filesEditor.getKey();
-
 
         noteEditorCtrl.initialize(sidebarEditor, markdownEditor, filesEditor, bundle);
         markdownEditorCtrl.initialize(sidebarCtrl);
