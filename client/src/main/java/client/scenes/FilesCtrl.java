@@ -211,11 +211,18 @@ public class FilesCtrl {
             directoryChooser.setTitle("Select folder");
             directoryChooser.setInitialDirectory(
                     new File(System.getProperty("user.home") + File.separator + "Downloads"));
+            File selectedFile;
 
-            File selectedFile = directoryChooser.showDialog(null);
+            try {
+                selectedFile = directoryChooser.showDialog(null);
+            } catch (IllegalArgumentException e) {
+                directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+                selectedFile = directoryChooser.showDialog(null);
+            }
             if (selectedFile == null) {
                 return;
             }
+
             String filePath = selectedFile.getAbsolutePath() + File.separator + file.title;
             FileOutputStream output = new FileOutputStream(filePath);
             output.write(thisFile);
