@@ -103,7 +103,7 @@ public class ShortcutHandler {
     private void handleCtrlNoteShortcuts(KeyEvent event) {
         if (event.getCode() == KeyCode.N) {
             sidebarCtrl.onCreateNote();
-        } else if (event.getCode() == KeyCode.W) {
+        } else if (event.getCode() == KeyCode.DELETE) {
             sidebarCtrl.deleteSelectedNote();
         }
     }
