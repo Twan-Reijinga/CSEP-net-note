@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import server.database.CollectionRepository;
 import server.database.NoteRepository;
 import server.services.CollectionService;
+import server.services.WebsocketService;
 
 @RestController
 @RequestMapping("/api/collections")
@@ -18,16 +19,19 @@ public class CollectionController {
     private final CollectionRepository collectionRepository;
     private final NoteRepository noteRepository;
     private final CollectionService collectionService;
+    private final WebsocketService websocketService;
 
     @Autowired
     public CollectionController(
             CollectionRepository collectionRepository,
             NoteRepository noteRepository,
-            CollectionService collectionService
+            CollectionService collectionService,
+            WebsocketService websocketService
     ) {
         this.collectionRepository = collectionRepository;
         this.noteRepository = noteRepository;
         this.collectionService = collectionService;
+        this.websocketService = websocketService;
     }
 
     @GetMapping(path = {"", "/"})
@@ -62,6 +66,7 @@ public class CollectionController {
             return ResponseEntity.badRequest().build();
         }
         Collection added = collectionRepository.save(collection);
+        websocketService.notifyCollectionSubscribers(websocketService.onCollectionCreated, added);
         return ResponseEntity.ok(added);
     }
 
@@ -81,7 +86,9 @@ public class CollectionController {
                 noteRepository.deleteAll(notes);
             }
 
+            var temp = collectionRepository.findById(id).get();
             collectionRepository.deleteById(id);
+            websocketService.notifyCollectionSubscribers(websocketService.onCollectionDeleted, temp);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,7 +99,8 @@ public class CollectionController {
     @PutMapping(path={"", "/"})
     public ResponseEntity<Collection> updateCollection(@RequestBody Collection collection) {
         try {
-            collectionRepository.save(collection);
+            var temp = collectionRepository.save(collection);
+            websocketService.notifyCollectionSubscribers(websocketService.onCollectionCreated, temp);
             return ResponseEntity.ok(collection);
         }
         catch (Exception e) {
