@@ -15,7 +15,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -66,23 +65,22 @@
                   </HBox>
                   <HBox fx:id="advSearchHBox" minHeight="-Infinity" prefHeight="0.0" prefWidth="600.0" style="-fx-background-color: black;">
                      <children>
-                        <Pane minWidth="-Infinity" prefWidth="130.0">
+                        <HBox minHeight="-Infinity" prefHeight="25.0" style="-fx-border-color: white; -fx-border-radius: 5;">
                            <children>
-                              <ChoiceBox fx:id="searchInOptionsList" disable="true" layoutX="50.0" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: black; -fx-mark-color: white;" visible="false" />
-                              <Label fx:id="searchInLabel" disable="true" minHeight="-Infinity" minWidth="-Infinity" opacity="1" prefHeight="25.0" prefWidth="130.0" style="-fx-border-color: white; -fx-border-radius: 5;" text="%searchIn" textFill="WHITE" visible="false">
+                              <Label fx:id="searchInLabel" disable="true" minHeight="-Infinity" opacity="1" prefHeight="25.0" text="%searchIn" textFill="WHITE" visible="false">
                                  <padding>
                                     <Insets left="2.0" />
                                  </padding>
-                                 <graphic>
-                                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@/images/search-in-icon.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
                               </Label>
+                              <ChoiceBox fx:id="searchInOptionsList" disable="true" minHeight="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefHeight="22.0" style="-fx-background-color: black; -fx-mark-color: white;" visible="false" />
                            </children>
-                        </Pane>
+                           <padding>
+                              <Insets right="2.0" />
+                           </padding>
+                           <HBox.margin>
+                              <Insets bottom="2.0" />
+                           </HBox.margin>
+                        </HBox>
                         <CheckBox fx:id="matchAllCheckBox" alignment="CENTER" contentDisplay="CENTER" disable="true" mnemonicParsing="false" prefHeight="18.0" text="%matchAll" textAlignment="CENTER" textFill="WHITE" visible="false" />
                         <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
                      </children>
