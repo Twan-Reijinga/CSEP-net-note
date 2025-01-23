@@ -261,9 +261,9 @@ public class NoteEditorCtrl {
         popupStage.setOnCloseRequest(event -> {
             if (popupCtrl.hasUnsavedChanges()) {
                 popupCtrl.handleUnsavedChanges();
-            } else {
-                loadCollectionDropdown();
             }
+
+            loadCollectionDropdown();
         });
 
         popupStage.setScene(popupScene);
