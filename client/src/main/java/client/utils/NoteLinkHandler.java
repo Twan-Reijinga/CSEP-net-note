@@ -70,6 +70,13 @@ public class NoteLinkHandler {
     }
 
     /**
+     * Updates the noteTitles in the collection by reading them again from the server.
+     */
+    public void updateNoteTitlesInCollection() {
+        setNoteTitlesForCollection(currentCollectionId);
+    }
+
+    /**
      * This method processes the input string and finds all links inside
      * using a specific regex pattern.
      * @param content the string to process

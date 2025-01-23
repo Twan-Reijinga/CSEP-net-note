@@ -461,4 +461,8 @@ public class MainCtrl {
     public void updateLink(String title, Long id, UUID collectionId){
         this.noteLinkHandler.updateLink(title, id, collectionId);
     }
+
+    public void updateValidLinks(){
+        this.noteLinkHandler.updateNoteTitlesInCollection();
+    }
 }

@@ -140,7 +140,11 @@ public class MarkdownEditorCtrl {
                 Platform.runLater(this::loadCollectionDropdown);
                 return;
             }
-            if(update.note.id != activeNote.id) return;
+            if(update.note.id != activeNote.id){
+                this.mainCtrl.updateValidLinks();
+                requestRefresh();
+                return;
+            }
             Platform.runLater(this::handleWebsocketUpdate);
         });
     }
@@ -152,6 +156,11 @@ public class MarkdownEditorCtrl {
         noteText.setText(activeNote.content);
         noteText.positionCaret(pos);
         titleField.setText(activeNote.title);
+
+        this.titleChanged = false;
+        this.initialTitle = activeNote.title;
+        this.mainCtrl.updateValidLinks();
+
         requestRefresh();
         loadCollectionDropdown();
         updateForbiddenTitles();
