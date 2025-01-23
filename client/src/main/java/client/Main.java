@@ -19,7 +19,6 @@ import static com.google.inject.Guice.createInjector;
 
 import client.config.Config;
 import client.scenes.*;
-import client.utils.Language;
 import client.utils.ServerUtils;
 import com.google.inject.Injector;
 import javafx.application.Application;
