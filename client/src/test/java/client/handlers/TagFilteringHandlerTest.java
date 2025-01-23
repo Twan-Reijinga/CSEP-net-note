@@ -75,7 +75,7 @@ class TagFilteringHandlerTest {
 
     @Test
     void testAddNoteTags() {
-        Note note = new Note("test", "Test note with #java and #test tags", collection);
+        Note note = new Note("test", "Test note with #tag and #test tags", collection);
         serverUtils.addNote(note);
         note.id = getServerNoteId(note);
         tagFilteringHandler.addNoteTags(note);
@@ -87,15 +87,15 @@ class TagFilteringHandlerTest {
 
     @Test
     void testUpdateNoteTags() {
-        Note initialNote = new Note("test", "Initial #java #test", collection);
+        Note initialNote = new Note("test", "Initial #tag #test", collection);
         tagFilteringHandler.addNoteTags(initialNote);
 
         Note updatedNote = new Note("test", "Updated", collection);
         List<String> removedTags = tagFilteringHandler.updateNoteTags(updatedNote);
 
-        assertTrue(removedTags.contains("#java"));
+        assertTrue(removedTags.contains("#tag"));
         List<String> availableTags = tagFilteringHandler.getAvailableTags();
-        assertFalse(availableTags.contains("#java"));
+        assertFalse(availableTags.contains("#tag"));
     }
 
     @Test
@@ -141,8 +141,8 @@ class TagFilteringHandlerTest {
 
     @Test
     void testRemoveTagsIfOrphaned() {
-        Note note1 = new Note("title", "Test #java #test", collection);
-        Note note2 = new Note("title", "Test #python #test", collection);
+        Note note1 = new Note("title", "Test #tag #test", collection);
+        Note note2 = new Note("title", "Test #csep #test", collection);
 
         serverUtils.addNote(note1);
         serverUtils.addNote(note2);
@@ -152,7 +152,7 @@ class TagFilteringHandlerTest {
         tagFilteringHandler.addNoteTags(note1);
         tagFilteringHandler.addNoteTags(note2);
 
-        HashSet<String> removedTags = new HashSet<>(List.of("#java"));
+        HashSet<String> removedTags = new HashSet<>(List.of("#tag"));
         List<String> orphanedTags = tagFilteringHandler.removeTagsIfOrphaned(removedTags);
 
         assertTrue(orphanedTags.isEmpty());
@@ -161,6 +161,6 @@ class TagFilteringHandlerTest {
         orphanedTags = tagFilteringHandler.removeTagsIfOrphaned(removedTags);
 
         assertEquals(1, orphanedTags.size());
-        assertTrue(orphanedTags.contains("#java"));
+        assertTrue(orphanedTags.contains("#tag"));
     }
 }
