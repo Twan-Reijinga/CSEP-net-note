@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 Delft University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package client.scenes;
 
 import client.LoaderFXML;
@@ -122,7 +137,6 @@ public class NoteEditorCtrl {
         collectionDropdown.setButtonCell(createCollectionDropdownOption());
 
         setupSearchElements(bundle);
-
         this.bundle = bundle;
 
         editCollections = new Pair<>(null, bundle.getString("editCollections"));
@@ -133,7 +147,7 @@ public class NoteEditorCtrl {
                 convertLocaleToLanguageString(locale);
         loadLanguageDropdown(fullLanguageName);
         loadCollectionDropdown();
-        this.loadTagOptions();
+        loadTagOptions();
     }
 
     private String convertLocaleToLanguageString(Locale locale) {
@@ -293,9 +307,9 @@ public class NoteEditorCtrl {
         popupStage.setOnCloseRequest(event -> {
             if (popupCtrl.hasUnsavedChanges()) {
                 popupCtrl.handleUnsavedChanges();
-            } else {
-                loadCollectionDropdown();
             }
+
+            loadCollectionDropdown();
         });
 
         popupStage.setScene(popupScene);
@@ -332,7 +346,6 @@ public class NoteEditorCtrl {
         collectionDropdown
                 .getSelectionModel()
                 .selectNext();
-        return;
     }
 
     /**
@@ -380,8 +393,7 @@ public class NoteEditorCtrl {
         UUID collectionId = chosenCollectionFilter.getKey();
         if(!searchText.isEmpty()){
             mainCtrl.sendSearchRequest(searchText, collectionId, matchAll, whereToSearch);
-        }
-        else{
+        } else{
             mainCtrl.refreshSideBar();
         }
     }

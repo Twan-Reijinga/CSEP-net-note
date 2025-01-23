@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 Delft University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package client.scenes;
 
 import client.config.Config;
@@ -13,6 +28,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
+import javafx.stage.Modality;
 
 import java.util.List;
 import java.util.UUID;
@@ -45,6 +61,8 @@ public class CollectionSettingsCtrl {
     // This is necessary because if a user creates a collection it doesn't guarantee that they'll save it
     private Collection createdCollection;
 
+    private boolean isDialogOpened = false;
+
     // Injectable
     private final ServerUtils serverUtils;
     private final Config config;
@@ -64,10 +82,8 @@ public class CollectionSettingsCtrl {
         collectionsListView.setCellFactory(_ -> createCollectionListViewItem());
 
         selectDefaultCollection();
-
-        Collection defaultCollection = getSelectedCollection();
-        loadCollectionInfo(defaultCollection);
     }
+
 
     public boolean hasUnsavedChanges() {
         return isCollectionModified || createdCollection != null;
@@ -87,6 +103,7 @@ public class CollectionSettingsCtrl {
         for (Collection collection : collectionsListView.getItems()) {
             if (collection.id.equals(defaultCollectionId)) {
                 collectionsListView.getSelectionModel().select(collection);
+                loadCollectionInfo(collection);
                 return;
             }
         }
@@ -125,8 +142,7 @@ public class CollectionSettingsCtrl {
 
     @FXML
     private void onTitleChange() {
-        Collection selectedCollection = getSelectedCollection();
-        selectedCollection.title = titleTextField.getText();
+        displayedCollection.title = titleTextField.getText();
 
         isCollectionModified = true;
         saveButton.setDisable(false);
@@ -136,26 +152,9 @@ public class CollectionSettingsCtrl {
     }
 
     @FXML
-    private void onServerChange() {
-        isCollectionModified = true;
-        saveButton.setDisable(false);
-
-        // TODO: should be reflected in the server status
-    }
-
-    @FXML
-    private void onNameChange() {
-        Collection selectedCollection = getSelectedCollection();
-        selectedCollection.name = nameTextField.getText();
-
-        isCollectionModified = true;
-        saveButton.setDisable(false);
-
-        // TODO: server status should be updated accordingly
-    }
-
-    @FXML
     private void onCreate() {
+        if (isDialogOpened) return;
+
         if (hasUnsavedChanges()) {
             handleUnsavedChanges();
         }
@@ -179,6 +178,8 @@ public class CollectionSettingsCtrl {
 
     @FXML
     private void onDelete() {
+        if (isDialogOpened) return;
+
         if (displayedCollection == null) {
             // Since default collection must always exist (cannot be deleted)
             // this edge case should never happen, just an extra safety measure
@@ -195,6 +196,8 @@ public class CollectionSettingsCtrl {
 
     @FXML
     private void onMakeDefault() {
+        if (isDialogOpened) return;
+
         // If user makes a newly create collection the default one, and it is not saved
         // it causes unexpected behaviour down the road
         if (createdCollection != null) {
@@ -209,6 +212,7 @@ public class CollectionSettingsCtrl {
 
     @FXML
     private void onSave() {
+        if (isDialogOpened) return;
         saveModifiedChanges();
     }
 
@@ -217,7 +221,6 @@ public class CollectionSettingsCtrl {
         // because it is exactly where it is loaded for the user
         displayedCollection = collection;
 
-        // TODO: implement server/status
         titleTextField.setText(collection.title);
         nameTextField.setText(collection.name);
 
@@ -226,11 +229,9 @@ public class CollectionSettingsCtrl {
     }
 
     private void deleteSelectedCollection() {
-        Collection selectedCollection = getSelectedCollection();
-
         // If deleting an existing collection then it must be removed from the server
         if (createdCollection == null) {
-            serverUtils.deleteCollection(selectedCollection);
+            serverUtils.deleteCollection(displayedCollection);
         } else {
             collectionsListView.getItems().remove(createdCollection);
 
@@ -240,7 +241,7 @@ public class CollectionSettingsCtrl {
             saveButton.setDisable(true);
         }
 
-        collectionsListView.getItems().remove(selectedCollection);
+        collectionsListView.getItems().remove(displayedCollection);
         collectionsListView.refresh();
 
         selectDefaultCollection();
@@ -312,16 +313,24 @@ public class CollectionSettingsCtrl {
     // >>>> Dialogs >>>>
 
     private void showDeletionNotPossibleDialog() {
+        if (isDialogOpened) return;
+        isDialogOpened = true;
+
         var dialog = DialogBoxUtils.createSimpleDialog(
                 "Deletion not possible",
                 "You cannot delete the default collection.",
                 "Ok",
                 (EventHandler<ActionEvent>) _ -> {});
 
+        dialog.withModality(Modality.APPLICATION_MODAL);
         dialog.showAndWait();
+        isDialogOpened = false;
     }
 
     private void showConfirmDeletionDialog(String collectionName, Runnable action) {
+        if (isDialogOpened) return;
+        isDialogOpened = true;
+
         var dialog = DialogBoxUtils.createYesNoDialog(
                 "Delete collection?",
                 "Do you want to delete collection \"" + collectionName + "\"? " +
@@ -330,11 +339,16 @@ public class CollectionSettingsCtrl {
                     if (confirmed) action.run();
                 });
 
+        dialog.withModality(Modality.APPLICATION_MODAL);
         dialog.showAndWait();
+        isDialogOpened = false;
     }
 
 
     private void showConfirmSaveDialog(String collectionName, Runnable yes, Runnable no) {
+        if (isDialogOpened) return;
+        isDialogOpened = true;
+
         var dialog = DialogBoxUtils.createYesNoDialog(
                 "Save changes to the collection?",
                 "Collection \"" + collectionName + "\" has been modified. Do you want to save changes? \n" +
@@ -345,7 +359,9 @@ public class CollectionSettingsCtrl {
                 }
         );
 
+        dialog.withModality(Modality.APPLICATION_MODAL);
         dialog.showAndWait();
+        isDialogOpened = false;
     }
 }
 

@@ -27,7 +27,7 @@
          </font>
       </Label>
       <TextField fx:id="titleTextField" layoutX="294.0" layoutY="14.0" onKeyTyped="#onTitleChange" />
-      <TextField fx:id="serverTextField" disable="true" layoutX="294.0" layoutY="46.0" onKeyTyped="#onServerChange" text="%local" />
-      <TextField fx:id="nameTextField" disable="true" layoutX="294.0" layoutY="80.0" onKeyTyped="#onNameChange" />
+      <TextField disable="true" layoutX="294.0" layoutY="46.0" text="%local" />
+      <TextField fx:id="nameTextField" disable="true" layoutX="294.0" layoutY="80.0" />
    </children>
 </AnchorPane>

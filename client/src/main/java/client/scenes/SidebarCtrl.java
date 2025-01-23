@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 Delft University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package client.scenes;
 
 import client.config.Config;
@@ -6,6 +21,7 @@ import commons.Note;
 import commons.NoteTitle;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -66,6 +82,14 @@ public class SidebarCtrl {
         // Hide and remove message container from layout
         messageContainer.setVisible(false);
         messageContainer.setManaged(false);
+
+        refresh();
+        selectFirstNote();
+
+        ServerUtils.connection.subscribe(update -> {
+            if(update.note == null) return;
+            Platform.runLater(this::refresh);
+        });
     }
 
     public void showMessage(String message, boolean isError) {
@@ -89,7 +113,7 @@ public class SidebarCtrl {
             }
         };
 
-        messageTimer.schedule(messageClearTask, 3000);
+        messageTimer.schedule(messageClearTask, (isError ? 5000 : 3000));
     }
 
     /**
@@ -228,6 +252,7 @@ public class SidebarCtrl {
         note.createdAt = new Date();
         server.addNote(note);
         mainCtrl.addNewTags(note);
+        mainCtrl.addLink(note.collection.id);
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getLast().getId());
         noteClick(selectedNoteId);
@@ -240,8 +265,9 @@ public class SidebarCtrl {
      * Afterward selects the first note.
      */
     public void deleteSelectedNote() {
-        deleteNoteById(selectedNoteId, true);
-        showMessage("Note successfully deleted!", false);
+        boolean isDeleted = deleteNoteById(selectedNoteId, true);
+        if (isDeleted) showMessage("Note successfully deleted!", false);
+        else showMessage("Deletion cancelled.", true);
     }
 
     /**
@@ -250,36 +276,36 @@ public class SidebarCtrl {
      * But if it deletes a note as part of an undo action it does not need to record it again.
      * @param id The ID of the note that needs to be deleted.
      * @param isReversible The option to record the action so it can be reverse with an undo action.
+     * @return returns if a note was deleted
      */
-    public void deleteNoteById(long id, boolean isReversible) {
-        if (!server.existsNoteById(id)) {
-            return; // note already didn't exist anymore //
-        }
-        if (id <= 0) {
-            return;
+    public boolean deleteNoteById(long id, boolean isReversible) {
+        if (id <= 0 || !server.existsNoteById(id)) {
+            return false; // note already didn't exist anymore //
         }
 
         Note note = server.getNoteById(id);
-        server.deleteAllFilesToNote(note);
 
         if (!mainCtrl.userConfirmDeletion(note.title)) {
-            return;
+            return false;
         }
-
 
         boolean isLastNote = server.isLastNoteInCollection(id);
         if (isLastNote) {
             createNote(note.collection.id);
         }
 
+        server.deleteAllFilesToNote(note);
         server.deleteNote(note);
         mainCtrl.deleteTags(note.id);
+        mainCtrl.deleteLink(note.title, note.collection.id);
         if (isReversible) {
             mainCtrl.recordDelete(note);
         }
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
         noteClick(selectedNoteId);
+
+        return true;
     }
 
     /**
@@ -320,6 +346,11 @@ public class SidebarCtrl {
         return selectedNoteId;
     }
 
+    /**
+     * Gets the next id in the sidebar.
+     * @param id The id of the current note.
+     * @return The note id in the menu after it.
+     */
     public long getNextNoteId(long id) {
         boolean isNext = false;
         for (var titleBoxes : noteContainer.getChildren()) {
@@ -333,6 +364,11 @@ public class SidebarCtrl {
         return -1;
     }
 
+    /**
+     * Gets the previous id in the sidebar.
+     * @param id The id of the current note.
+     * @return The note id in the menu before it.
+     */
     public long getPreviousNoteId(long id) {
         long previousNoteId = -1;
         for (var titleBoxes : noteContainer.getChildren()) {
@@ -341,8 +377,13 @@ public class SidebarCtrl {
             }
             previousNoteId = Long.parseLong(titleBoxes.getId());
         }
-        // never reached
         return previousNoteId;
     }
 
+    public void noteLinkClicked(Long id){
+        if(!this.noteTitles.stream().map(x -> x.getId()).toList().contains(id)){
+            refresh();
+        }
+        noteClick(id);
+    }
 }

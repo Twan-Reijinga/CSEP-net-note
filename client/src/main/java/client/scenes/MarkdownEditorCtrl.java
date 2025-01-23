@@ -42,7 +42,7 @@ import org.commonmark.ext.ins.InsExtension;
 import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
 import org.commonmark.ext.task.list.items.TaskListItemsExtension;
 import org.commonmark.ext.footnotes.FootnotesExtension;
-
+import java.util.HashMap;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -87,6 +87,8 @@ public class MarkdownEditorCtrl {
 
     private Note activeNote;
     private SidebarCtrl sidebarCtrl;
+    private boolean titleChanged = false;
+    private String initialTitle = "";
 
     @Inject
     public MarkdownEditorCtrl(ServerUtils serverUtils, Config config, MainCtrl mainCtrl) {
@@ -119,10 +121,6 @@ public class MarkdownEditorCtrl {
     public void initialize(SidebarCtrl sidebarCtrl) {
         this.sidebarCtrl = sidebarCtrl;
 
-        // TODO: stupidest fix possible; MUST be resolve - remove mocking
-        Note n = serverUtils.mockGetDefaultNote();
-        updateNote(n.id);
-
         scheduler.scheduleAtFixedRate(
                 this::syncNoteContents,
                 0,
@@ -136,6 +134,36 @@ public class MarkdownEditorCtrl {
 
         collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
         collectionDropdown.setButtonCell(createCollectionDropdownOption());
+        ServerUtils.connection.subscribe(update -> {
+            if(update.note == null) {
+                // If note is null then the update was for collections
+                Platform.runLater(this::loadCollectionDropdown);
+                return;
+            }
+            if(update.note.id != activeNote.id){
+                this.mainCtrl.updateValidLinks();
+                requestRefresh();
+                return;
+            }
+            Platform.runLater(this::handleWebsocketUpdate);
+        });
+    }
+
+    private void handleWebsocketUpdate() {
+        clearInvalidTitleStyle();
+        activeNote = serverUtils.getNoteById(activeNote.id);
+        var pos = noteText.getCaretPosition();
+        noteText.setText(activeNote.content);
+        noteText.positionCaret(pos);
+        titleField.setText(activeNote.title);
+
+        this.titleChanged = false;
+        this.initialTitle = activeNote.title;
+        this.mainCtrl.updateValidLinks();
+
+        requestRefresh();
+        loadCollectionDropdown();
+        updateForbiddenTitles();
     }
 
     /**
@@ -152,6 +180,10 @@ public class MarkdownEditorCtrl {
         }
 
         activeNote = serverUtils.getNoteById(newId);
+
+        this.titleChanged = false;
+        this.initialTitle = activeNote.title;
+
         noteText.setText(activeNote.content);
         titleField.setText(activeNote.title);
         requestRefresh();
@@ -185,12 +217,11 @@ public class MarkdownEditorCtrl {
 
         // Note contents can be updated anyway because no validation is required
         activeNote.content = noteText.getText();
-
         try {
-            serverUtils.updateNote(activeNote);
+            this.mainCtrl.updateNote(activeNote, titleChanged, initialTitle, activeNote.title);
+            this.titleChanged = false;
+            this.initialTitle = activeNote.title;
 
-            // Update available tags
-            mainCtrl.updateTags(activeNote);
             // Refresh the titles in the sidebar
             sidebarCtrl.refresh();
 
@@ -199,9 +230,9 @@ public class MarkdownEditorCtrl {
         } catch (Exception e) {
             System.out.println("Error updating note: " + activeNote);
             e.printStackTrace();
-
             mainCtrl.showMessage("Failed to update note: " + activeNote.title, true);
         }
+        mainCtrl.updateTags(activeNote);
     }
 
     private ListCell<Pair<UUID, String>> createCollectionDropdownOption() {
@@ -253,7 +284,6 @@ public class MarkdownEditorCtrl {
                         "Failed to move note to collection: %s".formatted(selected.getValue()) +
                         "Make sure that the destination collection doesn't have a note with the same title.",
                         true);
-
                 // Restore to the original collection
                 activeNote.collection = savedCollection;
 
@@ -264,6 +294,7 @@ public class MarkdownEditorCtrl {
                     }
                 }
             }
+            requestRefresh();
         }
     }
 
@@ -297,6 +328,11 @@ public class MarkdownEditorCtrl {
             mainCtrl.showMessage("Duplicate title: " + newTitle, true);
             applyInvalidTitleStyle();
             return;
+        }
+
+        if(!titleChanged){
+            this.initialTitle = activeNote.title;
+            titleChanged = true;
         }
 
         activeNote.title = newTitle;
@@ -336,12 +372,11 @@ public class MarkdownEditorCtrl {
 
     private synchronized void refreshView() {
         setTimeState(false);
-        String convertedTags = convertTagsToLinks(noteText.getText());
+        String convertedTagsAndLinks = convertTagsAndLinks(noteText.getText());
         String titleMarkdown = "# " + titleField.getText() + "\n\n";
-        String html = convertMarkdownToHtml(titleMarkdown + convertedTags);
+        String html = convertMarkdownToHtml(titleMarkdown + convertedTagsAndLinks);
 
 
-        // FIXME (edited): intuition: hangs the application when UI is closed; maybe that's not the problem
         // Use the jfx thread to update the text
         Platform.runLater(() -> setUpEngine(markdownPreview).loadContent(html));
     }
@@ -354,16 +389,16 @@ public class MarkdownEditorCtrl {
                 window.setMember("app", this);
             }
         });
+        String stylesheetUrl = "/stylesheets/webView_styles.css";
+        engine.setUserStyleSheetLocation(getClass().getResource(stylesheetUrl).toExternalForm());
         return engine;
     }
 
     private synchronized void syncNoteContents() {
         if (isContentsSynced) return;
 
-        // FIXME: do something meaningful?
         if (activeNote == null) return;
 
-        // TODO: lazy implementation of threading (not sure of the performance)
         // https://openjfx.io/javadoc/23/javafx.graphics/javafx/application/Platform.html#runLater(java.lang.Runnable)
         Platform.runLater(() -> {
             saveActiveNote();
@@ -391,21 +426,36 @@ public class MarkdownEditorCtrl {
         this.timeState = timeState;
     }
 
-    private String convertTagsToLinks(String text){
+    /**
+     * This method converts the tags that appear in the given array of strings into html links (anchor tags).
+     * It also checks whether the lines start with a tab character and if they do, it doesn't input the HTML.
+     * @param textLines an array containing the lines from the text that needs to be converted
+     * @return the updated array.
+     */
+    private String[] convertTagsToLinks(String[] textLines){
         Pattern pattern = Pattern.compile("#\\w+");
-        Matcher matcher = pattern.matcher(text);
+        Matcher matcher;
+        StringBuffer textBuffer;
 
-        StringBuffer textBuffer = new StringBuffer();
-        while (matcher.find()) {
-            String tag = matcher.group().substring(1);
-            String link = "<a href='#' onclick='app.onTagClicked(\""
-                    + tag + "\")' " + getLinkCSS() + ">"
-                    + tag + "</a>";
-            matcher.appendReplacement(textBuffer, link);
+        for(int i=0; i<textLines.length; i++){
+            if(!textLines[i].startsWith("\t")){
+                matcher = pattern.matcher(textLines[i]);
+
+                textBuffer = new StringBuffer();
+                while (matcher.find()) {
+                    String tag = matcher.group().substring(1);
+                    String link = "<a href='#' class='tags' onclick='app.onTagClicked(\""
+                            + tag + "\")'>"
+                            + tag + "</a>";
+                    matcher.appendReplacement(textBuffer, link);
+                }
+                matcher.appendTail(textBuffer);
+
+                textLines[i] = textBuffer.toString();
+            }
         }
-        matcher.appendTail(textBuffer);
 
-        return textBuffer.toString();
+        return textLines;
     }
 
     /**
@@ -416,14 +466,58 @@ public class MarkdownEditorCtrl {
         this.mainCtrl.addTagFilter("#" + tag);
     }
 
-    //FIXME this should probably be moved to a separate CSS file and then loaded from there.
-    private String getLinkCSS(){
-        return "style='display: inline-block; " +
-                "padding: 2px 4px; " +
-                "border: 1px solid #333; " +
-                "background-color: #ccc; " +
-                "border-radius: 8px; " +
-                "color: #000; " +
-                "text-decoration: none;'";
+    /**
+     * This method converts the note links that appear in the given array into HTML anchor tags.
+     * If a line starts with a tab character, it remains unchanged.
+     * @param textLines an array containing the lines from the text that needs to be converted
+     * @param fullText the text from the noteText field.
+     * @return the updated array.
+     */
+    private String[] getNoteLinkHtml(String[] textLines, String fullText){
+        HashMap<String, Long> links = this.mainCtrl.getNoteLinks(fullText, this.activeNote.collection.id);
+        String html = "";
+
+        for(String link: links.keySet()){
+            Long linkedId = links.get(link);
+            if(linkedId != null){
+                html = "<a class='links-valid' href='#' onclick='app.onLinkClicked(" + linkedId + ")'>";
+            }
+            else{
+                html = "<a class='links-invalid'>";
+            }
+            html +=  link + "</a>";
+
+            for(int i=0; i<textLines.length; i++){
+                if(!textLines[i].startsWith("\t")){
+                    textLines[i] = textLines[i].replace("[[" + link + "]]", html);
+                }
+            }
+        }
+
+        return textLines;
+    }
+
+    /**
+     * This method is called when a user clicks on a valid note-link;
+     * It selects the note that the link references as the active note for the controller.
+     * @param noteId the id of the note referenced.
+     */
+    public void onLinkClicked(String noteId){
+        this.mainCtrl.linkClicked(Long.parseLong(noteId));
+    }
+
+    /**
+     * This method converts the tags and links in the textField into HTML before passing them to the
+     * Markdown parser. It also checks whether the text is a part of code
+     * blocks in which case it doesn't convert links/tags it into HTML.
+     * @param text the text from the content field.
+     * @return the text after making the necessary conversions.
+     */
+    private String convertTagsAndLinks(String text){
+        String[] textLines = text.split("\n");
+        String[] tagsRendered = this.convertTagsToLinks(textLines);
+        String[] linksRendered = this.getNoteLinkHtml(tagsRendered, text);
+
+        return String.join("\n", linksRendered);
     }
 }
