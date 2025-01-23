@@ -7,17 +7,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.NoteRepository;
 import server.services.NoteService;
+import server.services.WebsocketService;
 
 @RestController
 @RequestMapping("/api/notes")
 public class NoteController {
     private final NoteRepository noteRepository;
     private final NoteService noteService;
+    private final WebsocketService websocketService;
 
     @Autowired
-    public NoteController(NoteRepository noteRepository, NoteService noteService) {
+    public NoteController(NoteRepository noteRepository, NoteService noteService, WebsocketService websocketService) {
         this.noteRepository = noteRepository;
         this.noteService = noteService;
+        this.websocketService = websocketService;
     }
 
     @GetMapping(path = {"", "/"})
@@ -66,6 +69,7 @@ public class NoteController {
         }
 
         Note saved = noteRepository.save(note);
+        websocketService.notifyNoteSubscribers(websocketService.onNoteCreated, saved);
         return ResponseEntity.ok(saved);
     }
 
@@ -83,13 +87,15 @@ public class NoteController {
         }
         Note removed = noteRepository.findById(id).get();
         noteRepository.deleteById(id);
+        websocketService.notifyNoteSubscribers(websocketService.onNoteDeleted, removed);
         return ResponseEntity.ok(removed);
     }
 
     @PutMapping(path={"", "/"})
     public ResponseEntity<Note> updateNote(@RequestBody Note note) {
         try {
-            noteRepository.save(note);
+            var temp = noteRepository.save(note);
+            websocketService.notifyNoteSubscribers(websocketService.onNoteUpdated, temp);
             return ResponseEntity.ok(note);
         }
         catch (Exception e) {

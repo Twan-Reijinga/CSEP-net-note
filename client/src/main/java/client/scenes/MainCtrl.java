@@ -59,6 +59,31 @@ public class MainCtrl {
     public MainCtrl(Config config, ServerUtils serverUtils) {
         this.config = config;
         this.serverUtils = serverUtils;
+        try {
+            ServerUtils.connection.connect(new java.net.URI(this.serverUtils.server).getHost());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        initializeDefaultCollection();
+    }
+
+    private void initializeDefaultCollection() {
+        if (config.getDefaultCollectionId() == null) {
+            System.out.println("Requesting default collection...");
+            Collection defaultCollection = serverUtils.getDefaultCollection();
+            if (defaultCollection == null) {
+                throw new IllegalStateException("Default collection cannot be null");
+            }
+            config.setDefaultCollectionId(defaultCollection.id);
+        } else {
+            try {
+                // Verify if collection still exists on server
+                serverUtils.getCollectionById(config.getDefaultCollectionId());
+            } catch (Exception e) {
+                Collection defaultCollection = serverUtils.getDefaultCollection();
+                config.setDefaultCollectionId(defaultCollection.id);
+            }
+        }
     }
 
 
@@ -69,8 +94,7 @@ public class MainCtrl {
             Pair<SidebarCtrl, Parent> sidebarEditor,
             Pair<FilesCtrl, Parent> filesEditor,
             ResourceBundle bundle
-    )
-    {
+    ) {
         this.primaryStage = primaryStage;
 
         this.tagFilteringHandler = new TagFilteringHandler(this.serverUtils);
@@ -107,26 +131,6 @@ public class MainCtrl {
         alert.setContentText("Server is unreachable. Try restarting the server and the application.");
 
         alert.showAndWait();
-    }
-
-    private void initDefaultCollection() {
-        // TODO: consider a better place for default collection initialization
-        if (config.getDefaultCollectionId() == null) {
-            System.out.println("Requesting default collection...");
-
-            // TODO: what if default collection returned from the server is NULL?
-            Collection defaultCollection = serverUtils.getDefaultCollection();
-            config.setDefaultCollectionId(defaultCollection.id);
-        } else {
-            try {
-                // Check if collection exists, because sometimes it would cause a bug
-                //  when for example a server restarts it creates a new default collection (different ID)
-                serverUtils.getCollectionById(config.getDefaultCollectionId());
-            } catch (Exception e) {
-                Collection defaultCollection = serverUtils.getDefaultCollection();
-                config.setDefaultCollectionId(defaultCollection.id);
-            }
-        }
     }
 
     /**

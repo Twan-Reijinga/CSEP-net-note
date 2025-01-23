@@ -132,6 +132,27 @@ public class MarkdownEditorCtrl {
 
         collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
         collectionDropdown.setButtonCell(createCollectionDropdownOption());
+        ServerUtils.connection.subscribe(update -> {
+            if(update.note == null) {
+                // If note is null then the update was for collections
+                Platform.runLater(this::loadCollectionDropdown);
+                return;
+            }
+            if(update.note.id != activeNote.id) return;
+            Platform.runLater(this::handleWebsocketUpdate);
+        });
+    }
+
+    private void handleWebsocketUpdate() {
+        clearInvalidTitleStyle();
+        activeNote = serverUtils.getNoteById(activeNote.id);
+        var pos = noteText.getCaretPosition();
+        noteText.setText(activeNote.content);
+        noteText.positionCaret(pos);
+        titleField.setText(activeNote.title);
+        requestRefresh();
+        loadCollectionDropdown();
+        updateForbiddenTitles();
     }
 
     /**
@@ -337,7 +358,6 @@ public class MarkdownEditorCtrl {
         String html = convertMarkdownToHtml(titleMarkdown + convertedTags);
 
 
-        // FIXME (edited): intuition: hangs the application when UI is closed; maybe that's not the problem
         // Use the jfx thread to update the text
         Platform.runLater(() -> setUpEngine(markdownPreview).loadContent(html));
     }
@@ -356,10 +376,8 @@ public class MarkdownEditorCtrl {
     private synchronized void syncNoteContents() {
         if (isContentsSynced) return;
 
-        // FIXME: do something meaningful?
         if (activeNote == null) return;
 
-        // TODO: lazy implementation of threading (not sure of the performance)
         // https://openjfx.io/javadoc/23/javafx.graphics/javafx/application/Platform.html#runLater(java.lang.Runnable)
         Platform.runLater(() -> {
             saveActiveNote();

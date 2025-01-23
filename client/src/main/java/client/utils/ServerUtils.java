@@ -34,7 +34,8 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
-	private final String server;
+	public final String server;
+	public static Connection connection = new Connection();
 
 	@Inject
 	public ServerUtils(Config config) {

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 Delft University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package client.scenes;
 
 import client.config.Config;
@@ -6,6 +21,7 @@ import commons.Note;
 import commons.NoteTitle;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -69,6 +85,11 @@ public class SidebarCtrl {
 
         refresh();
         selectFirstNote();
+
+        ServerUtils.connection.subscribe(update -> {
+            if(update.note == null) return;
+            Platform.runLater(this::refresh);
+        });
     }
 
     public void showMessage(String message, boolean isError) {
@@ -324,6 +345,11 @@ public class SidebarCtrl {
         return selectedNoteId;
     }
 
+    /**
+     * Gets the next id in the sidebar.
+     * @param id The id of the current note.
+     * @return The note id in the menu after it.
+     */
     public long getNextNoteId(long id) {
         boolean isNext = false;
         for (var titleBoxes : noteContainer.getChildren()) {
@@ -337,6 +363,11 @@ public class SidebarCtrl {
         return -1;
     }
 
+    /**
+     * Gets the previous id in the sidebar.
+     * @param id The id of the current note.
+     * @return The note id in the menu before it.
+     */
     public long getPreviousNoteId(long id) {
         long previousNoteId = -1;
         for (var titleBoxes : noteContainer.getChildren()) {
@@ -345,7 +376,6 @@ public class SidebarCtrl {
             }
             previousNoteId = Long.parseLong(titleBoxes.getId());
         }
-        // never reached
         return previousNoteId;
     }
 }
