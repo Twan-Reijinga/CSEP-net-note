@@ -320,6 +320,11 @@ public class SidebarCtrl {
         return selectedNoteId;
     }
 
+    /**
+     * Gets the next id in the sidebar.
+     * @param id The id of the current note.
+     * @return The note id in the menu after it.
+     */
     public long getNextNoteId(long id) {
         boolean isNext = false;
         for (var titleBoxes : noteContainer.getChildren()) {
@@ -333,6 +338,11 @@ public class SidebarCtrl {
         return -1;
     }
 
+    /**
+     * Gets the previous id in the sidebar.
+     * @param id The id of the current note.
+     * @return The note id in the menu before it.
+     */
     public long getPreviousNoteId(long id) {
         long previousNoteId = -1;
         for (var titleBoxes : noteContainer.getChildren()) {
@@ -341,7 +351,6 @@ public class SidebarCtrl {
             }
             previousNoteId = Long.parseLong(titleBoxes.getId());
         }
-        // never reached
         return previousNoteId;
     }
 
