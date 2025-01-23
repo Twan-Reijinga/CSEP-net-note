@@ -362,7 +362,6 @@ public class MarkdownEditorCtrl {
         String html = convertMarkdownToHtml(titleMarkdown + convertedTags);
 
 
-        // FIXME (edited): intuition: hangs the application when UI is closed; maybe that's not the problem
         // Use the jfx thread to update the text
         Platform.runLater(() -> setUpEngine(markdownPreview).loadContent(html));
     }
@@ -381,10 +380,8 @@ public class MarkdownEditorCtrl {
     private synchronized void syncNoteContents() {
         if (isContentsSynced) return;
 
-        // FIXME: do something meaningful?
         if (activeNote == null) return;
 
-        // TODO: lazy implementation of threading (not sure of the performance)
         // https://openjfx.io/javadoc/23/javafx.graphics/javafx/application/Platform.html#runLater(java.lang.Runnable)
         Platform.runLater(() -> {
             saveActiveNote();

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 Delft University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package client.handlers;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,7 +90,7 @@ class TagFilteringHandlerTest {
 
     @Test
     void testAddNoteTags() {
-        Note note = new Note("test", "Test note with #java and #test tags", collection);
+        Note note = new Note("test", "Test note with #tag and #test tags", collection);
         serverUtils.addNote(note);
         note.id = getServerNoteId(note);
         tagFilteringHandler.addNoteTags(note);
@@ -87,15 +102,15 @@ class TagFilteringHandlerTest {
 
     @Test
     void testUpdateNoteTags() {
-        Note initialNote = new Note("test", "Initial #java #test", collection);
+        Note initialNote = new Note("test", "Initial #tag #test", collection);
         tagFilteringHandler.addNoteTags(initialNote);
 
         Note updatedNote = new Note("test", "Updated", collection);
         List<String> removedTags = tagFilteringHandler.updateNoteTags(updatedNote);
 
-        assertTrue(removedTags.contains("#java"));
+        assertTrue(removedTags.contains("#tag"));
         List<String> availableTags = tagFilteringHandler.getAvailableTags();
-        assertFalse(availableTags.contains("#java"));
+        assertFalse(availableTags.contains("#tag"));
     }
 
     @Test
@@ -141,8 +156,8 @@ class TagFilteringHandlerTest {
 
     @Test
     void testRemoveTagsIfOrphaned() {
-        Note note1 = new Note("title", "Test #java #test", collection);
-        Note note2 = new Note("title", "Test #python #test", collection);
+        Note note1 = new Note("title", "Test #tag #test", collection);
+        Note note2 = new Note("title", "Test #csep #test", collection);
 
         serverUtils.addNote(note1);
         serverUtils.addNote(note2);
@@ -152,7 +167,7 @@ class TagFilteringHandlerTest {
         tagFilteringHandler.addNoteTags(note1);
         tagFilteringHandler.addNoteTags(note2);
 
-        HashSet<String> removedTags = new HashSet<>(List.of("#java"));
+        HashSet<String> removedTags = new HashSet<>(List.of("#tag"));
         List<String> orphanedTags = tagFilteringHandler.removeTagsIfOrphaned(removedTags);
 
         assertTrue(orphanedTags.isEmpty());
@@ -161,6 +176,6 @@ class TagFilteringHandlerTest {
         orphanedTags = tagFilteringHandler.removeTagsIfOrphaned(removedTags);
 
         assertEquals(1, orphanedTags.size());
-        assertTrue(orphanedTags.contains("#java"));
+        assertTrue(orphanedTags.contains("#tag"));
     }
 }
