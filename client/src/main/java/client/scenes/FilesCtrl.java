@@ -85,6 +85,11 @@ public class FilesCtrl {
         refresh();
     }
 
+    /**
+     * Edit the title of an existing file.
+     * @param noteId The note ID where the file is placed.
+     * @param id The id of the file.
+     */
     public void editTitle(long noteId, long id) {
         EmbeddedFile file = server.getFileFromNote(noteId, id);
         String MockTitle = "MockTitle1";
@@ -94,6 +99,11 @@ public class FilesCtrl {
         refresh();
     }
 
+    /**
+     * Download a file to your local computer.
+     * @param noteId The ID of the note where the file is embedded in.
+     * @param id The ID of the file.
+     */
     public void downloadFile(long noteId, long id){
         EmbeddedFile file = server.getFileFromNote(noteId, id);
         byte[] thisFile = Base64.getDecoder().decode(file.file);
@@ -106,6 +116,10 @@ public class FilesCtrl {
         }
     }
 
+    /**
+     * Check if the enter key is pressed to save file.
+     * @param event The key event.
+     */
     public void checkEnter(KeyEvent event) {
         if (event.getCode().equals(KeyCode.ENTER)) {
             addFile();
