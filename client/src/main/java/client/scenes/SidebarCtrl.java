@@ -67,13 +67,8 @@ public class SidebarCtrl {
         messageContainer.setVisible(false);
         messageContainer.setManaged(false);
 
-        if (!server.isServerAvailable()) {
-            // Sidebar initialized. Error can be displayed
-            showMessage("Server unreachable. Try restarting the application.", true);
-        } else {
-            refresh();
-            selectFirstNote();
-        }
+        refresh();
+        selectFirstNote();
     }
 
     public void showMessage(String message, boolean isError) {

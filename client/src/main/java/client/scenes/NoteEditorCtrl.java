@@ -127,11 +127,9 @@ public class NoteEditorCtrl {
         editCollections = new Pair<>(null, bundle.getString("editCollections"));
         showAll = new Pair<>(null, bundle.getString("showAll"));
 
-        if (serverUtils.isServerAvailable()) {
-            loadLanguageDropdown(bundle.getBaseBundleName());
-            loadCollectionDropdown();
-            loadTagOptions();
-        }
+        loadLanguageDropdown(bundle.getBaseBundleName());
+        loadCollectionDropdown();
+        loadTagOptions();
     }
 
     private void appendSidebar(Node sidebarNode) {

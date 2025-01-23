@@ -115,7 +115,7 @@ public class Main extends Application {
 	private void handleThreadException(Throwable throwable) {
 		if (!SERVER.isServerAvailable()) {
 			try {
-				mainCtrl.showMessage("Server unreachable. Try restarting the application.", true);
+				mainCtrl.handleServerUnreachable();
 			} catch (Exception e) {
 				System.err.println("Unable to display an exception caused by unavailable server.");
 

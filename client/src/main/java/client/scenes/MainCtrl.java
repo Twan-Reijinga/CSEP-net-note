@@ -29,6 +29,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import commons.Collection;
@@ -81,9 +82,9 @@ public class MainCtrl {
         this.sidebarCtrl = sidebarEditor.getKey();
         this.filesCtrl = filesEditor.getKey();
 
-        // At this point sidebar is not initialized so no way to display error
-        if (serverUtils.isServerAvailable()) {
-            initDefaultCollection();
+        if (!serverUtils.isServerAvailable()) {
+            handleServerUnreachable();
+            return;
         }
 
         noteEditorCtrl.initialize(sidebarEditor, markdownEditor, filesEditor, bundle);
@@ -95,6 +96,17 @@ public class MainCtrl {
 
         showNoteEditor();
         primaryStage.show();
+    }
+
+    public void handleServerUnreachable() {
+        primaryStage.close();
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Server Unreachable");
+        alert.setHeaderText("Connection Error");
+        alert.setContentText("Server is unreachable. Try restarting the server and the application.");
+
+        alert.showAndWait();
     }
 
     private void initDefaultCollection() {
