@@ -1,0 +1,7 @@
+#searchInOptionsList .context-menu {
+    -fx-background-color: black;
+}
+
+#searchInOptionsList .label {
+    -fx-text-fill: white;
+}

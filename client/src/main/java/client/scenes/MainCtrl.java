@@ -29,6 +29,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import commons.Collection;
@@ -52,23 +53,30 @@ public class MainCtrl {
 
     private final Config config;
     private final ServerUtils serverUtils;
+    private boolean isWaiting;
 
     @Inject
     public MainCtrl(Config config, ServerUtils serverUtils) {
         this.config = config;
         this.serverUtils = serverUtils;
+        try {
+            ServerUtils.connection.connect(new java.net.URI(this.serverUtils.server).getHost());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-        // TODO: consider a better place for default collection initialization
+    private void initializeDefaultCollection() {
         if (config.getDefaultCollectionId() == null) {
             System.out.println("Requesting default collection...");
-
             Collection defaultCollection = serverUtils.getDefaultCollection();
+            if (defaultCollection == null) {
+                throw new IllegalStateException("Default collection cannot be null");
+            }
             config.setDefaultCollectionId(defaultCollection.id);
         } else {
             try {
-                // TODO: create a dedicated collection exists method in server utils
-                // Check if collection exists, because sometimes it would cause a bug
-                //  when for example a server restarts it creates a new default collection (different ID)
+                // Verify if collection still exists on server
                 serverUtils.getCollectionById(config.getDefaultCollectionId());
             } catch (Exception e) {
                 Collection defaultCollection = serverUtils.getDefaultCollection();
@@ -85,8 +93,7 @@ public class MainCtrl {
             Pair<SidebarCtrl, Parent> sidebarEditor,
             Pair<FilesCtrl, Parent> filesEditor,
             ResourceBundle bundle
-    )
-    {
+    ) {
         this.primaryStage = primaryStage;
 
         this.tagFilteringHandler = new TagFilteringHandler(this.serverUtils);
@@ -98,6 +105,12 @@ public class MainCtrl {
         this.sidebarCtrl = sidebarEditor.getKey();
         this.filesCtrl = filesEditor.getKey();
 
+        if (!serverUtils.isServerAvailable()) {
+            handleServerUnreachable();
+            return;
+        }
+
+        initializeDefaultCollection();
 
         noteEditorCtrl.initialize(sidebarEditor, markdownEditor, filesEditor, bundle);
         markdownEditorCtrl.initialize(sidebarCtrl);
@@ -108,7 +121,18 @@ public class MainCtrl {
 
         showNoteEditor();
         primaryStage.show();
-        sidebarCtrl.refresh();
+    }
+
+    public void handleServerUnreachable() {
+        primaryStage.close();
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("HTTP Server Unreachable");
+        alert.setHeaderText("Connection Error");
+        alert.setContentText("Server is unreachable. Try restarting the server and the application.");
+        alert.setHeight(300);
+
+        alert.showAndWait();
     }
 
     /**
@@ -181,7 +205,7 @@ public class MainCtrl {
      * @param matchAll option to match all keywords or not
      * @param whereToSearch option to search specific parts of a note
      */
-    public void sendSearchRequest(String text, UUID collectionId, boolean matchAll, String whereToSearch) {
+    public void sendSearchRequest(String text, UUID collectionId, boolean matchAll, int whereToSearch) {
         List<NoteTitle> results = serverUtils.searchNotesInCollection(collectionId, text, matchAll, whereToSearch);
         updateSideBar(results);
     }
@@ -299,6 +323,7 @@ public class MainCtrl {
     public boolean userConfirmDeletion(String noteTitle) {
         // needs to be final for eventHandlers //
         final boolean[] isConfirmed = {false};
+        isWaiting = true;
 
         EventHandler<ActionEvent> deleteAction = _ -> isConfirmed[0] = true; // Confirm deletion
         EventHandler<ActionEvent> cancelAction = _ -> isConfirmed[0] = false; // Cancel deletion
@@ -312,6 +337,50 @@ public class MainCtrl {
                 "Cancel", cancelAction
         ).showAndWait();
 
+        isWaiting = false;
         return isConfirmed[0];
+    }
+
+    /**
+     * Get the default collection ID from the local config file.
+     * Propagates a call to a Config entity.
+     * @return a UUID of default collection
+     */
+    public UUID getDefaultCollectionId() {
+        return config.getDefaultCollectionId();
+    }
+
+    /**
+     * Moves to the next item in the dropdown, skipping the last option ("Edit Collections").
+     * If the second-to-last item is selected, it wraps around to the first item.
+     *
+     * The method calculates the next index. If it reaches the last option, it wraps to the
+     * first item. Otherwise, it selects the next item. This ensures smooth navigation while
+     * avoiding the special last option.
+     *
+     * The dropdown must be properly set up with items before calling this method.
+     * If the dropdown is empty, nothing happens.
+     */
+    public void selectNextCollection() {
+        noteEditorCtrl.selectNextCollection();
+    }
+
+    /**
+     * Moves to the previous item in the dropdown, skipping the last option ("Edit Collections").
+     * If the first item is selected, it wraps around to the second-to-last item.
+     *
+     * The method checks if the current selection is the first item. If so, it selects the
+     * second-to-last item. Otherwise, it moves to the previous item. This ensures smooth
+     * backward navigation while avoiding the special last option.
+     *
+     * The dropdown must be properly set up with items before calling this method.
+     * If the dropdown is empty, nothing happens.
+     */
+    public void selectPreviousCollection() {
+        noteEditorCtrl.selectPreviousCollection();
+    }
+
+    public boolean isWaiting() {
+        return isWaiting;
     }
 }

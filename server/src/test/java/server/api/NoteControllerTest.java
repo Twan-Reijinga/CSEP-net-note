@@ -4,8 +4,8 @@ import commons.Collection;
 import commons.Note;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import server.services.CollectionService;
 import server.services.NoteService;
+import server.services.WebsocketService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class NoteControllerTest {
         //  it requires fixing the tests (because even here, all notes have collection null which is not possible)
         NoteService service = new NoteService(repo, null);
 
-        controller = new NoteController(repo, service);
+        controller = new NoteController(repo, service, new WebsocketService());
     }
 
     @Test

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 Delft University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package client.handlers;
 
 import client.scenes.MainCtrl;
@@ -51,6 +66,9 @@ public class ShortcutHandler {
      * @param event The key press that is detected.
      */
     private void handleKeyPresses(KeyEvent event) {
+        if (mainCtrl.isWaiting()) {
+            return;
+        }
         if (event.getCode() == KeyCode.ESCAPE) {
             mainCtrl.focusOnSearch();
             return;
@@ -66,15 +84,34 @@ public class ShortcutHandler {
             this.noteSelectionChange(ChangeType.DOWN);
         } else if (event.getCode() == KeyCode.UP) {
             this.noteSelectionChange(ChangeType.UP);
+        } else if (event.getCode() == KeyCode.TAB) {
+            handleTabShortcuts(event);
         } else {
-            handleFocusShortcuts(event);
+            handleCtrlNoteShortcuts(event);
+            handleCtrlFocusShortcuts(event);
         }
     }
 
-    private void handleFocusShortcuts(KeyEvent event) {
-        if (event.isControlDown() && event.getCode() == KeyCode.R) {
+    private void handleTabShortcuts(KeyEvent event) {
+        if (event.isShiftDown()) {
+            mainCtrl.selectPreviousCollection();
+        } else {
+            mainCtrl.selectNextCollection();
+        }
+    }
+
+    private void handleCtrlNoteShortcuts(KeyEvent event) {
+        if (event.getCode() == KeyCode.N) {
+            sidebarCtrl.onCreateNote();
+        } else if (event.getCode() == KeyCode.DELETE) {
+            sidebarCtrl.deleteSelectedNote();
+        }
+    }
+
+    private void handleCtrlFocusShortcuts(KeyEvent event) {
+        if (event.getCode() == KeyCode.R) {
             sidebarCtrl.refresh();
-        } else if (event.isControlDown() && event.getCode() == KeyCode.L) {
+        } else if (event.getCode() == KeyCode.L) {
             mainCtrl.focusOnTitle();
         }
     }

@@ -1,44 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="232.0" prefWidth="393.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CollectionSettingsCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="220.0" prefWidth="458.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CollectionSettingsCtrl">
    <children>
-      <Button layoutX="14.0" layoutY="198.0" mnemonicParsing="false" onAction="#onCreate" text="%create" />
-      <Button fx:id="deleteButton" layoutX="92.0" layoutY="198.0" mnemonicParsing="false" onAction="#onDelete" text="%delete" />
-      <Button fx:id="makeDefaultButton" disable="true" layoutX="219.0" layoutY="198.0" mnemonicParsing="false" onAction="#onMakeDefault" text="%makeDefault" />
-      <Button fx:id="saveButton" disable="true" layoutX="329.0" layoutY="198.0" mnemonicParsing="false" onAction="#onSave" text="%save" />
-      <ListView fx:id="collectionsListView" layoutX="14.0" layoutY="8.0" onMouseClicked="#onListViewClick" prefHeight="169.0" prefWidth="138.0" />
-      <Label layoutX="162.0" layoutY="27.0" text="%title">
+      <Button layoutX="14.0" layoutY="185.0" mnemonicParsing="false" onAction="#onCreate" text="%create" />
+      <Button fx:id="deleteButton" layoutX="144.0" layoutY="185.0" mnemonicParsing="false" onAction="#onDelete" text="%delete" />
+      <Button fx:id="makeDefaultButton" layoutX="275.0" layoutY="185.0" mnemonicParsing="false" onAction="#onMakeDefault" text="%makeDefault" />
+      <Button fx:id="saveButton" disable="true" layoutX="394.0" layoutY="185.0" mnemonicParsing="false" onAction="#onSave" text="%save" />
+      <ListView fx:id="collectionsListView" layoutX="14.0" layoutY="8.0" onMouseClicked="#onListViewClick" prefHeight="170.0" prefWidth="190.0" />
+      <Label layoutX="216.0" layoutY="18.0" text="%title">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label layoutX="161.0" layoutY="60.0" text="%server">
+      <Label layoutX="215.0" layoutY="51.0" text="%server">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label layoutX="160.0" layoutY="93.0" text="%collection">
+      <Label layoutX="214.0" layoutY="84.0" text="%collection">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label layoutX="161.0" layoutY="126.0" text="%status">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label fx:id="statusLabel" layoutX="227.0" layoutY="127.0" text="[status]" />
-      <TextField fx:id="titleTextField" layoutX="227.0" layoutY="24.0" onKeyTyped="#onTitleChange" />
-      <TextField fx:id="serverTextField" disable="true" layoutX="227.0" layoutY="56.0" onKeyTyped="#onServerChange" text="%local" />
-      <TextField fx:id="nameTextField" layoutX="227.0" layoutY="90.0" onKeyTyped="#onNameChange" />
-      <CheckBox fx:id="isRemoteCheckBox" disable="true" layoutX="161.0" layoutY="158.0" mnemonicParsing="false" text="%remote" />
+      <TextField fx:id="titleTextField" layoutX="294.0" layoutY="14.0" onKeyTyped="#onTitleChange" />
+      <TextField disable="true" layoutX="294.0" layoutY="46.0" text="%local" />
+      <TextField fx:id="nameTextField" disable="true" layoutX="294.0" layoutY="80.0" />
    </children>
 </AnchorPane>
