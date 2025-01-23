@@ -104,17 +104,6 @@ public class NoteController {
         }
     }
 
-    // TODO: do something with this mock function which is still being used for some reason
-    @GetMapping(path="/mock")
-    public ResponseEntity<Note> mockGetDefaultNote() {
-        List<Note> notes = noteRepository.findAll();
-        if (notes.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(notes.get(0));
-    }
-
     @GetMapping(path="/last")
     public ResponseEntity<Boolean> isLastNoteInCollection(@RequestParam long noteId) {
         boolean isLastNote = noteService.isLastNoteInCollection(noteId);

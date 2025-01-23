@@ -29,6 +29,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import commons.Collection;
@@ -63,7 +64,6 @@ public class MainCtrl {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        initializeDefaultCollection();
     }
 
     private void initializeDefaultCollection() {
@@ -105,6 +105,12 @@ public class MainCtrl {
         this.sidebarCtrl = sidebarEditor.getKey();
         this.filesCtrl = filesEditor.getKey();
 
+        if (!serverUtils.isServerAvailable()) {
+            handleServerUnreachable();
+            return;
+        }
+
+        initializeDefaultCollection();
 
         noteEditorCtrl.initialize(sidebarEditor, markdownEditor, filesEditor, bundle);
         markdownEditorCtrl.initialize(sidebarCtrl);
@@ -115,6 +121,18 @@ public class MainCtrl {
 
         showNoteEditor();
         primaryStage.show();
+    }
+
+    public void handleServerUnreachable() {
+        primaryStage.close();
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("HTTP Server Unreachable");
+        alert.setHeaderText("Connection Error");
+        alert.setContentText("Server is unreachable. Try restarting the server and the application.");
+        alert.setHeight(300);
+
+        alert.showAndWait();
     }
 
     /**

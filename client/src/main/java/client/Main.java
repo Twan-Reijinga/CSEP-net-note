@@ -20,6 +20,7 @@ import static com.google.inject.Guice.createInjector;
 import client.config.Config;
 import client.scenes.*;
 import client.utils.Language;
+import client.utils.ServerUtils;
 import com.google.inject.Injector;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -35,6 +36,7 @@ public class Main extends Application {
 	private static final Injector INJECTOR = createInjector(new GuiceModule());
 	private static final LoaderFXML FXML = INJECTOR.getInstance(LoaderFXML.class);
 	private static final Config CONFIG = INJECTOR.getInstance(Config.class);
+	private static final ServerUtils SERVER = INJECTOR.getInstance(ServerUtils.class);
 
 	public static void main(String[] args) {
 		launch(args);
@@ -111,13 +113,25 @@ public class Main extends Application {
 	 * @param throwable an error that hasn't been caught manually
 	 */
 	private void handleThreadException(Throwable throwable) {
-		System.err.println("\n>>>> EXCEPTION CAUGHT >>>>");
-		System.err.println(throwable.getMessage());
-		throwable.printStackTrace();
-		try {
-			mainCtrl.showMessage("Unknown exception has occurred: " + throwable.getMessage(), true);
-		} catch (Exception e) {
-			System.err.println("Unable to display unknown exception.");
+		if (!SERVER.isServerAvailable()) {
+			try {
+				mainCtrl.handleServerUnreachable();
+			} catch (Exception e) {
+				System.err.println("Unable to display an exception caused by unavailable server.");
+
+				System.err.println("\n>>>> EXCEPTION CAUGHT (STATE NO SERVER) >>>>");
+				System.err.println(throwable.getMessage());
+				throwable.printStackTrace();
+			}
+		} else {
+			System.err.println("\n>>>> EXCEPTION CAUGHT >>>>");
+			System.err.println(throwable.getMessage());
+			throwable.printStackTrace();
+			try {
+				mainCtrl.showMessage("Unknown exception has occurred: " + throwable.getMessage(), true);
+			} catch (Exception e) {
+				System.err.println("Unable to display unknown exception.");
+			}
 		}
 	}
 }

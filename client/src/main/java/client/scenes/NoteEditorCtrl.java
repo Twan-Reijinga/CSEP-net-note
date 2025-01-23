@@ -137,7 +137,6 @@ public class NoteEditorCtrl {
         collectionDropdown.setButtonCell(createCollectionDropdownOption());
 
         setupSearchElements(bundle);
-
         this.bundle = bundle;
 
         editCollections = new Pair<>(null, bundle.getString("editCollections"));
@@ -145,7 +144,7 @@ public class NoteEditorCtrl {
 
         loadLanguageDropdown(bundle.getBaseBundleName());
         loadCollectionDropdown();
-        this.loadTagOptions();
+        loadTagOptions();
     }
 
     private void appendSidebar(Node sidebarNode) {
@@ -301,7 +300,6 @@ public class NoteEditorCtrl {
         collectionDropdown
                 .getSelectionModel()
                 .selectNext();
-        return;
     }
 
     /**

@@ -83,7 +83,6 @@ public class SidebarCtrl {
         messageContainer.setVisible(false);
         messageContainer.setManaged(false);
 
-
         refresh();
         selectFirstNote();
 
@@ -114,7 +113,7 @@ public class SidebarCtrl {
             }
         };
 
-        messageTimer.schedule(messageClearTask, 3000);
+        messageTimer.schedule(messageClearTask, (isError ? 5000 : 3000));
     }
 
     /**
