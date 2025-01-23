@@ -31,8 +31,10 @@ public class DeleteNoteAction extends NoteAction {
 
     @Override
     public String toString() {
-        return "DeleteNoteAction{" +
-                "note=" + note +
+        return "DeleteNoteAction{" + "\n" +
+                "noteId=" + note.id + ",\n" +
+                "noteTitle='" + note.title + "\',\n" +
+                "noteContent='" + note.content + "\',\n" +
                 '}';
     }
 }
