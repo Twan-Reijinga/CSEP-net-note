@@ -428,11 +428,12 @@ public class MainCtrl {
      * @param newTitle the new title of the note
      */
     public void updateNote(Note note, boolean titleChanged, String oldTitle, String newTitle){
-        serverUtils.updateNote(note);
         if(titleChanged){
             this.updateNoteLinks(note.id, oldTitle, newTitle);
             this.updateLink(newTitle, note.id, note.collection.id);
+            note.content = this.serverUtils.getNoteById(note.id).content;
         }
+        serverUtils.updateNote(note);
     }
 
     /**

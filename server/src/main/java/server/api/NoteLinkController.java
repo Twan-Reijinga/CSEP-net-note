@@ -16,9 +16,9 @@ public class NoteLinkController {
     }
 
     @GetMapping(path = "")
-    public ResponseEntity<Boolean> getAllTags(@RequestParam Long noteId,
-                                              @RequestParam String newTitle,
-                                              @RequestParam String oldTitle) {
+    public ResponseEntity<Boolean> renameNoteLinks(@RequestParam Long noteId,
+                                                   @RequestParam String newTitle,
+                                                   @RequestParam String oldTitle) {
         boolean result = this.noteLinkService.updateNoteLinks(noteId, newTitle, oldTitle);
         return ResponseEntity.ok(result);
     }
