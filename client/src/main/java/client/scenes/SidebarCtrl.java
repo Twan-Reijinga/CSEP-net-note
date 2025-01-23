@@ -21,6 +21,7 @@ import commons.Note;
 import commons.NoteTitle;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -85,6 +86,11 @@ public class SidebarCtrl {
 
         refresh();
         selectFirstNote();
+
+        ServerUtils.connection.subscribe(update -> {
+            if(update.note == null) return;
+            Platform.runLater(this::refresh);
+        });
     }
 
     public void showMessage(String message, boolean isError) {

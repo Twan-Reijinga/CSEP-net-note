@@ -58,6 +58,11 @@ public class MainCtrl {
     public MainCtrl(Config config, ServerUtils serverUtils) {
         this.config = config;
         this.serverUtils = serverUtils;
+        try {
+            ServerUtils.connection.connect(new java.net.URI(this.serverUtils.server).getHost());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         initializeDefaultCollection();
     }
 
@@ -80,6 +85,7 @@ public class MainCtrl {
         }
     }
 
+
     public void initialize(
             Stage primaryStage,
             Pair<MarkdownEditorCtrl, Parent> markdownEditor,
@@ -89,6 +95,7 @@ public class MainCtrl {
             ResourceBundle bundle
     ) {
         this.primaryStage = primaryStage;
+
         this.tagFilteringHandler = new TagFilteringHandler(this.serverUtils);
 
         this.noteEditorCtrl = noteEditor.getKey();
@@ -97,6 +104,7 @@ public class MainCtrl {
         this.markdownEditorCtrl = markdownEditor.getKey();
         this.sidebarCtrl = sidebarEditor.getKey();
         this.filesCtrl = filesEditor.getKey();
+
 
         noteEditorCtrl.initialize(sidebarEditor, markdownEditor, filesEditor, bundle);
         markdownEditorCtrl.initialize(sidebarCtrl);

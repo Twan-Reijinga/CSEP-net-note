@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.services.CollectionService;
 import server.services.RandomService;
+import server.services.WebsocketService;
 
 import java.util.List;
 import java.util.UUID;
@@ -48,7 +49,7 @@ public class CollectionControllerTest {
         repo.save(collection2);
 
 
-        controller = new CollectionController(repo, noteRepo, s);
+        controller = new CollectionController(repo, noteRepo, s, new WebsocketService());
     }
 
 

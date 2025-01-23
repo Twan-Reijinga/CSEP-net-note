@@ -136,6 +136,27 @@ public class MarkdownEditorCtrl {
 
         collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
         collectionDropdown.setButtonCell(createCollectionDropdownOption());
+        ServerUtils.connection.subscribe(update -> {
+            if(update.note == null) {
+                // If note is null then the update was for collections
+                Platform.runLater(this::loadCollectionDropdown);
+                return;
+            }
+            if(update.note.id != activeNote.id) return;
+            Platform.runLater(this::handleWebsocketUpdate);
+        });
+    }
+
+    private void handleWebsocketUpdate() {
+        clearInvalidTitleStyle();
+        activeNote = serverUtils.getNoteById(activeNote.id);
+        var pos = noteText.getCaretPosition();
+        noteText.setText(activeNote.content);
+        noteText.positionCaret(pos);
+        titleField.setText(activeNote.title);
+        requestRefresh();
+        loadCollectionDropdown();
+        updateForbiddenTitles();
     }
 
     /**
