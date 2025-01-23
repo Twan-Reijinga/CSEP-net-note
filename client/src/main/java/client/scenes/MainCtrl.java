@@ -58,6 +58,11 @@ public class MainCtrl {
     public MainCtrl(Config config, ServerUtils serverUtils) {
         this.config = config;
         this.serverUtils = serverUtils;
+        try {
+            ServerUtils.connection.connect(new java.net.URI(this.serverUtils.server).getHost());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // TODO: consider a better place for default collection initialization
         if (config.getDefaultCollectionId() == null) {
