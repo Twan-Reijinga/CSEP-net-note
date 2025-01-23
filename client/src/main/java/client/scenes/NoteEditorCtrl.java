@@ -334,8 +334,7 @@ public class NoteEditorCtrl {
         UUID collectionId = chosenCollectionFilter.getKey();
         if(!searchText.isEmpty()){
             mainCtrl.sendSearchRequest(searchText, collectionId, matchAll, whereToSearch);
-        }
-        else{
+        } else{
             mainCtrl.refreshSideBar();
         }
     }
