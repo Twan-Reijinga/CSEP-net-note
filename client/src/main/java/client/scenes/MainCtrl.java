@@ -268,7 +268,17 @@ public class MainCtrl {
      */
     public void loadNewNoteTags(List<Long> noteTagIds){
         this.tagFilteringHandler.loadNewNoteTags(noteTagIds);
-        this.clearTagFilters();
+        this.persistNoteTags();
+    }
+
+    /**
+     * This method is used to remove only the tags that are no longer present and
+     * keep the others as filters.
+     */
+    public void persistNoteTags(){
+        List<String> removedTags = this.tagFilteringHandler.persistTags();
+        this.noteEditorCtrl.removeTagsFromHBox(removedTags);
+        this.applyFiltersToSideBar();
     }
 
     /**
@@ -278,8 +288,8 @@ public class MainCtrl {
      * which makes the sidebar show all NoteTitles without any filters applied.
      */
     public void clearTagFilters(){
+        this.noteEditorCtrl.removeTagsFromHBox(this.tagFilteringHandler.tagsSelected);
         this.tagFilteringHandler.clearTags();
-        this.noteEditorCtrl.clearSelectedTagsFromHBox();
         this.applyFiltersToSideBar();
     }
 

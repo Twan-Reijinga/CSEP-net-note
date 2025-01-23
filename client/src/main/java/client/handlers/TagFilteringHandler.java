@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public class TagFilteringHandler {
     private List<NoteTags> loadedNoteTags;
     private ServerUtils serverUtils;
-    private List<String> tagsSelected;
+    public List<String> tagsSelected;
     private HashSet<String> availableTags;
 
     public TagFilteringHandler(ServerUtils serverUtils) {
@@ -194,5 +194,27 @@ public class TagFilteringHandler {
         }
 
         return removed;
+    }
+
+    /**
+     * This method is called whenever the client loads new noteTags, it removes only
+     * the selected tags which are not in the newly fetched batch. The tags that appear in
+     * the new batch too are kept as filters.
+     *
+     * @return the list of tags that are no longer relevant.
+     */
+    public List<String> persistTags(){
+        List<String> droppedTags = new ArrayList<>();
+        HashSet<String> newTags = new HashSet<>();
+        for(NoteTags noteTag: loadedNoteTags){
+            newTags.addAll(noteTag.getTags());
+        }
+        for(String tag: tagsSelected){
+            if(!newTags.contains(tag)){
+                droppedTags.add(tag);
+            }
+        }
+
+        return droppedTags;
     }
 }
