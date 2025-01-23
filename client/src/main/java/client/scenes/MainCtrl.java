@@ -18,7 +18,6 @@ package client.scenes;
 import client.Main;
 import client.config.Config;
 import client.utils.DialogBoxUtils;
-import client.utils.Language;
 import client.utils.ServerUtils;
 import client.handlers.TagFilteringHandler;
 import client.utils.*;
@@ -37,6 +36,7 @@ import commons.Collection;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
@@ -157,14 +157,9 @@ public class MainCtrl {
      * Sets a new UI language based on user selection
      * Builds a new scene but with all components translated
      * and parses the main stage the root node of the scene
-     * @param languageStr The chosen language by the user
+     * @param language The chosen language locale: [en, nl, es]
      */
-    public void switchLanguage(String languageStr) {
-        Language language = switch (languageStr) {
-            case "Dutch" -> Language.NL;
-            case "Spanish" -> Language.ES;
-            default -> Language.EN;
-        };
+    public void switchLanguage(Locale language) {
         Main.switchLanguage(language);
     }
 

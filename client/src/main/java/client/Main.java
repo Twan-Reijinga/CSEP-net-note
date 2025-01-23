@@ -19,13 +19,13 @@ import static com.google.inject.Guice.createInjector;
 
 import client.config.Config;
 import client.scenes.*;
-import client.utils.Language;
 import client.utils.ServerUtils;
 import com.google.inject.Injector;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 
@@ -56,7 +56,7 @@ public class Main extends Application {
 		});
 
 		primaryStage = stage;
-		Language language = CONFIG.getLanguage();
+		Locale language = CONFIG.getLanguage();
 		loadApplication(language);
 	}
 
@@ -67,14 +67,8 @@ public class Main extends Application {
 	 *
 	 * @param language the language configuration to be applied to the application
 	 */
-	public static void loadApplication(Language language) {
-		ResourceBundle resourceBundle = ResourceBundle.getBundle(
-			switch (language) {
-				case NL -> "dutch";
-				case ES -> "spanish";
-				default -> "english";
-			}
-		);
+	public static void loadApplication(Locale language) {
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("AppResources", language);
 
 		Main mainInstance = new Main();
 		FXMLLoader loader = new FXMLLoader(mainInstance.getClass().getResource("/fxml/main.fxml"));
@@ -96,8 +90,10 @@ public class Main extends Application {
 	 *
 	 * @param language the language configuration to be applied to the application
 	 */
-	public static void switchLanguage(Language language) {
-		if (language == CONFIG.getLanguage()) return;
+	public static void switchLanguage(Locale language) {
+		if (language == CONFIG.getLanguage()) {
+			return;
+		}
 		CONFIG.setLanguage(language);
 		loadApplication(language);
 	}
