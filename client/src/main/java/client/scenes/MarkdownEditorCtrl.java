@@ -454,7 +454,6 @@ public class MarkdownEditorCtrl {
                 textLines[i] = textBuffer.toString();
             }
         }
-
         return textLines;
     }
 
@@ -515,9 +514,41 @@ public class MarkdownEditorCtrl {
      */
     private String convertTagsAndLinks(String text){
         String[] textLines = text.split("\n");
-        String[] tagsRendered = this.convertTagsToLinks(textLines);
+        String[] filesRendered = this.embeddedFileToLinks(textLines);
+        String[] tagsRendered = this.convertTagsToLinks(filesRendered);
         String[] linksRendered = this.getNoteLinkHtml(tagsRendered, text);
 
         return String.join("\n", linksRendered);
+    }
+
+    private String[] embeddedFileToLinks(String[] text) {
+        Pattern pattern = Pattern.compile("!\\[(.*)]\\(([\\S\\w]+)\\)(\\{(\\d+), (\\d+)})?");
+        Matcher matcher;
+        StringBuffer textBuffer;
+
+        for(int i=0; i<text.length; i++) {
+            if (!text[i].startsWith("\t")) {
+                matcher = pattern.matcher(text[i]);
+                textBuffer = new StringBuffer();
+
+                while (matcher.find()) {
+                    String alt = matcher.group(1);
+                    String img = matcher.group(2);
+                    String width = matcher.group(4);
+                    String height = matcher.group(5);
+
+                    String imgURL = config.getServerUrl() + "/api/notes/" +
+                            mainCtrl.getSelectedNoteId() + "/embedded/title/" + img;
+
+                    String html = "<img src=\"" + imgURL + "\" " +
+                            "alt=\"" + alt + " \" style=\"width: " + width + "; height: " + height + ";\" />";
+
+                    matcher.appendReplacement(textBuffer, html);
+                }
+                matcher.appendTail(textBuffer);
+                text[i] = textBuffer.toString();
+            }
+        }
+        return text;
     }
 }
