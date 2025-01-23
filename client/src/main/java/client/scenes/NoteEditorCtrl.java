@@ -122,15 +122,16 @@ public class NoteEditorCtrl {
         collectionDropdown.setButtonCell(createCollectionDropdownOption());
 
         setupSearchElements(bundle);
-
         this.bundle = bundle;
 
         editCollections = new Pair<>(null, bundle.getString("editCollections"));
         showAll = new Pair<>(null, bundle.getString("showAll"));
 
-        loadLanguageDropdown(bundle.getBaseBundleName());
-        loadCollectionDropdown();
-        this.loadTagOptions();
+        if (serverUtils.isServerAvailable()) {
+            loadLanguageDropdown(bundle.getBaseBundleName());
+            loadCollectionDropdown();
+            loadTagOptions();
+        }
     }
 
     private void appendSidebar(Node sidebarNode) {
@@ -286,7 +287,6 @@ public class NoteEditorCtrl {
         collectionDropdown
                 .getSelectionModel()
                 .selectNext();
-        return;
     }
 
     /**

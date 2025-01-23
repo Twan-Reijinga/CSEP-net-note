@@ -119,10 +119,6 @@ public class MarkdownEditorCtrl {
     public void initialize(SidebarCtrl sidebarCtrl) {
         this.sidebarCtrl = sidebarCtrl;
 
-        // TODO: stupidest fix possible; MUST be resolve - remove mocking
-        Note n = serverUtils.mockGetDefaultNote();
-        updateNote(n.id);
-
         scheduler.scheduleAtFixedRate(
                 this::syncNoteContents,
                 0,

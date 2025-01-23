@@ -159,18 +159,6 @@ public class ServerUtils {
 	}
 
 	/**
-	 * getter for mocked default notes from the server
-	 *
-	 * @return mocked default notes from the server
-	 */
-	public Note mockGetDefaultNote() {
-		return ClientBuilder.newClient(new ClientConfig())
-				.target(server).path("api/notes/mock")
-				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {});
-	}
-
-	/**
 	 * update a specified note base on the id
 	 *
 	 * @param note the note you want to update
