@@ -1,0 +1,35 @@
+.links-valid {
+    display: inline-block;
+    color: #0077cc;
+    text-decoration: none;
+    font-style: italic;
+    font-weight: 500;
+    border-bottom: 2px solid rgba(0, 100, 200, 0.3);
+    border-top: 2px solid rgba(0, 100, 200, 0.3);
+}
+
+.links-valid:hover {
+    color: #005999;
+    border-bottom-color: rgba(0, 90, 150, 0.8);
+    border-top-color: rgba(0, 90, 150, 0.8);
+    text-decoration: none;
+}
+
+.links-invalid {
+    display: inline-block;
+    text-decoration: none;
+    color: #e01010;
+    border-bottom: 2px solid rgba(200, 30, 30, 0.7);
+    font-style: normal;
+}
+
+
+.tags {
+    display: inline-block;
+    padding: 2px 4px;
+    border: 1px solid #333;
+    background-color: #ccc;
+    border-radius: 8px;
+    color: #000;
+    text-decoration: none;
+}

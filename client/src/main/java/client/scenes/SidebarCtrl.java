@@ -252,6 +252,7 @@ public class SidebarCtrl {
         note.createdAt = new Date();
         server.addNote(note);
         mainCtrl.addNewTags(note);
+        mainCtrl.addLink(note.collection.id);
         refresh();
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getLast().getId());
         noteClick(selectedNoteId);
@@ -288,7 +289,6 @@ public class SidebarCtrl {
             return false;
         }
 
-
         boolean isLastNote = server.isLastNoteInCollection(id);
         if (isLastNote) {
             createNote(note.collection.id);
@@ -297,6 +297,7 @@ public class SidebarCtrl {
         server.deleteAllFilesToNote(note);
         server.deleteNote(note);
         mainCtrl.deleteTags(note.id);
+        mainCtrl.deleteLink(note.title, note.collection.id);
         if (isReversible) {
             mainCtrl.recordDelete(note);
         }
@@ -377,5 +378,12 @@ public class SidebarCtrl {
             previousNoteId = Long.parseLong(titleBoxes.getId());
         }
         return previousNoteId;
+    }
+
+    public void noteLinkClicked(Long id){
+        if(!this.noteTitles.stream().map(x -> x.getId()).toList().contains(id)){
+            refresh();
+        }
+        noteClick(id);
     }
 }
