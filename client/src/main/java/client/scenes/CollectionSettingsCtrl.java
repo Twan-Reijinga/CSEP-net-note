@@ -69,6 +69,7 @@ public class CollectionSettingsCtrl {
         loadCollectionInfo(defaultCollection);
     }
 
+
     public boolean hasUnsavedChanges() {
         return isCollectionModified || createdCollection != null;
     }
