@@ -21,6 +21,7 @@ import client.utils.DialogBoxUtils;
 import client.utils.Language;
 import client.utils.ServerUtils;
 import client.handlers.TagFilteringHandler;
+import client.utils.*;
 import commons.NoteTitle;
 import client.handlers.ShortcutHandler;
 import commons.Note;
@@ -34,6 +35,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import commons.Collection;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
@@ -50,6 +52,7 @@ public class MainCtrl {
 
     private ShortcutHandler shortcutHandler;
     private TagFilteringHandler tagFilteringHandler;
+    private NoteLinkHandler noteLinkHandler;
 
     private final Config config;
     private final ServerUtils serverUtils;
@@ -59,6 +62,7 @@ public class MainCtrl {
     public MainCtrl(Config config, ServerUtils serverUtils) {
         this.config = config;
         this.serverUtils = serverUtils;
+        this.noteLinkHandler = new NoteLinkHandler(serverUtils);
         try {
             ServerUtils.connection.connect(new java.net.URI(this.serverUtils.server).getHost());
         } catch (Exception e) {
@@ -382,5 +386,84 @@ public class MainCtrl {
 
     public boolean isWaiting() {
         return isWaiting;
+    }
+
+    /**
+     * This method finds all links to notes in the note's content.
+     * @param content The text (content of the note) which is scanned for note links
+     * @param collectionId the id of the note's collection.
+     * @return A map mapping each link to the id of the note in the same collection
+     * it represents or null if the link is invalid.
+     */
+    public HashMap<String, Long> getNoteLinks(String content, UUID collectionId){
+        return this.noteLinkHandler.getLinks(content, collectionId);
+    }
+
+    /**
+     * Called when a note-link is clicked.
+     * Selects the id of the clicked as a selectedNote in the sidebar.
+     * @param id the id of the note to which the link points to
+     */
+    public void linkClicked(Long id){
+        this.sidebarCtrl.noteLinkClicked(id);
+    }
+
+    /**
+     * Called when a noteTitle is updated. Forces all notes referencing the one that had it's title
+     * updated to update their contents accordingly.
+     * @param id id of note updated
+     * @param oldTitle the previous title of the note
+     * @param newTitle the new title of the note
+     */
+    public void updateNoteLinks(Long id, String oldTitle, String newTitle){
+        this.serverUtils.updateLinksToNote(id, newTitle, oldTitle);
+    }
+
+    /**
+     * Called when a note is updated. Checks whether the title was updated and
+     * updates the note links to this note if necessary.
+     * @param note The note that has to be updated
+     * @param titleChanged boolean for whether the title was changed
+     * @param oldTitle the old title of the note
+     * @param newTitle the new title of the note
+     */
+    public void updateNote(Note note, boolean titleChanged, String oldTitle, String newTitle){
+        if(titleChanged){
+            this.updateNoteLinks(note.id, oldTitle, newTitle);
+            this.updateLink(newTitle, note.id, note.collection.id);
+            note.content = this.serverUtils.getNoteById(note.id).content;
+        }
+        serverUtils.updateNote(note);
+    }
+
+    /**
+     * Called when a note is deleted, deletes it from the valid links.
+     * @param title The title of the note that was deleted
+     * @param collectionId The id of the collection that the note is in.
+     */
+    public void deleteLink(String title, UUID collectionId){
+        this.noteLinkHandler.deleteLink(title, collectionId);
+    }
+
+    /**
+     * Called when a note is added, updates the localy stored links to include its title as a valid link.
+     * @param collectionId The id of the collection that the note is in.
+     */
+    public void addLink(UUID collectionId){
+        this.noteLinkHandler.addLink(collectionId);
+    }
+
+    /**
+     * Called when a note's title is updated.
+     * @param title The new title for the note
+     * @param id the id of the note that was added.
+     * @param collectionId The id of the collection that the note is in.
+     */
+    public void updateLink(String title, Long id, UUID collectionId){
+        this.noteLinkHandler.updateLink(title, id, collectionId);
+    }
+
+    public void updateValidLinks(){
+        this.noteLinkHandler.updateNoteTitlesInCollection();
     }
 }
