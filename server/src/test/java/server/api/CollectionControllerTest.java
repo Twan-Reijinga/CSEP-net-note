@@ -2,8 +2,11 @@ package server.api;
 
 import commons.Collection;
 import commons.Note;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import server.services.CollectionService;
 import server.services.RandomService;
 import server.services.WebsocketService;
@@ -11,8 +14,7 @@ import server.services.WebsocketService;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CollectionControllerTest {
 
@@ -103,5 +105,39 @@ public class CollectionControllerTest {
         assertEquals(expected, collections);
     }
 
+
+    @Test
+    public void getCollectionByIdExists() {
+        ResponseEntity<Collection> response = controller.getCollectionById(collection1.id);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Collection collection = response.getBody();
+        assertNotNull(collection);
+        assertEquals(collection, collection1);
+    }
+
+    @Test
+    public void getCollectionByIdNotExists() {
+        UUID randomId = UUID.randomUUID();
+        ResponseEntity<Collection> response = controller.getCollectionById(randomId);
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void getDefaultCollectionTestExists() {
+        String defaultName = "default";
+
+        Collection collection = new Collection(defaultName, "Default Collection");
+        controller.add(collection);
+
+        ResponseEntity<Collection> response = controller.getDefaultCollection();
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Collection defaultCollection = response.getBody();
+        assertNotNull(defaultCollection);
+        assertEquals(collection.name, defaultName);
+    }
 }
 
