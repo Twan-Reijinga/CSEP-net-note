@@ -2,7 +2,7 @@ package client.utils;
 
 import java.util.Objects;
 
-public class NoteAction {
+public abstract class NoteAction {
 
     public enum ActionType {
         ADD,
