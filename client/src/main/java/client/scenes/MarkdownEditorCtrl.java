@@ -392,19 +392,23 @@ public class MarkdownEditorCtrl {
     }
 
     private String embeddedFileToLinks(String text) {
-        Pattern pattern = Pattern.compile("!\\[(.*)]\\(([\\S\\w]+)\\)");
+        Pattern pattern = Pattern.compile("!\\[(.*)]\\(([\\S\\w]+)\\)(\\{(\\d+), (\\d+)})?");
         Matcher matcher = pattern.matcher(text);
 
         StringBuffer textBuffer = new StringBuffer();
         while (matcher.find()) {
             String alt = matcher.group(1);
             String img = matcher.group(2);
+            String width = matcher.group(4);
+            String height = matcher.group(5);
 
             String imgURL = config.getLocalServer() + "/api/notes/" +
                     mainCtrl.getSelectedNoteId() + "/embedded/title/" + img;
-            String markdownFormat = "![" + alt + "](" + imgURL + ")";
 
-            matcher.appendReplacement(textBuffer, markdownFormat);
+            String html = "<img src=\"" + imgURL + "\" " +
+                    "alt=\"" + alt + " \" style=\"width: " + width + "; height: " + height + ";\" />";
+
+            matcher.appendReplacement(textBuffer, html);
         }
         matcher.appendTail(textBuffer);
         return textBuffer.toString();
