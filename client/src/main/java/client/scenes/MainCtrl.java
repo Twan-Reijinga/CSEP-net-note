@@ -64,7 +64,6 @@ public class MainCtrl {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        initializeDefaultCollection();
     }
 
     private void initializeDefaultCollection() {
@@ -111,6 +110,8 @@ public class MainCtrl {
             return;
         }
 
+        initializeDefaultCollection();
+
         noteEditorCtrl.initialize(sidebarEditor, markdownEditor, filesEditor, bundle);
         markdownEditorCtrl.initialize(sidebarCtrl);
         sidebarCtrl.initialize(this, filesCtrl);
@@ -126,9 +127,10 @@ public class MainCtrl {
         primaryStage.close();
 
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Server Unreachable");
+        alert.setTitle("HTTP Server Unreachable");
         alert.setHeaderText("Connection Error");
         alert.setContentText("Server is unreachable. Try restarting the server and the application.");
+        alert.setHeight(300);
 
         alert.showAndWait();
     }
