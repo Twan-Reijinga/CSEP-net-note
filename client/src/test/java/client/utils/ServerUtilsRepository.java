@@ -202,11 +202,6 @@ public class ServerUtilsRepository extends ServerUtils {
         }
     }
 
-    // Test helper methods
-    public void setServerAvailable(boolean available) {
-        this.serverAvailable = available;
-    }
-
     public void clearAll() {
         collections.clear();
         notes.clear();
