@@ -362,11 +362,9 @@ public class MainCtrl {
     /**
      * Moves to the next item in the dropdown, skipping the last option ("Edit Collections").
      * If the second-to-last item is selected, it wraps around to the first item.
-     *
      * The method calculates the next index. If it reaches the last option, it wraps to the
      * first item. Otherwise, it selects the next item. This ensures smooth navigation while
      * avoiding the special last option.
-     *
      * The dropdown must be properly set up with items before calling this method.
      * If the dropdown is empty, nothing happens.
      */
@@ -377,11 +375,9 @@ public class MainCtrl {
     /**
      * Moves to the previous item in the dropdown, skipping the last option ("Edit Collections").
      * If the first item is selected, it wraps around to the second-to-last item.
-     *
      * The method checks if the current selection is the first item. If so, it selects the
      * second-to-last item. Otherwise, it moves to the previous item. This ensures smooth
      * backward navigation while avoiding the special last option.
-     *
      * The dropdown must be properly set up with items before calling this method.
      * If the dropdown is empty, nothing happens.
      */
@@ -451,7 +447,7 @@ public class MainCtrl {
     }
 
     /**
-     * Called when a note is added, updates the localy stored links to include its title as a valid link.
+     * Called when a note is added, updates the locally stored links to include its title as a valid link.
      * @param collectionId The id of the collection that the note is in.
      */
     public void addLink(UUID collectionId){

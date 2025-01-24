@@ -218,21 +218,7 @@ public class ServerUtils {
 	}
 
 	/**
-	 * Returns a note corresponding to the provided id
-	 *
-	 * @param id the id of a valid id of a note in the database
-	 * @return a note which is provided from the database.
-	 */
-	public Note getNoteById(Long id) {
-		return ClientBuilder.newClient(new ClientConfig())
-				.target(server).path("api/notes/" + id)
-				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {});
-	}
-
-	/**
 	 * Returns a boolean based on if the note exists in the noteRepository
-	 *
 	 * @param id the id of a note (in the database or not)
 	 * @return a boolean which covers the existence of the note in the database
 	 */
@@ -240,7 +226,7 @@ public class ServerUtils {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/exists/" + id)
 				.request(APPLICATION_JSON)
-				.get(new GenericType<Boolean>() {});
+				.get(new GenericType<>() {});
 	}
 
 	/**
@@ -373,25 +359,25 @@ public class ServerUtils {
 				.delete();
 	}
 
-	public List<EmbeddedFile> getAllFilesFromNote(Note note) {
-		return ClientBuilder.newClient(new ClientConfig())
-				.target(server).path("api/notes/" + note.id + "/embedded")
-				.request(APPLICATION_JSON)
-				.get(new GenericType<>() {});
-	}
-
-	public EmbeddedFile getFileFromNote(long noteId, long fileId) {
+	public String getMetadataFromNote(long noteId, long fileId) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/" + noteId + "/embedded/" + fileId)
 				.request(APPLICATION_JSON)
 				.get(new GenericType<>() {});
 	}
 
-	public void editFileTitle(EmbeddedFile file) {
-		ClientBuilder.newClient(new ClientConfig())
-				.target(server).path("api/notes/" + file.note.id + "/embedded/" + file.id)
+	public List<String> getAllMetadataFromNote(Note note) {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/" + note.id + "/embedded")
 				.request(APPLICATION_JSON)
-				.put(Entity.entity(file, APPLICATION_JSON), EmbeddedFile.class);
+				.get(new GenericType<>() {});
+	}
+
+	public void editFileTitle(String title, long noteId, long fileId) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/notes/" + noteId + "/embedded/" + fileId)
+				.request(APPLICATION_JSON)
+				.put(Entity.entity(title, APPLICATION_JSON), String.class);
 	}
 
 	public List<String> getAllTitlesFromNote(long noteId) {
@@ -401,7 +387,7 @@ public class ServerUtils {
 				.get(new GenericType<>() {});
 	}
 
-	public String getTitlesFromNote(long noteId, String title) {
+	public byte[] getFileFromTitle(long noteId, String title) {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(server).path("api/notes/" + noteId + "/embedded/title/" + title)
 				.request(APPLICATION_JSON)

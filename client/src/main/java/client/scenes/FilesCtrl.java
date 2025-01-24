@@ -57,16 +57,19 @@ public class FilesCtrl {
     public void refresh() {
         filesContainer.getChildren().clear();
         Note note = server.getNoteById(main.getSelectedNoteId());
-        List<EmbeddedFile> files = server.getAllFilesFromNote(note);
-        for (EmbeddedFile currentFile : files) {
-            Label label = new Label(currentFile.title);
+        List<String> files = server.getAllMetadataFromNote(note);
+        for (String currentFile : files) {
+            Label label = new Label(currentFile.split("/")[2]);
             label.setCursor(Cursor.HAND);
             label.setStyle("-fx-text-fill: blue");
-            label.setOnMouseClicked(event -> downloadFile(currentFile.note.id, currentFile.id));
+            label.setOnMouseClicked(event -> downloadFile(Long.parseLong(currentFile.split("/")[1]),
+                    Long.parseLong(currentFile.split("/")[0])));
             Button remove = new Button("Remove");
-            remove.setOnAction(event -> deleteFile(currentFile.note.id, currentFile.id));
+            remove.setOnAction(event -> deleteFile(Long.parseLong(currentFile.split("/")[1]),
+                    Long.parseLong(currentFile.split("/")[0])));
             Button edit = new Button("Edit");
-            edit.setOnAction(event -> editTitle(currentFile.note.id, currentFile.id));
+            edit.setOnAction(event -> editTitle(Long.parseLong(currentFile.split("/")[1]),
+                    Long.parseLong(currentFile.split("/")[0])));
             HBox buttons = new HBox(10,edit, remove);
             VBox wrapper = new VBox(label, buttons);
             wrapper.setPadding(new Insets(5, 10, 5, 10));
@@ -81,7 +84,6 @@ public class FilesCtrl {
         if (main.getSelectedNoteId() == -1) {
             main.showMessage("Please select a note in the sidebar.", true);
             return;
-            //A note must be selected
         }
         try {
             FileChooser fileChooser = new FileChooser();
@@ -102,8 +104,8 @@ public class FilesCtrl {
      */
     public void addFile(File addedFile) {
         Note note = server.getNoteById(main.getSelectedNoteId());
-        for (EmbeddedFile file : server.getAllFilesFromNote(note)) {
-            if (file.title.equals(addedFile.getName())) {
+        for (String file : server.getAllMetadataFromNote(note)) {
+            if (file.split("/")[2].equals(addedFile.getName())) {
                 main.showMessage("File was already added before.", true);
                 return;
             }
@@ -155,7 +157,7 @@ public class FilesCtrl {
                 onChangeTitle(noteId, id, popupStage, newTitle, feedback);
             } else {feedback.setText("");}});
 
-        Label oldTitle = new Label("Previous title: " + server.getFileFromNote(noteId, id).title);
+        Label oldTitle = new Label("Previous title: " + server.getMetadataFromNote(noteId, id).split("/")[2]);
         oldTitle.setMaxWidth(290);
         Button button = new Button("Change Title");
 
@@ -178,13 +180,14 @@ public class FilesCtrl {
     private void onChangeTitle(long noteId, long id, Stage popupStage, TextField newTitle, Label feedback) {
         String title = newTitle.getText();
         if (!title.isEmpty()) {
-            String prevTitle = server.getFileFromNote(noteId, id).title;
+            String prevTitle = server.getMetadataFromNote(noteId, id).split("/")[2];
             String[] prevList = prevTitle.split("\\.");
             if(!title.split("\\.")[title.split("\\.").length - 1].equals(prevList[prevList.length - 1])) {
                 title += "." + prevList[prevList.length - 1];
             }
             if (!server.getAllTitlesFromNote(noteId).contains(title)) {
-                changeTitle(title, noteId, id);
+                server.editFileTitle(title, noteId, id);
+                refresh();
                 main.showMessage("Title successfully changed." +
                         "\nFrom: " + prevTitle +
                         "\nTo: " + title, false);
@@ -201,27 +204,13 @@ public class FilesCtrl {
     }
 
     /**
-     * Changes the title to the provided title passes along to server
-     * @param title the new title that the user made
-     * @param noteId the id of the selected note
-     * @param id the id of the selected file
-     */
-    public void changeTitle(String title, long noteId, long id) {
-        EmbeddedFile file = server.getFileFromNote(noteId, id);
-        file.title = title;
-        server.editFileTitle(file);
-
-        refresh();
-    }
-
-    /**
      * Decodes the file and writes it to a file, as path the filename
      * @param noteId the id of the selected note
      * @param id the id of the selected file
      */
     public void downloadFile(long noteId, long id){
-        EmbeddedFile file = server.getFileFromNote(noteId, id);
-        byte[] thisFile = Base64.getDecoder().decode(file.file);
+        String metadata = server.getMetadataFromNote(noteId, id);
+        byte[] file = server.getFileFromTitle(noteId, metadata.split("/")[2]);
         try {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("Select folder");
@@ -239,12 +228,12 @@ public class FilesCtrl {
                 return;
             }
 
-            String filePath = selectedFile.getAbsolutePath() + File.separator + file.title;
+            String filePath = selectedFile.getAbsolutePath() + File.separator + metadata.split("/")[2];
             FileOutputStream output = new FileOutputStream(filePath);
-            output.write(thisFile);
+            output.write(file);
             main.showMessage("File downloaded successfully to:\n" + filePath, false);
         }catch (IOException e) {
-            main.showMessage("Error downloading file:\n" + file.title + "\n" + e.getMessage(), true);
+            main.showMessage("Error downloading file:\n" + metadata.split("/")[2] + "\n" + e.getMessage(), true);
             throw new RuntimeException(e);
         }
     }
