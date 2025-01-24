@@ -522,7 +522,7 @@ public class MarkdownEditorCtrl {
     }
 
     private String[] embeddedFileToLinks(String[] text) {
-        Pattern pattern = Pattern.compile("!\\[(.*)]\\(([\\S\\w]+)\\)(\\{(\\d+), (\\d+)})?");
+        Pattern pattern = Pattern.compile("!\\[([^\\]]*)]\\(([\\S\\w]+)\\)(\\{(\\d+), (\\d+)})?");
         Matcher matcher;
         StringBuffer textBuffer;
 
