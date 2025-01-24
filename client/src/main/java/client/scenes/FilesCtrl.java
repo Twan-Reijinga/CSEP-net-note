@@ -27,12 +27,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.*;
 import java.util.Base64;
@@ -41,14 +43,16 @@ import java.util.List;
 public class FilesCtrl {
     private final ServerUtils server;
     private final MainCtrl main;
+    private final NoteEditorCtrl noteEditorCtrl;
 
     @FXML
     public VBox filesContainer;
 
     @Inject
-    public FilesCtrl(ServerUtils server, MainCtrl main) {
+    public FilesCtrl(ServerUtils server, MainCtrl main, NoteEditorCtrl noteEditorCtrl) {
         this.server = server;
         this.main = main;
+        this.noteEditorCtrl = noteEditorCtrl;
     }
 
     /**
@@ -64,14 +68,18 @@ public class FilesCtrl {
             label.setStyle("-fx-text-fill: blue");
             label.setOnMouseClicked(event -> downloadFile(Long.parseLong(currentFile.split("/")[1]),
                     Long.parseLong(currentFile.split("/")[0])));
-            Button remove = new Button("Remove");
+            Tooltip tooltip = new Tooltip(noteEditorCtrl.getBundle().getString("download"));
+            tooltip.setShowDelay(Duration.millis(50));
+            label.setTooltip(tooltip);
+
+            Button remove = new Button(noteEditorCtrl.getBundle().getString("delete"));
             remove.setOnAction(event -> deleteFile(Long.parseLong(currentFile.split("/")[1]),
                     Long.parseLong(currentFile.split("/")[0])));
-            Button edit = new Button("Edit");
+            Button edit = new Button(noteEditorCtrl.getBundle().getString("edit"));
             edit.setOnAction(event -> editTitle(Long.parseLong(currentFile.split("/")[1]),
                     Long.parseLong(currentFile.split("/")[0])));
-            HBox buttons = new HBox(10,edit, remove);
-            VBox wrapper = new VBox(label, buttons);
+            HBox buttons = new HBox(10, edit, remove);
+            VBox wrapper = new VBox(10, label, buttons);
             wrapper.setPadding(new Insets(5, 10, 5, 10));
             filesContainer.getChildren().add(wrapper);
         }
@@ -149,21 +157,23 @@ public class FilesCtrl {
     public void editTitle(long noteId, long id) {
         Stage popupStage = new Stage();
         Label feedback = new Label("");
-        popupStage.setTitle("Edit Title");
+        popupStage.setTitle(noteEditorCtrl.getBundle().getString("edit")
+                + " " + noteEditorCtrl.getBundle().getString("title"));
         TextField newTitle = new TextField();
-        newTitle.setPromptText("Enter new title");
+        newTitle.setPromptText(noteEditorCtrl.getBundle().getString("enterNewTitle"));
         newTitle.setOnKeyPressed(event -> {
             if ((event.getCode() == KeyCode.ENTER)) {
                 onChangeTitle(noteId, id, popupStage, newTitle, feedback);
             } else {feedback.setText("");}});
 
-        Label oldTitle = new Label("Previous title: " + server.getMetadataFromNote(noteId, id).split("/")[2]);
+        Label oldTitle = new Label(noteEditorCtrl.getBundle().getString("previousTitle")
+                + server.getMetadataFromNote(noteId, id).split("/")[2]);
         oldTitle.setMaxWidth(290);
-        Button button = new Button("Change Title");
+        Button button = new Button(noteEditorCtrl.getBundle().getString("changeTitle"));
 
         button.setOnAction(event -> {onChangeTitle(noteId, id, popupStage, newTitle, feedback);});
         HBox titleFeedback = new HBox(10,button, feedback);
-        VBox layout = new VBox (5, newTitle, oldTitle, titleFeedback);
+        VBox layout = new VBox (10, newTitle, oldTitle, titleFeedback);
         Scene popupScene = new Scene(layout, 300, 90);
         popupStage.setScene(popupScene);
         popupStage.showAndWait();
@@ -194,11 +204,11 @@ public class FilesCtrl {
                 popupStage.close();
             }else {
                 newTitle.clear();
-                feedback.setText("Title already exists");
+                feedback.setText(noteEditorCtrl.getBundle().getString("titleExists"));
                 feedback.setStyle("-fx-text-fill: red;");
             }
         }else{
-            feedback.setText("Please provide a title");
+            feedback.setText(noteEditorCtrl.getBundle().getString("titleEmpty"));
             feedback.setStyle("-fx-text-fill: red");
         }
     }
@@ -213,7 +223,7 @@ public class FilesCtrl {
         byte[] file = server.getFileFromTitle(noteId, metadata.split("/")[2]);
         try {
             DirectoryChooser directoryChooser = new DirectoryChooser();
-            directoryChooser.setTitle("Select folder");
+            directoryChooser.setTitle(noteEditorCtrl.getBundle().getString("selectFolder"));
             directoryChooser.setInitialDirectory(
                     new File(System.getProperty("user.home") + File.separator + "Downloads"));
             File selectedFile;
