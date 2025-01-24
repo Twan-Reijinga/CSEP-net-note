@@ -7,11 +7,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.services.SearchService;
 import server.services.CollectionService;
-import server.services.RandomService;
+import server.services.WebsocketService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -45,7 +44,7 @@ public class SearchControllerTest {
         note3 = new Note("NoteTitle 3", "Content 3", collection2);
         noteRepo.save(note3);
 
-        CollectionService service = new CollectionService(new RandomService(), repo, noteRepo);
+        CollectionService service = new CollectionService(repo, noteRepo, new WebsocketService());
         searchController = new SearchController(new SearchService(service));
     }
 

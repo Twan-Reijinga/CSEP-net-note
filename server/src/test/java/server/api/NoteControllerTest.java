@@ -30,11 +30,12 @@ public class NoteControllerTest {
         repo.save(note2);
         note3 = new Note("Title 3", "Content 3", null);
 
+        var web = new WebsocketService();
         // FIXME: invalid service, collection service cannot be null
         //  it requires fixing the tests (because even here, all notes have collection null which is not possible)
-        NoteService service = new NoteService(repo, null);
+        NoteService service = new NoteService(repo, null, web);
 
-        controller = new NoteController(repo, service, new WebsocketService());
+        controller = new NoteController(service);
     }
 
     @Test

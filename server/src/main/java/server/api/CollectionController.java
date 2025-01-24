@@ -4,39 +4,26 @@ import java.util.*;
 import commons.Collection;
 import commons.Note;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import server.database.CollectionRepository;
-import server.database.NoteRepository;
 import server.services.CollectionService;
-import server.services.WebsocketService;
 
 @RestController
 @RequestMapping("/api/collections")
 public class CollectionController {
 
-    private final CollectionRepository collectionRepository;
-    private final NoteRepository noteRepository;
     private final CollectionService collectionService;
-    private final WebsocketService websocketService;
 
     @Autowired
     public CollectionController(
-            CollectionRepository collectionRepository,
-            NoteRepository noteRepository,
-            CollectionService collectionService,
-            WebsocketService websocketService
+            CollectionService collectionService
     ) {
-        this.collectionRepository = collectionRepository;
-        this.noteRepository = noteRepository;
         this.collectionService = collectionService;
-        this.websocketService = websocketService;
     }
 
     @GetMapping(path = {"", "/"})
     public List<Collection> getAllCollections() {
-        return collectionRepository.findAll();
+        return collectionService.getAllCollections();
     }
 
 
@@ -62,12 +49,9 @@ public class CollectionController {
      */
     @PostMapping(path = {"", "/"})
     public ResponseEntity<Collection> add(@RequestBody Collection collection) {
-        if (collectionRepository.findById(collection.id).isPresent()){
-            return ResponseEntity.badRequest().build();
-        }
-        Collection added = collectionRepository.save(collection);
-        websocketService.notifyCollectionSubscribers(websocketService.onCollectionCreated, added);
-        return ResponseEntity.ok(added);
+        Optional<Collection> addedCollection = collectionService.addCollection(collection);
+        return addedCollection.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     /**
@@ -79,34 +63,16 @@ public class CollectionController {
      */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> remove(@PathVariable("id") UUID id) {
-        try {
-            // Delete notes inside the collection
-            List<Note> notes = noteRepository.findByCollectionId(id);
-            if (!notes.isEmpty()) {
-                noteRepository.deleteAll(notes);
-            }
-
-            var temp = collectionRepository.findById(id).get();
-            collectionRepository.deleteById(id);
-            websocketService.notifyCollectionSubscribers(websocketService.onCollectionDeleted, temp);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        Optional<Object> result = collectionService.deleteCollection(id);
+        if(result.isEmpty()) return ResponseEntity.noContent().build();
+        return ResponseEntity.badRequest().build();
     }
 
     @PutMapping(path={"", "/"})
     public ResponseEntity<Collection> updateCollection(@RequestBody Collection collection) {
-        try {
-            var temp = collectionRepository.save(collection);
-            websocketService.notifyCollectionSubscribers(websocketService.onCollectionCreated, temp);
-            return ResponseEntity.ok(collection);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        Optional<Collection> updatedCollection = collectionService.updateCollection(collection);
+        return updatedCollection.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping(path="/unique-name")
@@ -122,34 +88,19 @@ public class CollectionController {
 
     @GetMapping(path="/default")
     public ResponseEntity<Collection> getDefaultCollection() {
-        try {
-            Optional<Collection> collection = collectionRepository.getCollectionByName("default");
-            if (collection.isPresent()) {
-                return ResponseEntity.ok(collection.get());
-            } else {
-                Collection defaultCollection = new Collection("default", "Default Collection");
-                defaultCollection = collectionRepository.save(defaultCollection);
-                return ResponseEntity.ok(defaultCollection);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        var collection = collectionService.getCollectionByName("default");
+        if (collection.isPresent())
+            return ResponseEntity.ok(collection.get());
+
+        var newDefault = collectionService.addCollection(new Collection("default", "Default Collection"));
+        return newDefault.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     @GetMapping(path="/{collectionId}")
     public ResponseEntity<Collection> getCollectionById(@PathVariable UUID collectionId) {
-        try {
-            Optional<Collection> collection = collectionService.getCollectionById(collectionId);
-            if (collection.isPresent()) {
-                return ResponseEntity.ok(collection.get());
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        Optional<Collection> collection = collectionService.getCollectionById(collectionId);
+        return collection.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
 }

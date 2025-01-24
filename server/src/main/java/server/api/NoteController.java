@@ -5,27 +5,21 @@ import commons.Note;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import server.database.NoteRepository;
 import server.services.NoteService;
-import server.services.WebsocketService;
 
 @RestController
 @RequestMapping("/api/notes")
 public class NoteController {
-    private final NoteRepository noteRepository;
     private final NoteService noteService;
-    private final WebsocketService websocketService;
 
     @Autowired
-    public NoteController(NoteRepository noteRepository, NoteService noteService, WebsocketService websocketService) {
-        this.noteRepository = noteRepository;
+    public NoteController(NoteService noteService) {
         this.noteService = noteService;
-        this.websocketService = websocketService;
     }
 
     @GetMapping(path = {"", "/"})
     public List<Note> getAllNotes() {
-        return noteRepository.findAll();
+        return noteService.getAllNotes();
     }
 
     /**
@@ -38,10 +32,9 @@ public class NoteController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Note> getById(@PathVariable("id") long id) {
-        if (id < 0 || !noteRepository.existsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(noteRepository.findById(id).get());
+        Optional<Note> note = noteService.getNote(id);
+        return note.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     /**
@@ -51,7 +44,8 @@ public class NoteController {
      */
     @GetMapping("/exists/{id}")
     public boolean existsById(@PathVariable("id") long id) {
-        return noteRepository.existsById(id);
+        Optional<Note> note = noteService.getNote(id);
+        return note.isPresent();
     }
 
     /**
@@ -64,13 +58,9 @@ public class NoteController {
      */
     @PostMapping("")
     public ResponseEntity<Note> add(@RequestBody Note note) {
-        if (note.id < 0 || noteRepository.existsById(note.id)) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Note saved = noteRepository.save(note);
-        websocketService.notifyNoteSubscribers(websocketService.onNoteCreated, saved);
-        return ResponseEntity.ok(saved);
+        Optional<Note> addedNote = noteService.addNote(note);
+        return addedNote.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     /**
@@ -82,26 +72,16 @@ public class NoteController {
      */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Note> delete(@PathVariable("id") long id) {
-        if (id < 0 || !noteRepository.existsById(id)){
-            return ResponseEntity.badRequest().build();
-        }
-        Note removed = noteRepository.findById(id).get();
-        noteRepository.deleteById(id);
-        websocketService.notifyNoteSubscribers(websocketService.onNoteDeleted, removed);
-        return ResponseEntity.ok(removed);
+        Optional<Object> result = noteService.deleteNote(id);
+        if(result.isEmpty()) return ResponseEntity.noContent().build();
+        return ResponseEntity.badRequest().build();
     }
 
     @PutMapping(path={"", "/"})
     public ResponseEntity<Note> updateNote(@RequestBody Note note) {
-        try {
-            var temp = noteRepository.save(note);
-            websocketService.notifyNoteSubscribers(websocketService.onNoteUpdated, temp);
-            return ResponseEntity.ok(note);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        Optional<Note> updatedNote = noteService.updateNote(note);
+        return updatedNote.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     @GetMapping(path="/last")

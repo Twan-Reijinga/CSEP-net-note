@@ -2,13 +2,11 @@ package server.api;
 
 import commons.Collection;
 import commons.Note;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import server.services.CollectionService;
-import server.services.RandomService;
 import server.services.WebsocketService;
 
 import java.util.List;
@@ -32,7 +30,7 @@ public class CollectionControllerTest {
     public void setUp() {
         TestCollectionRepository repo = new TestCollectionRepository();
         TestNoteRepository noteRepo = new TestNoteRepository();
-        CollectionService s = new CollectionService(new RandomService(), repo, noteRepo);
+        CollectionService s = new CollectionService(repo, noteRepo, new WebsocketService());
 
         collection1 = new Collection("Name 1", "Title 1");
         note1 = new Note("NoteTitle 1", "Content 1", collection1);
@@ -51,7 +49,7 @@ public class CollectionControllerTest {
         repo.save(collection2);
 
 
-        controller = new CollectionController(repo, noteRepo, s, new WebsocketService());
+        controller = new CollectionController(s);
     }
 
 
