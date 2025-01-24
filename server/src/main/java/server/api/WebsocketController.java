@@ -132,7 +132,6 @@ public class WebsocketController {
         try {
             var str = objectMapper.writeValueAsString(
                     new WebsocketUpdate(WebsocketUpdate.Opcode.COLLECTION_CREATE, null, collection));
-            System.out.println(str);
             broadcast(str);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
