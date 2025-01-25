@@ -18,6 +18,7 @@ package client.handlers;
 import static org.junit.jupiter.api.Assertions.*;
 
 import client.config.Config;
+import client.utils.Connection;
 import client.utils.ServerUtilsRepository;
 import commons.Collection;
 import commons.Note;
@@ -45,7 +46,7 @@ class TagFilteringHandlerTest {
 
     @BeforeEach
     void setUp() {
-        serverUtils = new ServerUtilsRepository(new Config());
+        serverUtils = new ServerUtilsRepository(new Config(), new Connection());
         collection = new Collection("name", "title");
         tagFilteringHandler = new TagFilteringHandler(serverUtils);
     }

@@ -36,11 +36,12 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 	public final String server;
-	public static Connection connection = new Connection();
+	public Connection connection;
 
 	@Inject
-	public ServerUtils(Config config) {
+	public ServerUtils(Config config, Connection connection) {
 		this.server = config.getServerUrl();
+		this.connection = connection;
 	}
 
 	/**

@@ -147,7 +147,7 @@ public class NoteEditorCtrl {
                 convertLocaleToLanguageString(locale);
         loadLanguageDropdown(fullLanguageName);
         loadCollectionDropdown(); loadTagOptions();
-        ServerUtils.connection.subscribe(websocketUpdate -> {
+        serverUtils.connection.subscribe(websocketUpdate -> {
             if(websocketUpdate.collection != null || websocketUpdate.defaultId != null)
                 Platform.runLater(this::loadCollectionDropdown);
         });
