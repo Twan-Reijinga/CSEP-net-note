@@ -59,6 +59,7 @@ public class CollectionService {
             // Also delete all notes from collection
             List<Note> notes = noteRepository.findByCollectionId(id);
             if (!notes.isEmpty()) noteRepository.deleteAll(notes);
+            notes.forEach(n -> websocketService.notifyNoteSubscribers(websocketService.onNoteDeleted, n));
 
             collectionRepository.deleteById(id);
         } catch (RuntimeException e) {

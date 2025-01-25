@@ -150,20 +150,27 @@ public class MarkdownEditorCtrl {
     }
 
     private void handleWebsocketUpdate() {
-        clearInvalidTitleStyle();
-        activeNote = serverUtils.getNoteById(activeNote.id);
-        var pos = noteText.getCaretPosition();
-        noteText.setText(activeNote.content);
-        noteText.positionCaret(pos);
-        titleField.setText(activeNote.title);
+        if(serverUtils.existsNoteById(activeNote.id)){
+            clearInvalidTitleStyle();
+            activeNote = serverUtils.getNoteById(activeNote.id);
+            var pos = noteText.getCaretPosition();
+            noteText.setText(activeNote.content);
+            noteText.positionCaret(pos);
+            titleField.setText(activeNote.title);
 
-        this.titleChanged = false;
-        this.initialTitle = activeNote.title;
-        this.mainCtrl.updateValidLinks();
+            this.titleChanged = false;
+            this.initialTitle = activeNote.title;
+            this.mainCtrl.updateValidLinks();
 
-        requestRefresh();
-        loadCollectionDropdown();
-        updateForbiddenTitles();
+            requestRefresh();
+            loadCollectionDropdown();
+            updateForbiddenTitles();
+        }
+        else{
+            String errorMessage = "The note you were editing was deleted from another client!";
+            this.sidebarCtrl.showMessage(errorMessage,true);
+            this.sidebarCtrl.changeSelectedNote();
+        }
     }
 
     /**

@@ -301,11 +301,19 @@ public class SidebarCtrl {
         if (isReversible) {
             mainCtrl.recordDelete(note);
         }
-        refresh();
-        selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
-        noteClick(selectedNoteId);
+
+        this.changeSelectedNote();
 
         return true;
+    }
+
+    public void changeSelectedNote(){
+        refresh();
+        if(noteContainer.getChildren().isEmpty())
+            return;
+
+        selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
+        noteClick(selectedNoteId);
     }
 
     /**
