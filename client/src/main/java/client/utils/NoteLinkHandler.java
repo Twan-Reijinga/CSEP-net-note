@@ -15,7 +15,6 @@ public class NoteLinkHandler {
     private UUID currentCollectionId;
     private List<NoteTitle> noteTitlesInCollection;
 
-    @Inject
     public NoteLinkHandler(ServerUtils serverUtils) {
         this.serverUtils = serverUtils;
         setNoteTitlesForCollection(null);

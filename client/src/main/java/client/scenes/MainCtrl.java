@@ -63,7 +63,6 @@ public class MainCtrl {
     public MainCtrl(Config config, ServerUtils serverUtils) {
         this.config = config;
         this.serverUtils = serverUtils;
-        this.noteLinkHandler = new NoteLinkHandler(serverUtils);
         try {
             this.serverUtils.connection.subscribe(update -> {
                 if(update.defaultId != null) this.config.setDefaultCollectionId(update.defaultId);
@@ -126,6 +125,7 @@ public class MainCtrl {
 
         this.shortcutHandler = new ShortcutHandler(this, sidebarCtrl);
         shortcutHandler.attach(this.noteEditor);
+        this.noteLinkHandler = new NoteLinkHandler(this.serverUtils);
 
         showNoteEditor();
         primaryStage.show();
