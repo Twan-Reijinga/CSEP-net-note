@@ -522,10 +522,10 @@ public class MarkdownEditorCtrl {
     private String convertTagsAndLinks(String text){
         String[] textLines = text.split("\n");
         String[] filesRendered = this.embeddedFileToLinks(textLines);
-        String[] tagsRendered = this.convertTagsToLinks(filesRendered);
-        String[] linksRendered = this.getNoteLinkHtml(tagsRendered, text);
+        String[] linksRendered = this.getNoteLinkHtml(filesRendered, text);
+        String[] tagsRendered = this.convertTagsToLinks(linksRendered);
 
-        return String.join("\n", linksRendered);
+        return String.join("\n", tagsRendered);
     }
 
     private String[] embeddedFileToLinks(String[] text) {
