@@ -38,7 +38,7 @@
                   </Button>
                     <Button minWidth="30.0" mnemonicParsing="false" onAction="#deleteSelectedNote" prefWidth="24.666" text="-" />
                   <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES" />
-                    <Button minWidth="85.0" mnemonicParsing="false" onAction="#refresh" text="%refresh" HBox.hgrow="SOMETIMES">
+                    <Button minWidth="90.0" mnemonicParsing="false" onAction="#refresh" text="%refresh" HBox.hgrow="SOMETIMES">
                      <graphic>
                         <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                            <image>

@@ -101,7 +101,7 @@
                                  </image>
                               </ImageView>
                            </graphic></Label>
-                        <MenuButton fx:id="tagOptionsButton" mnemonicParsing="false" prefHeight="26.0" text="tags" textAlignment="CENTER">
+                        <MenuButton fx:id="tagOptionsButton" mnemonicParsing="false" prefHeight="26.0" text="%tags" textAlignment="CENTER">
                            <graphic>
                               <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
