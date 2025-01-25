@@ -157,6 +157,10 @@ public class FilesCtrl {
     public void editTitle(long noteId, long id) {
         Stage popupStage = new Stage();
         Label feedback = new Label("");
+        Tooltip tooltip = new Tooltip(noteEditorCtrl.getBundle().getString("titleRules"));
+        tooltip.setShowDelay(Duration.millis(50));
+        feedback.setTooltip(tooltip);
+
         popupStage.setTitle(noteEditorCtrl.getBundle().getString("edit")
                 + " " + noteEditorCtrl.getBundle().getString("title"));
         TextField newTitle = new TextField();
@@ -189,7 +193,11 @@ public class FilesCtrl {
      */
     private void onChangeTitle(long noteId, long id, Stage popupStage, TextField newTitle, Label feedback) {
         String title = newTitle.getText();
-        if (!title.isEmpty()) {
+        if (!title.isEmpty() && (!title.contains("/") || !title.contains("(")
+                || !title.contains(")") || !title.contains("{")
+                || !title.contains("}") || !title.contains("\"") || !title.contains("?")
+                || !title.contains("<") || !title.contains(">")
+                || !title.contains(":") || !title.contains(";"))) {
             String prevTitle = server.getMetadataFromNote(noteId, id).split("/")[2];
             String[] prevList = prevTitle.split("\\.");
             if(!title.split("\\.")[title.split("\\.").length - 1].equals(prevList[prevList.length - 1])) {
