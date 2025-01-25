@@ -98,10 +98,16 @@ public class FilesCtrl {
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.*"));
             File file = fileChooser.showOpenDialog(null);
             if (file != null) {
-                addFile(file);
+                if (!file.getName().contains(")")) {
+                    addFile(file);
+                }else {
+                    main.showMessage("File couldn't be selected." +
+                            "\nMake sure that the file does not contain any of the following:" +
+                            "\n \\ / : * ? < > \" | )", true);
+                }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            main.showMessage("Error whilst adding the file", true);
         }
     }
 
@@ -193,13 +199,10 @@ public class FilesCtrl {
      */
     private void onChangeTitle(long noteId, long id, Stage popupStage, TextField newTitle, Label feedback) {
         String title = newTitle.getText();
-        if (!title.isEmpty() && (!title.contains("/") || !title.contains("(")
-                || !title.contains(")") || !title.contains("{")
-                || !title.contains("}") || !title.contains("\"") || !title.contains("?")
-                || !title.contains("<") || !title.contains(">")
-                || !title.contains(":") || !title.contains(";"))) {
+        if (!title.isEmpty() && title.matches("[^)\\\\/\"?:*<>|]+")){
             String prevTitle = server.getMetadataFromNote(noteId, id).split("/")[2];
             String[] prevList = prevTitle.split("\\.");
+
             if(!title.split("\\.")[title.split("\\.").length - 1].equals(prevList[prevList.length - 1])) {
                 title += "." + prevList[prevList.length - 1];
             }
@@ -213,12 +216,10 @@ public class FilesCtrl {
             }else {
                 newTitle.clear();
                 feedback.setText(noteEditorCtrl.getBundle().getString("titleExists"));
-                feedback.setStyle("-fx-text-fill: red;");
-            }
+                feedback.setStyle("-fx-text-fill: red;");}
         }else{
             feedback.setText(noteEditorCtrl.getBundle().getString("titleEmpty"));
-            feedback.setStyle("-fx-text-fill: red");
-        }
+            feedback.setStyle("-fx-text-fill: red");}
     }
 
     /**
