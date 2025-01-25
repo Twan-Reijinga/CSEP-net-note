@@ -111,4 +111,8 @@ public class CollectionService {
         return collectionRepository.findAll();
     }
 
+    public void setDefaultCollectionId(UUID id) {
+        websocketService.notifyDefaultIdSubscribers(websocketService.onDefaultCollectionIdChanged, id);
+        System.out.println("Changed default id to " + id);
+    }
 }

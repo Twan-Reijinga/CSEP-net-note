@@ -64,6 +64,9 @@ public class MainCtrl {
         this.serverUtils = serverUtils;
         this.noteLinkHandler = new NoteLinkHandler(serverUtils);
         try {
+            this.serverUtils.connection.subscribe(update -> {
+                if(update.defaultId != null) this.config.setDefaultCollectionId(update.defaultId);
+            });
             ServerUtils.connection.connect(new java.net.URI(this.serverUtils.server).getHost());
         } catch (Exception e) {
             e.printStackTrace();
