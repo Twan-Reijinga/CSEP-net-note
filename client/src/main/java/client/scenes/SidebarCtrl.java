@@ -309,6 +309,9 @@ public class SidebarCtrl {
 
     public void changeSelectedNote(){
         refresh();
+        if(noteContainer.getChildren().isEmpty())
+            return;
+
         selectedNoteId = Integer.parseInt(noteContainer.getChildren().getFirst().getId());
         noteClick(selectedNoteId);
     }
