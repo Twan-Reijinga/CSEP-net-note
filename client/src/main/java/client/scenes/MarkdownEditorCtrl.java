@@ -446,22 +446,50 @@ public class MarkdownEditorCtrl {
 
         for(int i=0; i<textLines.length; i++){
             if(!textLines[i].startsWith("\t")){
-                matcher = pattern.matcher(textLines[i]);
-
+                String line = textLines[i];
+                boolean[] ignore = ignoreTextInBrackets(line);
+                matcher = pattern.matcher(line);
                 textBuffer = new StringBuffer();
+
                 while (matcher.find()) {
-                    String tag = matcher.group().substring(1);
-                    String link = "<a href='#' class='tags' onclick='app.onTagClicked(\""
-                            + tag + "\")'>"
-                            + tag + "</a>";
-                    matcher.appendReplacement(textBuffer, link);
+                    boolean isIgnored = this.ignoreText(matcher.start(), matcher.end(), ignore);
+                    if (!isIgnored) {
+                        String tag = matcher.group().substring(1);
+                        String link = "<a href='#' class='tags' onclick='app.onTagClicked(\""
+                                + tag + "\")'>"
+                                + tag + "</a>";
+                        matcher.appendReplacement(textBuffer, link);
+                    }
                 }
                 matcher.appendTail(textBuffer);
-
                 textLines[i] = textBuffer.toString();
             }
         }
         return textLines;
+    }
+
+    private boolean[] ignoreTextInBrackets(String line){
+        Pattern bracketPattern = Pattern.compile("\\[\\[.*?]]");
+        Matcher bracketMatcher = bracketPattern.matcher(line);
+        boolean[] ignore = new boolean[line.length()];
+
+        while (bracketMatcher.find()) {
+            for (int j = bracketMatcher.start(); j < bracketMatcher.end(); j++) {
+                ignore[j] = true;
+            }
+        }
+        return ignore;
+    }
+
+    private boolean ignoreText(int start, int end, boolean[] ignore){
+        boolean isIgnored = false;
+        for (int j = start; j < end; j++) {
+            if (ignore[j]) {
+                isIgnored = true;
+                break;
+            }
+        }
+        return isIgnored;
     }
 
     /**
