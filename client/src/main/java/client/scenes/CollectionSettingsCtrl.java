@@ -84,7 +84,7 @@ public class CollectionSettingsCtrl {
         collectionsListView.setCellFactory(_ -> createCollectionListViewItem());
 
         selectDefaultCollection();
-        ServerUtils.connection.subscribe(websocketUpdate -> {
+        serverUtils.connection.subscribe(websocketUpdate -> {
             if(websocketUpdate.collection != null || websocketUpdate.defaultId != null) Platform.runLater(() -> {
                 collectionsListView.getItems().clear();
                 collectionsListView.getItems().addAll(serverUtils.getAllCollections());

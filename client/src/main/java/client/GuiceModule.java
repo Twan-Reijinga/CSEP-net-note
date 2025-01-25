@@ -17,6 +17,7 @@ package client;
 
 import client.scenes.CollectionSettingsCtrl;
 import client.scenes.NoteEditorCtrl;
+import client.utils.Connection;
 import com.google.inject.*;
 import client.scenes.MainCtrl;
 import client.config.Config;
@@ -32,6 +33,7 @@ public class GuiceModule implements Module {
         binder.bind(NoteEditorCtrl.class).in(Scopes.SINGLETON);
         // NO_SCOPE ensures a new fresh instance of a pop-up will be created everytime
         binder.bind(CollectionSettingsCtrl.class).in(Scopes.NO_SCOPE);
+        binder.bind(Connection.class).in(Scopes.SINGLETON);
     }
 
     @Provides

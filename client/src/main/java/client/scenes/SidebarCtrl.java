@@ -86,7 +86,7 @@ public class SidebarCtrl {
         refresh();
         selectFirstNote();
 
-        ServerUtils.connection.subscribe(update -> {
+        server.connection.subscribe(update -> {
             if(update.note == null) return;
             Platform.runLater(this::refresh);
         });

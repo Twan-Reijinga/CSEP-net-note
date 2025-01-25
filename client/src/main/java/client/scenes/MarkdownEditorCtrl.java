@@ -134,7 +134,7 @@ public class MarkdownEditorCtrl {
 
         collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
         collectionDropdown.setButtonCell(createCollectionDropdownOption());
-        ServerUtils.connection.subscribe(update -> {
+        serverUtils.connection.subscribe(update -> {
             if(update.note == null) {
                 // If note is null then the update was for collections
                 Platform.runLater(this::loadCollectionDropdown);
