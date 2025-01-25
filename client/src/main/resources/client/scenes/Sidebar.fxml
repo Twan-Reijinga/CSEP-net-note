@@ -4,6 +4,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -21,13 +23,13 @@
               </ScrollPane>
             <Pane fx:id="messageContainer" minHeight="100.0" snapToPixel="false">
                <children>
-                  <Label fx:id="messageTextLabel" alignment="TOP_LEFT" prefWidth="200.0" text="[error/success message]" wrapText="true">
+                  <Label fx:id="messageTextLabel" alignment="TOP_LEFT" prefHeight="100.0" prefWidth="200.0" text="[error/success message]" wrapText="true">
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding></Label>
                </children>
             </Pane>
-            <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="NEVER">
+            <HBox minHeight="-Infinity" prefHeight="50.0" prefWidth="200.0" VBox.vgrow="NEVER">
                <children>
                     <Button minWidth="30.0" mnemonicParsing="false" onAction="#onCreateNote" text="+">
                      <HBox.margin>
@@ -36,7 +38,14 @@
                   </Button>
                     <Button minWidth="30.0" mnemonicParsing="false" onAction="#deleteSelectedNote" prefWidth="24.666" text="-" />
                   <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES" />
-                    <Button minWidth="80.0" mnemonicParsing="false" onAction="#refresh" text="%refresh" HBox.hgrow="SOMETIMES" />
+                    <Button minWidth="90.0" mnemonicParsing="false" onAction="#refresh" text="%refresh" HBox.hgrow="SOMETIMES">
+                     <graphic>
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@/images/refresh-icon.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
                </children>
                <VBox.margin>
                   <Insets />
