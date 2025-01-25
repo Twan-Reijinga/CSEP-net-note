@@ -134,7 +134,7 @@ public class MarkdownEditorCtrl {
 
         collectionDropdown.setCellFactory(_ -> createCollectionDropdownOption());
         collectionDropdown.setButtonCell(createCollectionDropdownOption());
-        ServerUtils.connection.subscribe(update -> {
+        serverUtils.connection.subscribe(update -> {
             if(update.note == null) {
                 // If note is null then the update was for collections
                 Platform.runLater(this::loadCollectionDropdown);
@@ -150,20 +150,27 @@ public class MarkdownEditorCtrl {
     }
 
     private void handleWebsocketUpdate() {
-        clearInvalidTitleStyle();
-        activeNote = serverUtils.getNoteById(activeNote.id);
-        var pos = noteText.getCaretPosition();
-        noteText.setText(activeNote.content);
-        noteText.positionCaret(pos);
-        titleField.setText(activeNote.title);
+        if(serverUtils.existsNoteById(activeNote.id)){
+            clearInvalidTitleStyle();
+            activeNote = serverUtils.getNoteById(activeNote.id);
+            var pos = noteText.getCaretPosition();
+            noteText.setText(activeNote.content);
+            noteText.positionCaret(pos);
+            titleField.setText(activeNote.title);
 
-        this.titleChanged = false;
-        this.initialTitle = activeNote.title;
-        this.mainCtrl.updateValidLinks();
+            this.titleChanged = false;
+            this.initialTitle = activeNote.title;
+            this.mainCtrl.updateValidLinks();
 
-        requestRefresh();
-        loadCollectionDropdown();
-        updateForbiddenTitles();
+            requestRefresh();
+            loadCollectionDropdown();
+            updateForbiddenTitles();
+        }
+        else{
+            String errorMessage = "The note you were editing was deleted from another client!";
+            this.sidebarCtrl.showMessage(errorMessage,true);
+            this.sidebarCtrl.changeSelectedNote();
+        }
     }
 
     /**
@@ -439,22 +446,50 @@ public class MarkdownEditorCtrl {
 
         for(int i=0; i<textLines.length; i++){
             if(!textLines[i].startsWith("\t")){
-                matcher = pattern.matcher(textLines[i]);
-
+                String line = textLines[i];
+                boolean[] ignore = ignoreTextInBrackets(line);
+                matcher = pattern.matcher(line);
                 textBuffer = new StringBuffer();
+
                 while (matcher.find()) {
-                    String tag = matcher.group().substring(1);
-                    String link = "<a href='#' class='tags' onclick='app.onTagClicked(\""
-                            + tag + "\")'>"
-                            + tag + "</a>";
-                    matcher.appendReplacement(textBuffer, link);
+                    boolean isIgnored = this.ignoreText(matcher.start(), matcher.end(), ignore);
+                    if (!isIgnored) {
+                        String tag = matcher.group().substring(1);
+                        String link = "<a href='#' class='tags' onclick='app.onTagClicked(\""
+                                + tag + "\")'>"
+                                + tag + "</a>";
+                        matcher.appendReplacement(textBuffer, link);
+                    }
                 }
                 matcher.appendTail(textBuffer);
-
                 textLines[i] = textBuffer.toString();
             }
         }
         return textLines;
+    }
+
+    private boolean[] ignoreTextInBrackets(String line){
+        Pattern bracketPattern = Pattern.compile("\\[\\[.*?]]");
+        Matcher bracketMatcher = bracketPattern.matcher(line);
+        boolean[] ignore = new boolean[line.length()];
+
+        while (bracketMatcher.find()) {
+            for (int j = bracketMatcher.start(); j < bracketMatcher.end(); j++) {
+                ignore[j] = true;
+            }
+        }
+        return ignore;
+    }
+
+    private boolean ignoreText(int start, int end, boolean[] ignore){
+        boolean isIgnored = false;
+        for (int j = start; j < end; j++) {
+            if (ignore[j]) {
+                isIgnored = true;
+                break;
+            }
+        }
+        return isIgnored;
     }
 
     /**
@@ -522,7 +557,7 @@ public class MarkdownEditorCtrl {
     }
 
     private String[] embeddedFileToLinks(String[] text) {
-        Pattern pattern = Pattern.compile("!\\[([^]]*)]\\(([^)\\\\/\"?:*<>|]+)\\)(\\{(\\d+), (\\d+)})?");
+        Pattern pattern = Pattern.compile("!\\[([^]]*)]\\(([^)\\\\/\"?;$#:*<>|]+)\\)(\\{(\\d+), (\\d+)})?");
         Matcher matcher;
         StringBuffer textBuffer;
 

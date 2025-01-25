@@ -30,8 +30,8 @@ public class ServerUtilsRepository extends ServerUtils {
     private boolean serverAvailable;
     private long lastNoteId;
 
-    public ServerUtilsRepository(Config config) {
-        super(config);
+    public ServerUtilsRepository(Config config, Connection connection) {
+        super(config, connection);
         this.collections = new HashMap<>();
         this.notes = new HashMap<>();
         this.serverAvailable = true;

@@ -25,6 +25,7 @@ import commons.NoteTitle;
 import client.handlers.ShortcutHandler;
 import commons.Note;
 import jakarta.inject.Inject;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
@@ -64,9 +65,12 @@ public class MainCtrl {
         this.serverUtils = serverUtils;
         this.noteLinkHandler = new NoteLinkHandler(serverUtils);
         try {
-            ServerUtils.connection.connect(new java.net.URI(this.serverUtils.server).getHost());
+            this.serverUtils.connection.subscribe(update -> {
+                if(update.defaultId != null) this.config.setDefaultCollectionId(update.defaultId);
+            });
+            this.serverUtils.connection.connect(new java.net.URI(this.serverUtils.server).getHost());
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Could not connect to server. Are you sure the server is running?");
         }
     }
 
@@ -99,7 +103,7 @@ public class MainCtrl {
             ResourceBundle bundle
     ) {
         this.primaryStage = primaryStage;
-
+        this.primaryStage.setOnCloseRequest(_ -> {serverUtils.connection.close(); System.exit(0);});
         this.tagFilteringHandler = new TagFilteringHandler(this.serverUtils);
 
         this.noteEditorCtrl = noteEditor.getKey();

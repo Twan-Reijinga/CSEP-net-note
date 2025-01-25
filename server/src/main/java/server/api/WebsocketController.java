@@ -15,6 +15,7 @@ import server.services.WebsocketService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Configuration
 @ServerEndpoint("/ws")
@@ -46,6 +47,7 @@ public class WebsocketController {
         service.onCollectionCreated.add(this::collectionCreate);
         service.onCollectionUpdated.add(this::collectionUpdate);
         service.onCollectionDeleted.add(this::collectionDelete);
+        service.onDefaultCollectionIdChanged.add(this::defaultIdChanged);
 
         clients = new ArrayList<>();
         server = new Server("localhost", 8025, "/", null, WebsocketController.class);
@@ -104,7 +106,7 @@ public class WebsocketController {
     private void noteCreate(Note note) {
         try {
             broadcast(objectMapper.writeValueAsString(
-                    new WebsocketUpdate(WebsocketUpdate.Opcode.NOTE_CREATE, note, null)));
+                    new WebsocketUpdate(WebsocketUpdate.Opcode.NOTE_CREATE, note, null, null)));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -113,7 +115,7 @@ public class WebsocketController {
     private void noteUpdate(Note note) {
         try {
             broadcast(objectMapper.writeValueAsString(
-                    new WebsocketUpdate(WebsocketUpdate.Opcode.NOTE_UPDATE, note, null)));
+                    new WebsocketUpdate(WebsocketUpdate.Opcode.NOTE_UPDATE, note, null, null)));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -122,7 +124,7 @@ public class WebsocketController {
     private void noteDelete(Note note) {
         try {
             broadcast(objectMapper.writeValueAsString(
-                    new WebsocketUpdate(WebsocketUpdate.Opcode.NOTE_DELETE, note, null)));
+                    new WebsocketUpdate(WebsocketUpdate.Opcode.NOTE_DELETE, note, null, null)));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -131,8 +133,7 @@ public class WebsocketController {
     private void collectionCreate(Collection collection) {
         try {
             var str = objectMapper.writeValueAsString(
-                    new WebsocketUpdate(WebsocketUpdate.Opcode.COLLECTION_CREATE, null, collection));
-            System.out.println(str);
+                    new WebsocketUpdate(WebsocketUpdate.Opcode.COLLECTION_CREATE, null, collection, null));
             broadcast(str);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -142,7 +143,7 @@ public class WebsocketController {
     private void collectionUpdate(Collection collection) {
         try {
             broadcast(objectMapper.writeValueAsString(
-                    new WebsocketUpdate(WebsocketUpdate.Opcode.COLLECTION_UPDATE, null, collection)));
+                    new WebsocketUpdate(WebsocketUpdate.Opcode.COLLECTION_UPDATE, null, collection, null)));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -151,7 +152,16 @@ public class WebsocketController {
     private void collectionDelete(Collection collection) {
         try {
             broadcast(objectMapper.writeValueAsString(
-                    new WebsocketUpdate(WebsocketUpdate.Opcode.COLLECTION_DELETE, null, collection)));
+                    new WebsocketUpdate(WebsocketUpdate.Opcode.COLLECTION_DELETE, null, collection, null)));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void defaultIdChanged(UUID id) {
+        try {
+            broadcast(objectMapper.writeValueAsString(
+                    new WebsocketUpdate(WebsocketUpdate.Opcode.DEFAULT_COLLECTION_CHANGED, null, null, id)));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

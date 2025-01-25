@@ -20,10 +20,7 @@ import client.config.Config;
 import client.scenes.MainCtrl;
 import client.scenes.NoteEditorCtrl;
 import client.scenes.SidebarCtrl;
-import client.utils.AddNoteAction;
-import client.utils.NoteLinkHandler;
-import client.utils.ServerUtils;
-import client.utils.ServerUtilsRepository;
+import client.utils.*;
 import commons.Collection;
 import commons.Note;
 import javafx.geometry.Side;
@@ -39,8 +36,9 @@ class ShortcutHandlerTest {
     @BeforeEach
     void setUp() {
         Config config = new Config();
-        MainCtrl mainCtrl = new MainCtrl(config, new ServerUtilsRepository(config));
-        SidebarCtrl sidebarCtrl = new SidebarCtrl(new ServerUtilsRepository(config), config);
+        Connection connection = new Connection();
+        MainCtrl mainCtrl = new MainCtrl(config, new ServerUtilsRepository(config, connection));
+        SidebarCtrl sidebarCtrl = new SidebarCtrl(new ServerUtilsRepository(config, connection), config);
         this.shortcutHandler = new ShortcutHandler(mainCtrl, sidebarCtrl);
     }
 

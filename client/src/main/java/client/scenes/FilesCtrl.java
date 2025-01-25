@@ -98,12 +98,13 @@ public class FilesCtrl {
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.*"));
             File file = fileChooser.showOpenDialog(null);
             if (file != null) {
-                if (!file.getName().contains(")")) {
+                if (!file.getName().contains(")") && !file.getName().contains(";")
+                        && !file.getName().contains("$") && !file.getName().contains("#")) {
                     addFile(file);
                 }else {
                     main.showMessage("File couldn't be selected." +
                             "\nMake sure that the file does not contain any of the following:" +
-                            "\n \\ / : * ? < > \" | )", true);
+                            "\n \\ / : ; $ # * ? < > \" | )", true);
                 }
             }
         }catch (Exception e) {
@@ -199,7 +200,7 @@ public class FilesCtrl {
      */
     private void onChangeTitle(long noteId, long id, Stage popupStage, TextField newTitle, Label feedback) {
         String title = newTitle.getText();
-        if (!title.isEmpty() && title.matches("[^)\\\\/\"?:*<>|]+")){
+        if (!title.isEmpty() && title.matches("[^)\\\\/\"?:;$#*<>|]+")){
             String prevTitle = server.getMetadataFromNote(noteId, id).split("/")[2];
             String[] prevList = prevTitle.split("\\.");
 

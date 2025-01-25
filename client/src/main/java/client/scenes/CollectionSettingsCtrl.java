@@ -20,6 +20,8 @@ import client.utils.DialogBoxUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Collection;
+import commons.WebsocketUpdate;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -82,6 +84,16 @@ public class CollectionSettingsCtrl {
         collectionsListView.setCellFactory(_ -> createCollectionListViewItem());
 
         selectDefaultCollection();
+        serverUtils.connection.subscribe(websocketUpdate -> {
+            if(websocketUpdate.collection != null || websocketUpdate.defaultId != null) Platform.runLater(() -> {
+                collectionsListView.getItems().clear();
+                collectionsListView.getItems().addAll(serverUtils.getAllCollections());
+                isCollectionModified = false;
+                createdCollection = null;
+                collectionsListView.refresh();
+                selectDefaultCollection();
+            });
+        });
     }
 
 
@@ -205,6 +217,7 @@ public class CollectionSettingsCtrl {
         }
 
         config.setDefaultCollectionId(displayedCollection.id);
+        serverUtils.setDefaultCollection(displayedCollection.id);
 
         // To ensure that the display collection is labeled as default
         collectionsListView.refresh();
