@@ -97,6 +97,12 @@ public class CollectionController {
                 .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
+    @PutMapping(path="/default")
+    public ResponseEntity<Void> setDefaultCollection(@RequestBody UUID id) {
+        collectionService.setDefaultCollectionId(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping(path="/{collectionId}")
     public ResponseEntity<Collection> getCollectionById(@PathVariable UUID collectionId) {
         Optional<Collection> collection = collectionService.getCollectionById(collectionId);

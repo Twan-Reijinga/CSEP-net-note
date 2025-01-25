@@ -17,6 +17,7 @@ public class WebsocketService {
     public final List<Consumer<Collection>> onCollectionCreated = new ArrayList<>();
     public final List<Consumer<Collection>> onCollectionUpdated = new ArrayList<>();
     public final List<Consumer<Collection>> onCollectionDeleted = new ArrayList<>();
+    public final List<Consumer<UUID>> onDefaultCollectionIdChanged = new ArrayList<>();
 
     @Autowired
     public WebsocketService() { }
@@ -29,5 +30,10 @@ public class WebsocketService {
     public void notifyCollectionSubscribers(List<Consumer<Collection>> subscribers, Collection collection) {
         for (var subscriber : subscribers)
             subscriber.accept(collection);
+    }
+
+    public void notifyDefaultIdSubscribers(List<Consumer<UUID>> subscribers, UUID id) {
+        for (var subscriber : subscribers)
+            subscriber.accept(id);
     }
 }

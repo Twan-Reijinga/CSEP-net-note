@@ -146,8 +146,11 @@ public class NoteEditorCtrl {
         String fullLanguageName =
                 convertLocaleToLanguageString(locale);
         loadLanguageDropdown(fullLanguageName);
-        loadCollectionDropdown();
-        loadTagOptions();
+        loadCollectionDropdown(); loadTagOptions();
+        ServerUtils.connection.subscribe(websocketUpdate -> {
+            if(websocketUpdate.collection != null || websocketUpdate.defaultId != null)
+                Platform.runLater(this::loadCollectionDropdown);
+        });
     }
 
     private String convertLocaleToLanguageString(Locale locale) {

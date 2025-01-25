@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 
 import commons.*;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -64,6 +65,18 @@ public class ServerUtils {
 				.target(server).path("api/collections/default")
 				.request(APPLICATION_JSON)
 				.get(new GenericType<>() {});
+	}
+
+	/**
+	 * request the server to broadcast the default collection to the other clients
+	 *
+	 * @param id new id to be marked default
+	 */
+	public void setDefaultCollection(UUID id) {
+		ClientBuilder.newClient(new ClientConfig())
+				.target(server).path("api/collections/default")
+				.request(APPLICATION_JSON)
+				.put(Entity.entity(id, APPLICATION_JSON), UUID.class);
 	}
 
 	/**
