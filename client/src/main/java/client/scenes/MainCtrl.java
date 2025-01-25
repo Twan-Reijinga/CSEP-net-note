@@ -21,10 +21,10 @@ import client.utils.DialogBoxUtils;
 import client.utils.ServerUtils;
 import client.handlers.TagFilteringHandler;
 import client.utils.*;
+import com.google.inject.Inject;
 import commons.NoteTitle;
 import client.handlers.ShortcutHandler;
 import commons.Note;
-import jakarta.inject.Inject;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -60,9 +60,14 @@ public class MainCtrl {
     private boolean isWaiting;
 
     @Inject
-    public MainCtrl(Config config, ServerUtils serverUtils) {
+    public MainCtrl(Config config,
+                    ServerUtils serverUtils,
+                    NoteLinkHandler noteLinkHandler,
+                    TagFilteringHandler tagFilteringHandler) {
         this.config = config;
         this.serverUtils = serverUtils;
+        this.noteLinkHandler = noteLinkHandler;
+        this.tagFilteringHandler = tagFilteringHandler;
         try {
             this.serverUtils.connection.subscribe(update -> {
                 if(update.defaultId != null) this.config.setDefaultCollectionId(update.defaultId);
@@ -125,7 +130,7 @@ public class MainCtrl {
 
         this.shortcutHandler = new ShortcutHandler(this, sidebarCtrl);
         shortcutHandler.attach(this.noteEditor);
-        this.noteLinkHandler = new NoteLinkHandler(this.serverUtils);
+        this.noteLinkHandler.initialize();
 
         showNoteEditor();
         primaryStage.show();

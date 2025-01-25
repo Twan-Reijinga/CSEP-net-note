@@ -1,7 +1,7 @@
 package client.utils;
 
+import com.google.inject.Inject;
 import commons.NoteTitle;
-import jakarta.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +15,12 @@ public class NoteLinkHandler {
     private UUID currentCollectionId;
     private List<NoteTitle> noteTitlesInCollection;
 
+    @Inject
     public NoteLinkHandler(ServerUtils serverUtils) {
         this.serverUtils = serverUtils;
+    }
+
+    public void initialize(){
         setNoteTitlesForCollection(null);
     }
 

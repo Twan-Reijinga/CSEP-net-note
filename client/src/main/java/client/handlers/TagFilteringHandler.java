@@ -16,6 +16,7 @@
 package client.handlers;
 
 import client.utils.ServerUtils;
+import com.google.inject.Inject;
 import commons.Note;
 import commons.NoteTags;
 
@@ -33,6 +34,7 @@ public class TagFilteringHandler {
     public List<String> tagsSelected;
     private HashSet<String> availableTags;
 
+    @Inject
     public TagFilteringHandler(ServerUtils serverUtils) {
         loadedNoteTags = new ArrayList<>();
         this.serverUtils = serverUtils;

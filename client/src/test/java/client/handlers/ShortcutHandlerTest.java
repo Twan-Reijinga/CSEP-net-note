@@ -37,8 +37,9 @@ class ShortcutHandlerTest {
     void setUp() {
         Config config = new Config();
         Connection connection = new Connection();
-        MainCtrl mainCtrl = new MainCtrl(config, new ServerUtilsRepository(config, connection));
-        SidebarCtrl sidebarCtrl = new SidebarCtrl(new ServerUtilsRepository(config, connection), config);
+        ServerUtilsRepository repo = new ServerUtilsRepository(config, connection);
+        MainCtrl mainCtrl = new MainCtrl(config, repo, new NoteLinkHandler(repo), new TagFilteringHandler(repo));
+        SidebarCtrl sidebarCtrl = new SidebarCtrl(repo, config);
         this.shortcutHandler = new ShortcutHandler(mainCtrl, sidebarCtrl);
     }
 
