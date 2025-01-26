@@ -153,10 +153,13 @@ public class MarkdownEditorCtrl {
         if(serverUtils.existsNoteById(activeNote.id)){
             clearInvalidTitleStyle();
             activeNote = serverUtils.getNoteById(activeNote.id);
-            var pos = noteText.getCaretPosition();
+            var pos1 = noteText.getCaretPosition();
             noteText.setText(activeNote.content);
-            noteText.positionCaret(pos);
+            noteText.positionCaret(pos1);
+
+            var pos2 = titleField.getCaretPosition();
             titleField.setText(activeNote.title);
+            titleField.positionCaret(pos2);
 
             this.titleChanged = false;
             this.initialTitle = activeNote.title;
