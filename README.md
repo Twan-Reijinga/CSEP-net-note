@@ -1,8 +1,8 @@
-# CSEP Template Project
+# CSE Project Team 04 - NetNote
 
-This repository contains the template for the CSE project. Please extend this README.md with sufficient instructions that will illustrate for your TA and the course staff how they can run your project.
+This repository contains our note taking application for the CSE project 2024-2025.
 
-To run the template project from the command line, you either need to have [Maven](https://maven.apache.org/install.html) installed on your local system (`mvn`) or you need to use the Maven wrapper (`mvnw`). You can then execute
+To run the project from the command line, you either need to have [Maven](https://maven.apache.org/install.html) installed on your local system (`mvn`) or you need to use the Maven wrapper (`mvnw`). You can then execute
 
 	mvn clean install
 
@@ -34,3 +34,22 @@ Once this is working, you can try importing the project into your favorite IDE.
 | `Ctrl + Del` | Delete selected note |
 | `Ctrl + R` | Manually refresh sidebar contents from server |
 | `Ctrl + L` | Focus on the active note title |
+
+# Implememented extensions
+- [x] Multi-collections (100%)
+- [x] Embedded files (100%)
+- [x] Interconnected content (100%)
+- [x] Automated change synchronization (100%)
+- [x] Live Language Switch (100%)
+
+# Additional implementations
+- As an extra that was not listed in the rubriks, we have stack based undo actions for note deletion and addition.
+- Implemented a fuzzy search algoritm for the note search functionality.
+
+# Participated team members
+- Liviu
+- Oleh
+- Pepijn
+- Petar
+- Twan
+- (Tushit)
