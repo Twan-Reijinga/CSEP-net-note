@@ -573,4 +573,8 @@ public class NoteEditorCtrl {
         this.searchInOptionsList.getSelectionModel().selectFirst();
         this.matchAllCheckBox.setSelected(true);
     }
+
+    public ResourceBundle getBundle(){
+        return bundle;
+    }
 }

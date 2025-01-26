@@ -20,20 +20,15 @@ public class EmbeddedFileController {
         this.embeddedFileRepository = embeddedFileRepository;
     }
 
-    @GetMapping(path = {"", "/"})
-    public List<EmbeddedFile> getAllFiles(@PathVariable("noteId") long id) {
-        List<EmbeddedFile> emFiles = embeddedFileRepository.findAll();
-        emFiles.removeIf(CurrentFile -> CurrentFile.note.id!=id);
-        return emFiles;
-    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<EmbeddedFile> getById(@PathVariable("noteId") long noteId, @PathVariable("id") long id) {
-        if (id < 0 || embeddedFileRepository.findById(id).isEmpty()
+    public ResponseEntity<String> getMetadataFromNote(@PathVariable("noteId") long noteId, @PathVariable("id") long id){
+        if (embeddedFileRepository.findById(id).isEmpty()
                 || embeddedFileRepository.findById(id).get().note.id!= noteId) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(embeddedFileRepository.findById(id).get());
+        EmbeddedFile file = embeddedFileRepository.findById(id).get();
+        String fileMetadata = file.id + "/" + file.note.id + "/" + file.title;
+        return ResponseEntity.ok(fileMetadata);
     }
 
     @GetMapping("/exists/{id}")
@@ -43,12 +38,11 @@ public class EmbeddedFileController {
 
     /**
      * Stores the file in the EmbeddedFileRep, stores the file as base64
-     * @param id Unique file id (every file must be stored on note/embedded/{fileId}
      * @param file the file that needs to be saved
      * @return  HTTP response
      */
     @PostMapping("/{id}")
-    public ResponseEntity<EmbeddedFile> addFile(@PathVariable("id") long id, @RequestBody EmbeddedFile file) {
+    public ResponseEntity<EmbeddedFile> addFile(@RequestBody EmbeddedFile file) {
         if (file.id < 0 || embeddedFileRepository.existsById(file.id)) {
             return ResponseEntity.badRequest().build();
         }
@@ -67,9 +61,12 @@ public class EmbeddedFileController {
         if (id < 0 || !embeddedFileRepository.existsById(id)){
             return ResponseEntity.badRequest().build();
         }
-        EmbeddedFile removed = embeddedFileRepository.findById(id).get();
-        embeddedFileRepository.deleteById(id);
-        return ResponseEntity.ok(removed);
+        if (embeddedFileRepository.findById(id).isPresent()) {
+            EmbeddedFile removed = embeddedFileRepository.findById(id).get();
+            embeddedFileRepository.deleteById(id);
+            return ResponseEntity.ok(removed);
+        }
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -89,8 +86,11 @@ public class EmbeddedFileController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmbeddedFile> updateFile(@RequestBody EmbeddedFile file) {
+    public ResponseEntity<EmbeddedFile> updateTitleFile(
+            @PathVariable("noteId") long noteId, @PathVariable("id") long fileId, @RequestBody String title) {
         try {
+            EmbeddedFile file = embeddedFileRepository.findById(fileId).get();
+            file.title = title;
             EmbeddedFile saved = embeddedFileRepository.save(file);
             return ResponseEntity.ok(saved);
         }catch (Exception e){
@@ -125,6 +125,24 @@ public class EmbeddedFileController {
                     .filter(f-> f.note.id==id)
                     .map(f -> f.title)
                     .toList());
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<String>> getAllMetadataFromFile(@PathVariable("noteId") long id) {
+        try {
+            List<EmbeddedFile> files = embeddedFileRepository.findAll()
+                    .stream()
+                    .filter(f-> f.note.id==id)
+                    .toList();
+            List<String> metadata = new ArrayList<>();
+            for (EmbeddedFile file : files) {
+                String fileMetadata = file.id + "/" + file.note.id + "/" + file.title;
+                metadata.add(fileMetadata);
+            }
+            return ResponseEntity.ok(metadata);
         }catch (Exception e){
             return ResponseEntity.badRequest().build();
         }

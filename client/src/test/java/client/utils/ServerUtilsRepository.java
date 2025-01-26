@@ -132,7 +132,7 @@ public class ServerUtilsRepository extends ServerUtils {
     }
 
     @Override
-    public Note getNoteById(Long id) {
+    public Note getNoteById(long id) {
         return notes.get(id);
     }
 
